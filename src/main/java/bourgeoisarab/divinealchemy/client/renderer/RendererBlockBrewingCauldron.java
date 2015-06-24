@@ -1,9 +1,5 @@
 package bourgeoisarab.divinealchemy.client.renderer;
 
-import bourgeoisarab.divinealchemy.client.renderer.model.ModelBrewingCauldron;
-import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
-import bourgeoisarab.divinealchemy.init.ModFluids;
-import bourgeoisarab.divinealchemy.utility.ColourHelper;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -11,6 +7,13 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.FluidRegistry;
+
+import org.lwjgl.opengl.GL11;
+
+import bourgeoisarab.divinealchemy.client.renderer.model.ModelBrewingCauldron;
+import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
+import bourgeoisarab.divinealchemy.init.ModFluids;
+import bourgeoisarab.divinealchemy.utility.ColourHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
@@ -44,6 +47,7 @@ public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
 			if (tile.getFluid().getFluid() == FluidRegistry.WATER) {
 				icon = BlockLiquid.getLiquidIcon("water_still");
 			} else {
+				// icon = BlockLiquid.getLiquidIcon("water_still");
 				icon = tile.getFluid().getFluid().getBlock().getIcon(0, 0);
 				if (tile.getFluid().getFluid() == ModFluids.fluidPotion) {
 					doColour = true;
@@ -71,8 +75,10 @@ public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
 		double d14 = z + renderMinZ;
 		double d15 = z + renderMaxZ;
 
+		GL11.glDisable(GL11.GL_LIGHTING);
 		t.startDrawingQuads();
 		if (doColour) {
+			GL11.glEnable(GL11.GL_BLEND);
 			float[] colour = ColourHelper.getColourFromIngredients(tile.getIngredients());
 			t.setColorOpaque_F(colour[0], colour[1], colour[2]);
 		} else {
@@ -84,5 +90,7 @@ public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
 		t.addVertexWithUV(d11, d13, d14, d3, d5);
 		t.addVertexWithUV(d11, d13, d15, d8, d10);
 		t.draw();
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 }

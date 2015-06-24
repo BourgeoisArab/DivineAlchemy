@@ -9,6 +9,7 @@ public final class Ref {
 	public static final String SERVER_PROXY = "bourgeoisarab.divinealchemy.proxy.ServerProxy";
 
 	public static class Location {
+
 		public static final String PREFIX = MODID + ":";
 		public static final String MODELS = PREFIX + "models/";
 		public static final String TEXTURES = PREFIX + "textures/";
@@ -17,14 +18,24 @@ public final class Ref {
 	}
 
 	public static class NBT {
-		public static final String EFFECTS_TAG = "AIEffects";
+
+		public static final String INGREDIENTS = "Ingredients";
+		public static final String EFFECTS_TAG = "DAEffects";
 		public static final String EFFECT = "PotionEffect";
-		public static final String PERSISTENT_IDS = "AIPersistentIDs";
-		public static final String PERSISTENT = "AIPersistent";
-		public static final String FOOD_ID = "AIFoodID";
-		public static final String FOOD_LEVEL = "AIFoodLevel";
-		public static final String FOOD_SATURATION = "AIFoodSaturation";
-		public static final String SOUL_AMOUNT = "AISoulAmount";
+		public static final String PERSISTENT_IDS = "PersistentIDs";
+		public static final String PERSISTENT = "Persistent";
+		public static final String FOOD_ID = "DAFoodID";
+		public static final String FOOD_LEVEL = "DAFoodLevel";
+		public static final String FOOD_SATURATION = "DAFoodSaturation";
+		public static final String SOUL_AMOUNT = "SoulAmount";
+		public static final String DIVINITY = "Divinity";
+	}
+
+	public static class Config {
+
+		public static final String CATEGORY_COMPAT = "Compatability";
+		public static final String CATEGORY_POTION_IDS = "Potion IDs (if dynamic assignment is on, this will be ignored)";
+
 	}
 
 }

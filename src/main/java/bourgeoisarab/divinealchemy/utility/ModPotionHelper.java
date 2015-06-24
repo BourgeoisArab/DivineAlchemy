@@ -1,9 +1,5 @@
 package bourgeoisarab.divinealchemy.utility;
 
-import bourgeoisarab.divinealchemy.common.potion.ModPotion;
-import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
-import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -11,6 +7,8 @@ import java.util.Random;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import bourgeoisarab.divinealchemy.common.potion.ModPotion;
+import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
 
 public class ModPotionHelper {
 
@@ -28,7 +26,6 @@ public class ModPotionHelper {
 		tier1blacklist.add(Potion.nightVision.id);
 		tier1blacklist.add(ModPotion.potionFlight.id);
 
-		PotionIngredient.register();
 		// TODO: Prerequisites to effects and base effects (awkward, mundane, etc.)
 	}
 
@@ -36,7 +33,7 @@ public class ModPotionHelper {
 		Potion potion;
 		do {
 			potion = Potion.potionTypes[random.nextInt(Potion.potionTypes.length - 1)];
-		} while (potion == null || potion.isBadEffect() != badEffect || (tier == 1 && tier1blacklist.contains(potion.id)));
+		} while (potion == null || potion.isBadEffect() != badEffect || tier == 1 && tier1blacklist.contains(potion.id));
 		return potion;
 	}
 
@@ -56,7 +53,7 @@ public class ModPotionHelper {
 	 **/
 	public static List<PotionEffect> getSideEffects(TEBrewingCauldron tile, boolean badEffect, Random random) {
 		float chance = random.nextFloat();
-		int duration = tile.unstable ? (int) (tile.getMaxDuration() * tile.getInstability() * (new Random().nextFloat() * 0.5 + 0.5)) : tile.getMaxDuration();
+		int duration = tile.properties.isUnstable ? (int) (tile.getMaxDuration() * tile.getInstability() * (new Random().nextFloat() * 0.5 + 0.5)) : tile.getMaxDuration();
 		int tier = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
 		int amplifier = tier == 0 ? 0 : tier - 1;
 
@@ -187,10 +184,14 @@ public class ModPotionHelper {
 	public static int[] mergeIntArrays(int[] a1, int[] a2) {
 		List<Integer> list = new ArrayList<Integer>();
 		for (int i = 0; i < a1.length; i++) {
-			if (!list.contains(a1[i])) list.add(a1[i]);
+			if (!list.contains(a1[i])) {
+				list.add(a1[i]);
+			}
 		}
 		for (int i = 0; i < a2.length; i++) {
-			if (!list.contains(a2[i])) list.add(a2[i]);
+			if (!list.contains(a2[i])) {
+				list.add(a2[i]);
+			}
 		}
 		int[] a3 = new int[list.size()];
 		for (int i = 0; i < a3.length; i++) {

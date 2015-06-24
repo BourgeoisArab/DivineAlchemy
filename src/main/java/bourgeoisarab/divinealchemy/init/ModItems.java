@@ -1,14 +1,15 @@
 package bourgeoisarab.divinealchemy.init;
 
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import bourgeoisarab.divinealchemy.common.item.ItemBucketHotMess;
 import bourgeoisarab.divinealchemy.common.item.ItemBucketPotion;
 import bourgeoisarab.divinealchemy.common.item.ItemEssenceCrystal;
 import bourgeoisarab.divinealchemy.common.item.ItemInstillationTome;
 import bourgeoisarab.divinealchemy.common.item.ItemPotionBottle;
 import bourgeoisarab.divinealchemy.common.item.ItemPotionFood;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ModItems {
@@ -37,8 +38,9 @@ public class ModItems {
 		GameRegistry.registerItem(itemBucketHotMess, itemBucketHotMess.getUnlocalizedName());
 		GameRegistry.registerItem(itemPotionFood, itemPotionFood.getUnlocalizedName());
 		GameRegistry.registerItem(itemEssenceCrystal, itemEssenceCrystal.getUnlocalizedName());
-		FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack(ModFluids.fluidPotion.getName(), FluidContainerRegistry.BUCKET_VOLUME), new ItemStack(ModItems.itemBucketPotion));
-		FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack(ModFluids.fluidHotMess.getName(), FluidContainerRegistry.BUCKET_VOLUME), new ItemStack(ModItems.itemBucketHotMess));
+		FluidContainerRegistry.registerFluidContainer(new FluidStack(ModFluids.fluidPotion, FluidContainerRegistry.BUCKET_VOLUME), new ItemStack(itemBucketPotion), new ItemStack(Items.bucket));
+		FluidContainerRegistry.registerFluidContainer(new FluidStack(ModFluids.fluidPotion, 333), new ItemStack(itemPotionBottle), new ItemStack(Items.glass_bottle));
+		FluidContainerRegistry.registerFluidContainer(new FluidStack(ModFluids.fluidHotMess, FluidContainerRegistry.BUCKET_VOLUME), new ItemStack(itemBucketHotMess), new ItemStack(Items.bucket));
 	}
 
 }

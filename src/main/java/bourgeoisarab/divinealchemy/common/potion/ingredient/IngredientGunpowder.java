@@ -1,7 +1,7 @@
 package bourgeoisarab.divinealchemy.common.potion.ingredient;
 
-import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
 import net.minecraft.item.ItemStack;
+import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
 
 public class IngredientGunpowder extends PotionIngredient {
 
@@ -12,7 +12,7 @@ public class IngredientGunpowder extends PotionIngredient {
 
 	@Override
 	public void applyEffect(TEBrewingCauldron tile) {
-		tile.setSplash(true);
+		tile.properties.isSplash = true;
 	}
 
 }

@@ -1,11 +1,5 @@
 package bourgeoisarab.divinealchemy.common.tileentity;
 
-import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
-import bourgeoisarab.divinealchemy.init.ModFluids;
-import bourgeoisarab.divinealchemy.network.MessagePotionEffect;
-import bourgeoisarab.divinealchemy.network.NetworkHandler;
-import bourgeoisarab.divinealchemy.utility.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +22,14 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.IFluidTank;
+import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
+import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
+import bourgeoisarab.divinealchemy.init.ConfigHandler;
+import bourgeoisarab.divinealchemy.init.ModFluids;
+import bourgeoisarab.divinealchemy.network.MessagePotionEffect;
+import bourgeoisarab.divinealchemy.network.NetworkHandler;
+import bourgeoisarab.divinealchemy.utility.Log;
+import bourgeoisarab.divinealchemy.utility.NBTHelper;
 
 public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidHandler, IBrewingCauldron {
 
@@ -40,12 +42,13 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 	private float instability;
 	private final float INSTABILITY_CONSTANT = 0.06944444444F;
 
-	private List<PotionEffect> effects = new ArrayList<PotionEffect>();
+	/**
+	 * Only to be used when finalising effects
+	 */
+	private List<PotionEffect> effectList = new ArrayList<PotionEffect>();
 	private List<PotionEffect> sideEffects = new ArrayList<PotionEffect>();
-	private PotionIngredient[] ingredients = new PotionIngredient[16];
-	public boolean unstable = true;
-	public boolean persistent = false;
-	public boolean splash;
+	private PotionIngredient[] ingredients = new PotionIngredient[ConfigHandler.maxEffects];
+	public PotionProperties properties = new PotionProperties();
 
 	public TEBrewingCauldron() {
 
@@ -70,25 +73,29 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 		return boiling;
 	}
 
+	public void clearEffects() {
+		effectList.clear();
+		sideEffects.clear();
+		ingredients = new PotionIngredient[ConfigHandler.maxEffects];
+	}
+
 	@Override
 	public void addEffect(PotionEffect effect) {
-		if (effects.size() < 16 && !effects.contains(effect)) {
-			effects.add(effect);
-			System.out.println(effects);
+		if (effectList.size() + sideEffects.size() < ConfigHandler.maxEffects) {
+			effectList.add(effect);
+		} else {
+			makeHotMess();
 		}
 	}
 
 	@Override
 	public void addSideEffect(PotionEffect effect) {
-		if (getFluid() == null || effect == null) {
-			return;
-		}
-		// TODO
+
 	}
 
 	@Override
 	public List<PotionEffect> getEffects() {
-		return effects;
+		return effectList;
 	}
 
 	@Override
@@ -113,19 +120,17 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 	}
 
 	@Override
+	public int getTier() {
+		return worldObj.getBlockMetadata(xCoord, yCoord, zCoord) + 1;
+	}
+
+	@Override
 	public int getMaxDuration() {
 		return (int) (Math.pow(2, worldObj.getBlockMetadata(xCoord, yCoord, zCoord)) * 1200);
 	}
 
 	@Override
 	public void clearInstability() {
-		sideEffects = new ArrayList<PotionEffect>();
-		unstable = false;
-		List<PotionEffect> newEffects = new ArrayList<PotionEffect>();
-		for (int i = 0; i < effects.size(); i++) {
-			newEffects.add(new PotionEffect(effects.get(i).getPotionID(), getMaxDuration(), effects.get(i).getAmplifier()));
-		}
-		effects = newEffects;
 	}
 
 	@Override
@@ -139,13 +144,12 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 	@Override
 	public void finaliseEffects() {
 		if (!worldObj.isRemote) {
-			for (int i = 0; i < ingredients.length; i++) {
-				PotionIngredient ing = ingredients[i];
+			for (PotionIngredient ing : ingredients) {
 				if (ing != null) {
 					ing.applyEffect(this);
 				}
 			}
-			NetworkHandler.sendToAll(new MessagePotionEffect(xCoord, yCoord, zCoord, effects));
+			NetworkHandler.sendToAll(new MessagePotionEffect(xCoord, yCoord, zCoord, effectList));
 		}
 	}
 
@@ -189,17 +193,6 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 		tank.readFromNBT(nbt);
 
 		boiling = nbt.getBoolean("Boiling");
-
-		NBTTagCompound tagEffects = nbt.getCompoundTag("Effects");
-		for (int i = 0; i < 16; i++) {
-			try {
-				int[] e = tagEffects.getIntArray("PotionEffect" + i);
-				effects.add(new PotionEffect(e[0], e[1], e[2]));
-			} catch (Exception e) {
-				break;
-			}
-		}
-		nbt.setTag("Effects", tagEffects);
 	}
 
 	@Override
@@ -208,13 +201,7 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 		tank.writeToNBT(nbt);
 
 		nbt.setBoolean("Boiling", boiling);
-
-		NBTTagCompound tagEffects = new NBTTagCompound();
-		for (int i = 0; i < effects.size(); i++) {
-			PotionEffect e = effects.get(i);
-			tagEffects.setIntArray("PotionEffect" + i, new int[]{e.getPotionID(), e.getDuration(), e.getAmplifier()});
-		}
-		nbt.setTag("Effects", tagEffects);
+		NBTHelper.setEffectsForNBT(nbt, effectList);
 	}
 
 	@Override
@@ -244,7 +231,10 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 
 	@Override
 	public int fill(FluidStack resource, boolean doFill) {
-		return tank.fill(resource, doFill);
+		if (resource.getFluid() == FluidRegistry.WATER || resource.getFluid() == ModFluids.fluidPotion) {
+			return tank.fill(resource, doFill);
+		}
+		return 0;
 	}
 
 	@Override
@@ -266,7 +256,7 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 			finaliseEffects();
 		}
 		if (getFluidAmount() - maxDrain == 0) {
-			effects.clear();
+			effectList.clear();
 			boiling = false;
 		}
 		return tank.drain(maxDrain, doDrain);
@@ -288,8 +278,9 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 				return true;
 			}
 			return false;
-		} else
+		} else {
 			return true;
+		}
 	}
 
 	public boolean canFill(Fluid fluid) {
@@ -343,12 +334,13 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 	 */
 	@Override
 	public void setEffects(List<PotionEffect> effects) {
-		this.effects = effects;
+		effectList = effects;
 	}
 
 	@Override
 	public boolean addIngredient(ItemStack stack) {
 		PotionIngredient ing = PotionIngredient.getIngredient(stack);
+		Log.info(ing);
 		if (ing == null) {
 			return false;
 		}
@@ -390,17 +382,8 @@ public class TEBrewingCauldron extends TileEntity implements IFluidTank, IFluidH
 
 	public void makeHotMess() {
 		setFluid(new FluidStack(ModFluids.fluidHotMess, getFluidAmount()));
-		effects.clear();
+		clearEffects();
 		sideEffects.clear();
-		ingredients = new PotionIngredient[16];
+		ingredients = new PotionIngredient[ConfigHandler.maxEffects];
 	}
-
-	public void setSplash(boolean splash) {
-		this.splash = splash;
-	}
-
-	public boolean getSplash() {
-		return splash;
-	}
-
 }

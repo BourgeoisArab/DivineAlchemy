@@ -1,16 +1,13 @@
 package bourgeoisarab.divinealchemy.common.event;
 
-import bourgeoisarab.divinealchemy.common.potion.ModPotion;
-import bourgeoisarab.divinealchemy.reference.Ref;
-import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
-import bourgeoisarab.divinealchemy.utility.NBTHelper;
-
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -19,6 +16,11 @@ import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
+import bourgeoisarab.divinealchemy.common.potion.ModPotion;
+import bourgeoisarab.divinealchemy.common.potion.PotionPerformEffect;
+import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
+import bourgeoisarab.divinealchemy.utility.NBTHelper;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
@@ -63,8 +65,8 @@ public class AIEventHooks {
 		int[] origIDs = event.original.getEntityData().getIntArray(Ref.NBT.PERSISTENT_IDS);
 		List<PotionEffect> effects = new ArrayList<PotionEffect>();
 
-		for (int i = 0; i < origIDs.length; i++) {
-			PotionEffect effect = event.original.getActivePotionEffect(Potion.potionTypes[origIDs[i]]);
+		for (int origID : origIDs) {
+			PotionEffect effect = event.original.getActivePotionEffect(Potion.potionTypes[origID]);
 			if (effect != null) {
 				effects.add(new PotionEffect(effect.getPotionID(), effect.getDuration(), effect.getAmplifier()));
 			}
@@ -96,41 +98,40 @@ public class AIEventHooks {
 
 	@SubscribeEvent
 	public void onEntityUpdate(LivingUpdateEvent event) {
+		// Log.info(ModPotion.potionNegativeEffectResist.id);
 		EntityLivingBase entity = event.entityLiving;
+		Iterator it = entity.getActivePotionEffects().iterator();
+		while (it.hasNext()) {
+			Object effectObj = it.next();
+			PotionEffect effect = (PotionEffect) effectObj;
+			if (ModPotion.getPotion(effect.getPotionID()) instanceof PotionPerformEffect) {
+				((PotionPerformEffect) ModPotion.getPotion(effect.getPotionID())).performEffect(entity, effect);
+			}
+		}
 		if (entity.getActivePotionEffect(ModPotion.potionFlight) != null) {
 			if (entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer) entity;
 				player.capabilities.allowFlying = true;
 			} else if (entity instanceof EntityLiving) {
-				// TODO
 				EntityLiving living = (EntityLiving) entity;
 				// living.tasks.addTask(0, new EntityAIFlight(living));
-				if (entity.getActivePotionEffect(ModPotion.potionFlight).getDuration() <= 5) {
-					// EntityAIBase task = null;
-					// for (int i = 0; i < living.tasks.taskEntries.size(); i++) {
-					// if (living.tasks.taskEntries.get(i) instanceof EntityAIFlight) {
-					// task = (EntityAIBase) living.tasks.taskEntries.get(i);
-					// }
-					// }
-					// living.tasks.removeTask(task);
-				}
-			}
-		} else {
-			if (entity instanceof EntityPlayer) {
-				((EntityPlayer) entity).capabilities.allowFlying = false;
-				((EntityPlayer) entity).capabilities.isFlying = false;
 			}
 		}
 		if (entity.getActivePotionEffect(ModPotion.potionEffectResist) != null && entity.getActivePotionEffects().size() > 1) {
-			// PotionEffect effect = new PotionEffect(entity.getActivePotionEffect(ModPotion.potionEffectResist));
 			PotionEffect effect = entity.getActivePotionEffect(ModPotion.potionEffectResist);
 			entity.clearActivePotions();
 			entity.addPotionEffect(effect);
-			// entity.getActivePotionEffect(ModPotion.potionEffectResist).setCurativeItems(new ArrayList());
-			// List curativeItems = ((PotionEffect) entity.getActivePotionEffects().iterator().next()).getCurativeItems();
-			// if (curativeItems != null && curativeItems.size() > 0) {
-			// entity.curePotionEffects((ItemStack) curativeItems.get(0));
-			// }
+		}
+		if (entity.getActivePotionEffect(ModPotion.potionNegativeEffectResist) != null && entity.getActivePotionEffects().size() > 1) {
+			Iterator<PotionEffect> i = entity.getActivePotionEffects().iterator();
+			ItemStack cure = new ItemStack(Blocks.dragon_egg);
+			while (i.hasNext()) {
+				PotionEffect effect = i.next();
+				if (ModPotion.getPotion(effect.getPotionID()).isBadEffect()) {
+					effect.addCurativeItem(cure);
+				}
+			}
+			entity.curePotionEffects(cure);
 		}
 		if (entity.getActivePotionEffect(ModPotion.potionDay) != null && entity.worldObj.getWorldTime() > 12000) {
 			entity.worldObj.setWorldTime(1000);

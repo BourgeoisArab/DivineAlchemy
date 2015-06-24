@@ -1,16 +1,5 @@
 package bourgeoisarab.divinealchemy.common.block;
 
-import bourgeoisarab.divinealchemy.DivineAlchemy;
-import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
-import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
-import bourgeoisarab.divinealchemy.init.ConfigHandler;
-import bourgeoisarab.divinealchemy.init.ModBlocks;
-import bourgeoisarab.divinealchemy.init.ModFluids;
-import bourgeoisarab.divinealchemy.init.ModItems;
-import bourgeoisarab.divinealchemy.utility.ColourHelper;
-import bourgeoisarab.divinealchemy.utility.Log;
-import bourgeoisarab.divinealchemy.utility.NBTHelper;
-
 import java.util.List;
 import java.util.Random;
 
@@ -32,10 +21,18 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.IFluidTank;
+import bourgeoisarab.divinealchemy.DivineAlchemy;
+import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
+import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
+import bourgeoisarab.divinealchemy.init.ConfigHandler;
+import bourgeoisarab.divinealchemy.init.ModBlocks;
+import bourgeoisarab.divinealchemy.init.ModFluids;
+import bourgeoisarab.divinealchemy.init.ModItems;
+import bourgeoisarab.divinealchemy.utility.ColourHelper;
+import bourgeoisarab.divinealchemy.utility.Log;
+import bourgeoisarab.divinealchemy.utility.NBTHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -120,40 +117,17 @@ public class BlockBrewingCauldron extends BlockContainer {
 		}
 
 		Item heldItem = heldStack.getItem();
+		ItemStack returnStack = processContainer(heldStack, tile);
 
-		if (heldItem == Items.water_bucket && tile.canFill(FluidRegistry.WATER)) {
-			tile.fill(new FluidStack(FluidRegistry.WATER, FluidContainerRegistry.BUCKET_VOLUME), true);
-			addStackToInventory(player, heldStack, new ItemStack(Items.bucket));
-			return true;
-		} else if (heldItem == Items.potionitem && heldStack.getItemDamage() == 0 && tile.canFill(FluidRegistry.WATER)) {
-			tile.fill(new FluidStack(FluidRegistry.WATER, 333), true);
-			addStackToInventory(player, heldStack, new ItemStack(Items.glass_bottle));
-			return true;
-		} else if (heldItem == Items.bucket && tile.getFluidAmount() >= FluidContainerRegistry.BUCKET_VOLUME) {
-			if (!player.capabilities.isCreativeMode) {
-				if (tile.getFluid().getFluid() == FluidRegistry.WATER) {
-					addStackToInventory(player, heldStack, new ItemStack(Items.water_bucket));
-				} else if (tile.getFluid().getFluid() == ModFluids.fluidPotion) {
-					tile.finaliseEffects();
-					ItemStack stack = NBTHelper.setEffectsForStack(new ItemStack(ModItems.itemBucketPotion), tile.getEffects());
-					addStackToInventory(player, heldStack, stack);
-				}
-				tile.drain(FluidContainerRegistry.BUCKET_VOLUME, true);
-				return true;
+		if (returnStack != null) {
+			if (returnStack.getItem() == ModItems.itemBucketPotion || returnStack.getItem() == ModItems.itemPotionBottle) {
+				NBTHelper.setEffectsForStack(returnStack, tile.getEffects());
 			}
-		} else if (heldItem == Items.glass_bottle && tile.getFluidAmount() >= 333) {
-			if (!player.capabilities.isCreativeMode) {
-				if (tile.getFluid().getFluid() == FluidRegistry.WATER) {
-					addStackToInventory(player, heldStack, new ItemStack(Items.potionitem));
-				} else if (tile.getFluid().getFluid() == ModFluids.fluidPotion) {
-					tile.finaliseEffects();
-					ItemStack stack = NBTHelper.setEffectsForStack(new ItemStack(ModItems.itemPotionBottle, 1, tile.getSplash() ? 1 : 0), tile.getEffects());
-					addStackToInventory(player, heldStack, stack);
-				}
-				tile.drain(333, true);
-				if (tile.getFluidAmount() == 1) tile.drain(1, true);
-				return true;
+			addStackToInventory(player, heldStack, returnStack);
+			if (tile.getFluidAmount() == 1) {
+				tile.drain(1, true);
 			}
+			return true;
 		}
 		return false;
 	}
@@ -172,19 +146,26 @@ public class BlockBrewingCauldron extends BlockContainer {
 		}
 	}
 
-	public boolean isFillingValid(ItemStack stack, IFluidTank tile) {
-		if (stack.getItem() instanceof IFluidContainerItem) {
-			IFluidContainerItem container = (IFluidContainerItem) stack.getItem();
-			FluidStack fluid = container.getFluid(stack);
-			if (fluid == null && tile.getFluidAmount() >= container.getCapacity(stack)) {
-				return true;
-			} else if (tile.fill(fluid, false) > 0) {
-				return true;
+	public ItemStack processContainer(ItemStack stack, IFluidTank tile) {
+		if (FluidContainerRegistry.isContainer(stack)) {
+			boolean filled = FluidContainerRegistry.isFilledContainer(stack);
+			FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
+			if (fluid != null) {
+				Log.info(fluid.amount);
 			}
-		} else if (stack.getItem() == Items.potionitem && stack.getItemDamage() == 0) {
-
+			if (filled && tile.fill(fluid, false) > 0) {
+				tile.fill(fluid, true);
+				return FluidContainerRegistry.drainFluidContainer(stack);
+			} else {
+				// ItemStack filledStack = FluidContainerRegistry.fillFluidContainer(new FluidStack(FluidRegistry.WATER, 1000), stack);
+				// int capacity = FluidContainerRegistry.getContainerCapacity(filledStack);
+				int capacity = stack.getItem() == Items.bucket ? FluidContainerRegistry.BUCKET_VOLUME : 333;
+				if (!filled && tile.drain(capacity, false) != null && tile.drain(capacity, false).amount > 0) {
+					return FluidContainerRegistry.fillFluidContainer(tile.drain(capacity, true), stack);
+				}
+			}
 		}
-		return false;
+		return null;
 	}
 
 	@Override
@@ -215,12 +196,13 @@ public class BlockBrewingCauldron extends BlockContainer {
 			EntityFX particle = new EntitySpellParticleFX(world, entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F, 0.0F);
 			particle = new EntitySpellParticleFX(world, entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F, 0.0F);
 			if (tile.addIngredient(stack)) {
-				// int[] colour = ColourHelper.separateColours(PotionIngredient.getIngredient(stack).getPotion().getLiquidColor());
-				float[] colour = ColourHelper.getFloatColours(ColourHelper.separateColours(PotionIngredient.getIngredient(stack).getPotion().getLiquidColor()));
+				int[] colour = ColourHelper.separateColours(PotionIngredient.getIngredient(stack).getPotion().getLiquidColor());
+				// float[] colour = ColourHelper.getFloatColours(ColourHelper.separateColours(PotionIngredient.getIngredient(stack).getPotion().getLiquidColor()));
 				for (float i : colour) {
 					Log.info(i / 255);
 				}
-				particle.setRBGColorF(colour[0] / 255F, colour[1] / 255F, colour[2] / 255F);
+				// particle.setRBGColorF(colour[0] * 255F, colour[1] * 255F, colour[2] * 255F);
+				particle.setRBGColorF(colour[0], colour[1], colour[2]);
 			} else {
 				particle.setRBGColorF(0.0F, 1.0F, 0.0F);
 				tile.makeHotMess();

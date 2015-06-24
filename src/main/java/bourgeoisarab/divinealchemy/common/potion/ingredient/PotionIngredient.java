@@ -1,9 +1,5 @@
 package bourgeoisarab.divinealchemy.common.potion.ingredient;
 
-import bourgeoisarab.divinealchemy.common.potion.ModPotion;
-import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
-import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -13,6 +9,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import bourgeoisarab.divinealchemy.common.potion.ModPotion;
+import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
+import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
 
 public class PotionIngredient {
 
@@ -35,6 +34,7 @@ public class PotionIngredient {
 	public static final PotionIngredient netherStar = new IngredientNetherStar(new ItemStack(Items.nether_star), 0);
 	public static final PotionIngredient potato = new IngredientPotato(new ItemStack(Items.potato), 0);
 
+	public final int id;
 	public ItemStack stack;
 	/**
 	 * Additional instability this ingredient may add
@@ -70,6 +70,8 @@ public class PotionIngredient {
 		doesEffectStack = true;
 		metaSensitive = false;
 		priority = 0;
+		id = ingredients.size();
+		registerIngredient(this);
 	}
 
 	/**
@@ -97,10 +99,9 @@ public class PotionIngredient {
 	public void applyEffect(TEBrewingCauldron tile) {
 		tile.addEffect(getEffect(tile));
 
-		if (tile.unstable) {
+		if (tile.properties.isUnstable) {
 			addSideEffect(tile, !effect.isBadEffect());
 		}
-
 	}
 
 	public Potion getPotion() {
@@ -115,25 +116,10 @@ public class PotionIngredient {
 		return stack.stackTagCompound;
 	}
 
-	public static void register() {
-		registerIngredient(magmaCream);
-		registerIngredient(sugar);
-		registerIngredient(melon);
-		registerIngredient(spiderEye);
-		registerIngredient(ghastTear);
-		registerIngredient(blazePowder);
-		registerIngredient(fermentedSpiderEye);
-		registerIngredient(goldenCarrot);
-		registerIngredient(fish);
-		registerIngredient(rottenFlesh);
-		registerIngredient(witherSkull);
-		registerIngredient(netherStar);
-	}
-
 	public static void addSideEffect(TEBrewingCauldron tile, boolean badEffect) {
 		List<PotionEffect> sideEffects = null;
 
-		if (!tile.getWorldObj().isRemote && tile.unstable) {
+		if (!tile.getWorldObj().isRemote && tile.properties.isUnstable) {
 			sideEffects = ModPotionHelper.getSideEffects(tile, badEffect, tile.getWorldObj().rand);
 		}
 
@@ -145,7 +131,9 @@ public class PotionIngredient {
 	}
 
 	public static void registerIngredient(PotionIngredient ingredient) {
-		if (!ingredients.contains(ingredient)) ingredients.add(ingredient);
+		if (!ingredients.contains(ingredient)) {
+			ingredients.add(ingredient);
+		}
 	}
 
 	public static PotionIngredient getIngredient(ItemStack stack) {
@@ -167,7 +155,7 @@ public class PotionIngredient {
 	}
 
 	public PotionEffect getEffect(TEBrewingCauldron tile) {
-		int duration = tile.unstable ? new Random().nextInt(tile.getMaxDuration() / 4) + (tile.getMaxDuration() / 4) : tile.getMaxDuration();
+		int duration = tile.properties.isUnstable ? new Random().nextInt(tile.getMaxDuration() / 4) + tile.getMaxDuration() / 4 : tile.getMaxDuration();
 		return new PotionEffect(effect.id, duration, getAmplifier(tile.countIngredient(this), getMaxAmplifier()));
 	}
 

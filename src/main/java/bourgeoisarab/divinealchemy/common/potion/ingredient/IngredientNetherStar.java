@@ -1,7 +1,7 @@
 package bourgeoisarab.divinealchemy.common.potion.ingredient;
 
-import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
 import net.minecraft.item.ItemStack;
+import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
 
 public class IngredientNetherStar extends PotionIngredient {
 
@@ -11,7 +11,7 @@ public class IngredientNetherStar extends PotionIngredient {
 
 	@Override
 	public void applyEffect(TEBrewingCauldron entity) {
-		entity.persistent = true;
+		entity.properties.isPersistent = true;
 	}
 
 }

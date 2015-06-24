@@ -1,8 +1,8 @@
 package bourgeoisarab.divinealchemy.common.tileentity;
 
-import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
+import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 
 public interface IEffectBrewingThingy extends IEffectProvider {
 
@@ -19,5 +19,7 @@ public interface IEffectBrewingThingy extends IEffectProvider {
 	public void clearInstability();
 
 	public void finaliseEffects();
+
+	public int getTier();
 
 }

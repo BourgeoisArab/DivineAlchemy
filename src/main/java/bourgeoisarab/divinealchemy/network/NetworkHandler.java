@@ -1,7 +1,7 @@
 package bourgeoisarab.divinealchemy.network;
 
-import bourgeoisarab.divinealchemy.reference.Ref;
 import net.minecraft.entity.player.EntityPlayerMP;
+import bourgeoisarab.divinealchemy.reference.Ref;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -15,6 +15,7 @@ public class NetworkHandler {
 	public static void init() {
 		INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(Ref.MODID);
 		INSTANCE.registerMessage(MessagePotionEffect.class, MessagePotionEffect.class, 0, Side.CLIENT);
+		INSTANCE.registerMessage(MessageCancelFlight.class, MessageCancelFlight.class, 1, Side.CLIENT);
 	}
 
 	public static void sendToServer(IMessage msg) {

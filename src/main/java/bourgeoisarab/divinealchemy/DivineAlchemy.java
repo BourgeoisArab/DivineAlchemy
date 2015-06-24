@@ -1,7 +1,15 @@
 package bourgeoisarab.divinealchemy;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.potion.Potion;
+import net.minecraftforge.common.MinecraftForge;
 import bourgeoisarab.divinealchemy.common.event.AIEventHooks;
 import bourgeoisarab.divinealchemy.common.item.BucketHandler;
+import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
 import bourgeoisarab.divinealchemy.init.ModEntities;
@@ -13,15 +21,8 @@ import bourgeoisarab.divinealchemy.proxy.CommonProxy;
 import bourgeoisarab.divinealchemy.reference.Ref;
 import bourgeoisarab.divinealchemy.troll.CommandCake;
 import bourgeoisarab.divinealchemy.troll.TrollEvents;
+import bourgeoisarab.divinealchemy.utility.Log;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.potion.Potion;
-import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -40,6 +41,7 @@ public class DivineAlchemy {
 	public static CommonProxy proxy;
 
 	public static CreativeTabs tabAInstillation = new CreativeTabs("tabDivineAlchemy") {
+
 		@Override
 		public Item getTabIconItem() {
 			return Item.getItemFromBlock(ModBlocks.blockBrewingCauldron);
@@ -53,7 +55,7 @@ public class DivineAlchemy {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		expandPotionArray(256);
+		expandPotionArray(128);
 
 		ConfigHandler.init(event.getSuggestedConfigurationFile());
 
@@ -78,6 +80,7 @@ public class DivineAlchemy {
 		proxy.init();
 		Recipes.init();
 		ModPotionHelper.init();
+		Log.info("Registered " + PotionIngredient.ingredients.size() + " ingredients");
 	}
 
 	@Mod.EventHandler
@@ -104,6 +107,7 @@ public class DivineAlchemy {
 
 	public static void expandPotionArray(int arraySize) {
 		Potion[] potionTypes = null;
+		boolean successful = false;
 		for (Field f : Potion.class.getDeclaredFields()) {
 			f.setAccessible(true);
 			try {
@@ -115,11 +119,15 @@ public class DivineAlchemy {
 					final Potion[] newPotionTypes = new Potion[arraySize];
 					System.arraycopy(potionTypes, 0, newPotionTypes, 0, potionTypes.length);
 					f.set(null, newPotionTypes);
+					successful = true;
 				}
 			} catch (Exception e) {
 				System.err.println("BourgeoisArab made a serious boo-boo. Please report this ASAP:");
 				System.err.println(e);
 			}
+		}
+		if (successful) {
+			Log.info("Potion array was expanded to " + arraySize);
 		}
 	}
 
