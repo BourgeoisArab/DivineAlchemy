@@ -29,6 +29,7 @@ public final class Ref {
 		public static final String FOOD_SATURATION = "DAFoodSaturation";
 		public static final String SOUL_AMOUNT = "SoulAmount";
 		public static final String DIVINITY = "Divinity";
+		public static final String ITEM_THROWER = "Thrower";
 	}
 
 	public static class Config {

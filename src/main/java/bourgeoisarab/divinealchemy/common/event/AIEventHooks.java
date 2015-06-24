@@ -13,9 +13,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.potion.PotionPerformEffect;
 import bourgeoisarab.divinealchemy.reference.Ref;
@@ -61,6 +65,11 @@ public class AIEventHooks {
 	}
 
 	@SubscribeEvent
+	public void onItemToss(ItemTossEvent event) {
+		// event.entityItem.getEntityData().setString(Ref.NBT.ITEM_THROWER, event.player.getCommandSenderName());
+	}
+
+	@SubscribeEvent
 	public void onPlayerDeath(PlayerEvent.Clone event) {
 		int[] origIDs = event.original.getEntityData().getIntArray(Ref.NBT.PERSISTENT_IDS);
 		List<PotionEffect> effects = new ArrayList<PotionEffect>();
@@ -100,12 +109,18 @@ public class AIEventHooks {
 	public void onEntityUpdate(LivingUpdateEvent event) {
 		// Log.info(ModPotion.potionNegativeEffectResist.id);
 		EntityLivingBase entity = event.entityLiving;
-		Iterator it = entity.getActivePotionEffects().iterator();
+		int[] persistentIDs = new int[]{};
+		if (entity.getEntityData().hasKey(Ref.NBT.PERSISTENT_IDS)) {
+			persistentIDs = entity.getEntityData().getIntArray(Ref.NBT.PERSISTENT_IDS);
+		}
+		Iterator<PotionEffect> it = entity.getActivePotionEffects().iterator();
 		while (it.hasNext()) {
-			Object effectObj = it.next();
-			PotionEffect effect = (PotionEffect) effectObj;
+			PotionEffect effect = it.next();
 			if (ModPotion.getPotion(effect.getPotionID()) instanceof PotionPerformEffect) {
 				((PotionPerformEffect) ModPotion.getPotion(effect.getPotionID())).performEffect(entity, effect);
+			}
+			if (ArrayUtils.contains(persistentIDs, effect.getPotionID())) {
+				effect.setCurativeItems(new ArrayList<ItemStack>());
 			}
 		}
 		if (entity.getActivePotionEffect(ModPotion.potionFlight) != null) {
