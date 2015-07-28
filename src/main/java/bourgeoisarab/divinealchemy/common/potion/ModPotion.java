@@ -18,6 +18,11 @@ public class ModPotion extends Potion {
 	public static ModPotion potionNauseaAura = new PotionAura(ConfigHandler.potionIDs[8], true, 0xFFFFFF, confusion);
 	public static ModPotion potionHungerAura = new PotionAura(ConfigHandler.potionIDs[9], true, 0xFFFFFF, hunger);
 	public static ModPotion potionNegativeEffectResist = new ModPotion(ConfigHandler.potionIDs[10], false, 0xAAFFAA).setPotionName("potion.negativeEffectResist");
+	public static ModPotion potionParticle = new ModPotion(ConfigHandler.potionIDs[11], false, 0x888888).setPotionName("potion.particle");
+	public static ModPotion potionFiendFyre = new PotionFiendFyre(ConfigHandler.potionIDs[12], true, 0x884400).setPotionName("potion.fiendfyre");
+	public static ModPotion potionSealedMouth = new ModPotion(ConfigHandler.potionIDs[13], true, 0x000000).setPotionName("potion.sealedmouth");
+	public static ModPotion potionReach = new PotionReach(ConfigHandler.potionIDs[14], false, 0xFFFFFF).setPotionName("potion.reach");
+	public static ModPotion potionExplodeAbsorb = new PotionExplosionAbsorb(ConfigHandler.potionIDs[15], false, 0x888888).setPotionName("potion.explodeabsorb");
 
 	public ResourceLocation icon = null;
 

@@ -1,10 +1,5 @@
 package bourgeoisarab.divinealchemy.client.renderer;
 
-import bourgeoisarab.divinealchemy.common.block.BlockPotion;
-import bourgeoisarab.divinealchemy.common.tileentity.TEPotion;
-import bourgeoisarab.divinealchemy.init.ModBlocks;
-import bourgeoisarab.divinealchemy.utility.ColourHelper;
-
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -16,6 +11,10 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
+import bourgeoisarab.divinealchemy.common.block.BlockPotion;
+import bourgeoisarab.divinealchemy.common.tileentity.TEPotion;
+import bourgeoisarab.divinealchemy.init.ModBlocks;
+import bourgeoisarab.divinealchemy.utility.ColourHelper;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class RendererBlockPotion implements ISimpleBlockRenderingHandler {
@@ -49,12 +48,12 @@ public class RendererBlockPotion implements ISimpleBlockRenderingHandler {
 			if (tile == null) {
 				return false;
 			}
-			List<PotionEffect> effects = tile.getEffects();
+			List<PotionEffect> effects = tile.getEffects().getEffects();
 			if (effects == null) {
 				return false;
 			}
 			if (effects.size() > 0) {
-				float[] colours = ColourHelper.getColourFromEffects(effects);
+				float[] colours = ColourHelper.getColourFromEffects(effects, tile.getColouring());
 				Tessellator.instance.setColorOpaque_F(colours[0], colours[1], colours[2]);
 				return true;
 			}
@@ -141,7 +140,7 @@ public class RendererBlockPotion implements ISimpleBlockRenderingHandler {
 
 				tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z));
 				if (!setPotionColour(world, x, y, z, block)) {
-					Tessellator.instance.setColorOpaque(ColourHelper.potionColour[0], ColourHelper.potionColour[1], ColourHelper.potionColour[2]);
+					Tessellator.instance.setColorOpaque(ColourHelper.potionColourIntArr[0], ColourHelper.potionColourIntArr[1], ColourHelper.potionColourIntArr[2]);
 				}
 				tessellator.addVertexWithUV(x + 0, y + d2, z + 0, d7, d14);
 				tessellator.addVertexWithUV(x + 0, y + d3, z + 1, d8, d16);
@@ -156,7 +155,7 @@ public class RendererBlockPotion implements ISimpleBlockRenderingHandler {
 			if (renderer.renderAllFaces || flag1) {
 				tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y - 1, z));
 				if (!setPotionColour(world, x, y, z, block)) {
-					Tessellator.instance.setColorOpaque(ColourHelper.potionColour[0], ColourHelper.potionColour[1], ColourHelper.potionColour[2]);
+					Tessellator.instance.setColorOpaque(ColourHelper.potionColourIntArr[0], ColourHelper.potionColourIntArr[1], ColourHelper.potionColourIntArr[2]);
 				}
 				renderer.renderFaceYNeg(block, x, y + d6, z, renderer.getBlockIconFromSide(block, 0));
 				flag2 = true;
@@ -232,7 +231,7 @@ public class RendererBlockPotion implements ISimpleBlockRenderingHandler {
 					float f13 = 1.0F;
 					f13 *= k1 < 2 ? f5 : f6;
 					if (!setPotionColour(world, x, y, z, block)) {
-						Tessellator.instance.setColorOpaque(ColourHelper.potionColour[0], ColourHelper.potionColour[1], ColourHelper.potionColour[2]);
+						Tessellator.instance.setColorOpaque(ColourHelper.potionColourIntArr[0], ColourHelper.potionColourIntArr[1], ColourHelper.potionColourIntArr[2]);
 					}
 					tessellator.addVertexWithUV(d13, y + d9, d15, f8, f10);
 					tessellator.addVertexWithUV(d17, y + d11, d19, f9, f11);

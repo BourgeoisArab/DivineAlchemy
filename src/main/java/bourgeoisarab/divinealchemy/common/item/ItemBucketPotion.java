@@ -1,11 +1,5 @@
 package bourgeoisarab.divinealchemy.common.item;
 
-import bourgeoisarab.divinealchemy.common.tileentity.TEPotion;
-import bourgeoisarab.divinealchemy.init.ModBlocks;
-import bourgeoisarab.divinealchemy.reference.Ref;
-import bourgeoisarab.divinealchemy.utility.ColourHelper;
-import bourgeoisarab.divinealchemy.utility.NBTHelper;
-
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -16,10 +10,19 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import bourgeoisarab.divinealchemy.common.potion.Colouring;
+import bourgeoisarab.divinealchemy.common.potion.Effects;
+import bourgeoisarab.divinealchemy.common.potion.ModPotion;
+import bourgeoisarab.divinealchemy.common.tileentity.TEPotion;
+import bourgeoisarab.divinealchemy.init.ModBlocks;
+import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.utility.ColourHelper;
+import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -35,7 +38,6 @@ public class ItemBucketPotion extends ItemBucket {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister iconRegister) {
 		itemIcon = iconRegister.registerIcon(Ref.MODID + ":bucket_base");
 		overlay = iconRegister.registerIcon(Ref.MODID + ":bucket_overlay");
@@ -46,8 +48,13 @@ public class ItemBucketPotion extends ItemBucket {
 		if (pass == 0) {
 			return 0xFFFFFF;
 		}
-		int colour = ColourHelper.combineColours(ColourHelper.getColourFromEffects(NBTHelper.getEffectsFromStack(stack)));
-		return colour == -1 ? ColourHelper.combineColours(ColourHelper.potionColour) : colour;
+		Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
+		if (effects == null) {
+			return ColourHelper.potionColourInt;
+		}
+		Colouring colouring = NBTEffectHelper.getColouringFromStack(stack);
+		int colour = ColourHelper.combineColours(ColourHelper.getColourFromEffects(effects.getEffects(), colouring));
+		return colour == -1 ? ColourHelper.potionColourInt : colour;
 	}
 
 	@Override
@@ -61,25 +68,21 @@ public class ItemBucketPotion extends ItemBucket {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
-		List<PotionEffect> effects = NBTHelper.getEffectsFromStack(stack);
-
+		Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
 		if (effects != null) {
-			for (PotionEffect i : effects) {
-				Potion potion = Potion.potionTypes[i.getPotionID()];
-				String s1 = I18n.format(potion.getName(), new Object[0]);
-
-				list.add(s1 + " " + I18n.format("enchantment.level." + (i.getAmplifier() + 1), new Object[0]));
+			for (int i = 0; i < effects.size(); i++) {
+				Potion potion = ModPotion.getPotion(effects.getEffect(i).getPotionID());
+				String s1 = I18n.format(potion.getName());
+				list.add((effects.getSideEffect(i) ? EnumChatFormatting.DARK_RED : "") + s1 + " " + I18n.format("enchantment.level." + (effects.getEffect(i).getAmplifier() + 1)));
 			}
 		}
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public boolean hasEffect(ItemStack stack) {
-		if (NBTHelper.getEffectsFromStack(stack) != null) {
-			if (NBTHelper.getEffectsFromStack(stack).size() > 0) {
+		if (NBTEffectHelper.getEffectsFromStack(stack) != null) {
+			if (NBTEffectHelper.getEffectsFromStack(stack).size() > 0) {
 				return true;
 			}
 		}
@@ -90,31 +93,22 @@ public class ItemBucketPotion extends ItemBucket {
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
 		ItemStack stackReturn = super.onItemRightClick(stack, world, player);
 
-		MovingObjectPosition movingobjectposition = getMovingObjectPositionFromPlayer(world, player, false);
-
-		if (movingobjectposition == null) {
+		MovingObjectPosition pos = getMovingObjectPositionFromPlayer(world, player, false);
+		if (pos == null) {
 			return stack;
 		}
 
-		int x = movingobjectposition.blockX;
-		int y = movingobjectposition.blockY;
-		int z = movingobjectposition.blockZ;
-		if (movingobjectposition.sideHit == 0) --y;
+		ForgeDirection dir = ForgeDirection.getOrientation(pos.sideHit);
 
-		if (movingobjectposition.sideHit == 1) ++y;
-
-		if (movingobjectposition.sideHit == 2) --z;
-
-		if (movingobjectposition.sideHit == 3) ++z;
-
-		if (movingobjectposition.sideHit == 4) --x;
-
-		if (movingobjectposition.sideHit == 5) ++x;
+		int x = pos.blockX + dir.offsetX;
+		int y = pos.blockY + dir.offsetY;
+		int z = pos.blockZ + dir.offsetZ;
 
 		if (world.getBlock(x, y, z) == ModBlocks.blockPotion) {
-			((TEPotion) world.getTileEntity(x, y, z)).setEffects(NBTHelper.getEffectsFromStack(stack));
+			((TEPotion) world.getTileEntity(x, y, z)).setEffects(NBTEffectHelper.getEffectsFromStack(stack));
+			((TEPotion) world.getTileEntity(x, y, z)).setColouring(NBTEffectHelper.getColouringFromStack(stack));
 		}
-
+		world.markBlockForUpdate(x, y, z);
 		return stackReturn;
 	}
 

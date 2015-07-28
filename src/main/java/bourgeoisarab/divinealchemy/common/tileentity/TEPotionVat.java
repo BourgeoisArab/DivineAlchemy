@@ -1,41 +1,92 @@
 package bourgeoisarab.divinealchemy.common.tileentity;
 
-import bourgeoisarab.divinealchemy.init.ModBlocks;
 import net.minecraft.block.Block;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import bourgeoisarab.divinealchemy.init.ModBlocks;
 
-public class TEPotionVat extends TEPotionVatBase {
+public class TEPotionVat extends TEPotionBrewerBase implements IInventory {
 
-	private int energy;
-	
-	@Override
-	public int getEnergyLevel() {
-		return this.energy;
-	}
-	
-	public int extractEnergy(ForgeDirection dir, int amount, boolean simulate) {
-		int extracted = Math.min(energy, amount);
-		if (!simulate) energy -= extracted;
-		return extracted;
-	}
-	
-	public int receiveEnergy(ForgeDirection dir, int amount, boolean simulate) {
-		int received = Math.min(capacity - amount, amount);
-		if (!simulate) energy += received;
-		return received;
-	}
-	
-	public int getMaxEnergyStored(ForgeDirection dir) {
-		return this.capacity;
-	}
-	
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		Block block = this.worldObj.getBlock(this.xCoord, this.yCoord, this.zCoord);
-		if (this.worldObj.getBlock(this.xCoord, this.yCoord, this.zCoord) == ModBlocks.blockGenerator) {
-			
+		Block block = worldObj.getBlock(xCoord, yCoord, zCoord);
+		if (worldObj.getBlock(xCoord, yCoord, zCoord) == ModBlocks.blockGenerator) {
+
 		}
+	}
+
+	@Override
+	public int getSizeInventory() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int p_70301_1_) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ItemStack decrStackSize(int p_70298_1_, int p_70298_2_) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ItemStack getStackInSlotOnClosing(int p_70304_1_) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setInventorySlotContents(int p_70299_1_, ItemStack p_70299_2_) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String getInventoryName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomInventoryName() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getInventoryStackLimit() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void openInventory() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void closeInventory() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -1,17 +1,25 @@
 package bourgeoisarab.divinealchemy.common.tileentity;
 
-import java.util.List;
-
-import net.minecraft.potion.PotionEffect;
+import bourgeoisarab.divinealchemy.common.potion.Colouring;
+import bourgeoisarab.divinealchemy.common.potion.Effects;
+import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
 
 public interface IEffectProvider {
 
-	public List<PotionEffect> getEffects();
+	public Effects getEffects();
 
-	public void setEffects(List<PotionEffect> effects);
+	public void setEffects(Effects effects);
 
 	public float getInstability();
 
 	public void setInstability(float instability);
+
+	public PotionProperties getProperties();
+
+	public PotionProperties setProperties(PotionProperties properties);
+
+	public Colouring getColouring();
+
+	public Colouring setColouring(Colouring colour);
 
 }

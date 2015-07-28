@@ -1,9 +1,5 @@
 package bourgeoisarab.divinealchemy.common.entity;
 
-import bourgeoisarab.divinealchemy.common.potion.ModPotion;
-import bourgeoisarab.divinealchemy.utility.NBTHelper;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -14,10 +10,14 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import bourgeoisarab.divinealchemy.common.potion.Effects;
+import bourgeoisarab.divinealchemy.common.potion.ISplashEffect;
+import bourgeoisarab.divinealchemy.common.potion.ModPotion;
+import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
 
 public class EntitySplashPotion extends EntityThrowable {
 
-	private List<PotionEffect> effects = new ArrayList<PotionEffect>();
+	private Effects effects = new Effects();
 
 	public EntitySplashPotion(World world) {
 		super(world);
@@ -31,7 +31,7 @@ public class EntitySplashPotion extends EntityThrowable {
 		super(world, x, y, z);
 	}
 
-	public EntitySplashPotion(World world, EntityLivingBase thrower, List<PotionEffect> effects) {
+	public EntitySplashPotion(World world, EntityLivingBase thrower, Effects effects) {
 		this(world, thrower);
 		this.effects = effects;
 	}
@@ -56,13 +56,16 @@ public class EntitySplashPotion extends EntityThrowable {
 							if (entity == pos.entityHit) {
 								affect = 1.0D;
 							}
-							for (PotionEffect j : effects) {
+							for (PotionEffect j : effects.getEffects()) {
 								Potion potion = ModPotion.getPotion(j.getPotionID());
 								if (potion.isInstant()) {
 									potion.affectEntity(getThrower(), entity, j.getAmplifier(), affect);
 								} else {
 									PotionEffect effect = new PotionEffect(j.getPotionID(), (int) (affect * j.getDuration() + 0.5D), j.getAmplifier());
 									entity.addPotionEffect(effect);
+								}
+								if (potion instanceof ISplashEffect) {
+									((ISplashEffect) potion).applySplashEffect(worldObj, posX, posY, posZ, this, j);
 								}
 							}
 						}
@@ -79,20 +82,20 @@ public class EntitySplashPotion extends EntityThrowable {
 	@Override
 	public void readEntityFromNBT(NBTTagCompound nbt) {
 		super.readEntityFromNBT(nbt);
-		effects = NBTHelper.getEffectsFromNBT(nbt);
+		effects = NBTEffectHelper.getEffectsFromNBT(nbt);
 	}
 
 	@Override
 	public void writeEntityToNBT(NBTTagCompound nbt) {
 		super.writeEntityToNBT(nbt);
-		NBTHelper.setEffectsForNBT(nbt, effects);
+		NBTEffectHelper.setEffectsForNBT(nbt, effects);
 	}
 
-	public List<PotionEffect> getEffects() {
+	public Effects getEffects() {
 		return effects;
 	}
 
-	public EntitySplashPotion setEffects(List<PotionEffect> effects) {
+	public EntitySplashPotion setEffects(Effects effects) {
 		this.effects = effects;
 		return this;
 	}

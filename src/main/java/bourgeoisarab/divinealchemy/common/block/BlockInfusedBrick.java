@@ -11,7 +11,7 @@ public class BlockInfusedBrick extends Block {
 	public BlockInfusedBrick() {
 		super(Material.rock);
 		if (ConfigHandler.creativeTab) {
-			setCreativeTab(DivineAlchemy.tabAInstillation);
+			setCreativeTab(DivineAlchemy.tabDivineAlchemy);
 		}
 		setBlockName("blockInfusedBrick");
 		setBlockTextureName(Ref.MODID + ":brick_infused");

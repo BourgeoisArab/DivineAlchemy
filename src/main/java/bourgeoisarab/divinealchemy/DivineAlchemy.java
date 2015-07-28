@@ -7,8 +7,9 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.common.MinecraftForge;
-import bourgeoisarab.divinealchemy.common.event.AIEventHooks;
-import bourgeoisarab.divinealchemy.common.item.BucketHandler;
+import bourgeoisarab.divinealchemy.common.event.BucketHandler;
+import bourgeoisarab.divinealchemy.common.event.DAEventHooks;
+import bourgeoisarab.divinealchemy.common.event.DARenderEventHooks;
 import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
@@ -40,7 +41,7 @@ public class DivineAlchemy {
 	@SidedProxy(clientSide = Ref.CLIENT_PROXY, serverSide = Ref.SERVER_PROXY)
 	public static CommonProxy proxy;
 
-	public static CreativeTabs tabAInstillation = new CreativeTabs("tabDivineAlchemy") {
+	public static CreativeTabs tabDivineAlchemy = new CreativeTabs("tabDivineAlchemy") {
 
 		@Override
 		public Item getTabIconItem() {
@@ -87,9 +88,10 @@ public class DivineAlchemy {
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit();
 		MinecraftForge.EVENT_BUS.register(new BucketHandler());
-		AIEventHooks eventHooks = new AIEventHooks();
+		DAEventHooks eventHooks = new DAEventHooks();
 		MinecraftForge.EVENT_BUS.register(eventHooks);
 		FMLCommonHandler.instance().bus().register(eventHooks);
+		MinecraftForge.EVENT_BUS.register(new DARenderEventHooks());
 		try {
 			FMLCommonHandler.instance().bus().register(new TrollEvents());
 		} catch (Exception e) {
@@ -106,6 +108,10 @@ public class DivineAlchemy {
 	}
 
 	public static void expandPotionArray(int arraySize) {
+		if (arraySize > 128) {
+			Log.warn("Potion array can't be bigger than 128. Setting to 128");
+			arraySize = 128;
+		}
 		Potion[] potionTypes = null;
 		boolean successful = false;
 		for (Field f : Potion.class.getDeclaredFields()) {

@@ -1,8 +1,5 @@
 package bourgeoisarab.divinealchemy.common.item;
 
-import bourgeoisarab.divinealchemy.reference.Ref;
-import bourgeoisarab.divinealchemy.utility.NBTHelper;
-
 import java.util.List;
 
 import net.minecraft.client.resources.I18n;
@@ -12,11 +9,13 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import bourgeoisarab.divinealchemy.common.potion.Effects;
+import bourgeoisarab.divinealchemy.common.potion.ModPotion;
+import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
+import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
 
 public class ItemPotionFood extends ItemFood {
 
@@ -27,25 +26,22 @@ public class ItemPotionFood extends ItemFood {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(ItemStack stack, int pass) {
 		if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey(Ref.NBT.FOOD_ID)) {
 			return Item.getItemById(stack.stackTagCompound.getInteger(Ref.NBT.FOOD_ID)).getIcon(stack, pass);
-		} else
-			return super.getIcon(stack, pass);
+		}
+		return super.getIcon(stack, pass);
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public IIcon getIconIndex(ItemStack stack) {
 		if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey(Ref.NBT.FOOD_ID)) {
 			return Item.getItemById(stack.stackTagCompound.getInteger(Ref.NBT.FOOD_ID)).getIconIndex(stack);
-		} else
-			return super.getIconIndex(stack);
+		}
+		return super.getIconIndex(stack);
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public boolean hasEffect(ItemStack stack, int pass) {
 		return stack.stackTagCompound != null && stack.stackTagCompound.hasKey(Ref.NBT.EFFECTS_TAG);
 	}
@@ -85,18 +81,25 @@ public class ItemPotionFood extends ItemFood {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
-		List<PotionEffect> effects = NBTHelper.getEffectsFromStack(stack);
-
+		if (PotionProperties.getSplash(stack.getItemDamage())) {
+			list.add("Splash");
+		}
+		if (PotionProperties.getBlessed(stack.getItemDamage())) {
+			list.add("Blessed");
+		}
+		if (PotionProperties.getBlessed(stack.getItemDamage())) {
+			list.add("Cursed");
+		}
+		Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
 		if (effects != null) {
-			for (PotionEffect i : effects) {
-				Potion potion = Potion.potionTypes[i.getPotionID()];
-				String s1 = I18n.format(potion.getName(), new Object[0]);
+			for (int i = 0; i < effects.size(); i++) {
+				Potion potion = ModPotion.getPotion(effects.getEffect(i).getPotionID());
+				String s1 = I18n.format(potion.getName());
 
-				s1 = s1 + " " + I18n.format("enchantment.level." + (i.getAmplifier() + 1), new Object[0]);
+				s1 = s1 + " " + I18n.format("enchantment.level." + (effects.getEffect(i).getAmplifier() + 1));
 
-				list.add(s1 + " (" + Potion.getDurationString(i) + ")");
+				list.add((effects.getSideEffect(i) ? "§4" : "§7") + s1 + " (" + Potion.getDurationString(effects.getEffect(i)) + ")");
 			}
 		}
 	}

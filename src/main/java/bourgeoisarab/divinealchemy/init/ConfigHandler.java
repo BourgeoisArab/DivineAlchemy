@@ -22,7 +22,7 @@ public class ConfigHandler {
 	public static boolean creativeTab = true;
 
 	public static boolean useDynamicPotionIDs;
-	public static final int totalPotionCount = 11;
+	public static final int totalPotionCount = 16;
 	public static int[] potionIDs = new int[totalPotionCount];
 
 	public static void init(File configFile) {
@@ -48,12 +48,16 @@ public class ConfigHandler {
 				potionIDs[5] = config.getInt("InvisiblityAura", Ref.Config.CATEGORY_POTION_IDS, 55, 1, 127, "");
 				potionIDs[6] = config.getInt("PoisonAura", Ref.Config.CATEGORY_POTION_IDS, 56, 1, 127, "");
 			} else {
+				Log.info("Dynamic potion ID assignment is enabled.");
 				int index = getFirstEmptyIndex();
 				if (index > 0) {
 					for (int i = 0; i < totalPotionCount; i++) {
 						potionIDs[i] = index + i;
 					}
+					Log.info("Assigned potion IDs: from " + index + " to " + (index + totalPotionCount - 1));
 				} else {
+					Log.info("Empty space to fit " + totalPotionCount + " potion IDs was not found. IDs will be assigned to whatever empty slot is discovered.");
+					Log.info("It is recommended that you use manual ID assignment at this point.");
 					int remainingPotions = totalPotionCount;
 					for (int i = 32; i < Potion.potionTypes.length; i++) {
 						if (Potion.potionTypes[i] == null) {
@@ -64,6 +68,13 @@ public class ConfigHandler {
 					if (remainingPotions > 0) {
 						Log.fatal("There aren't enough potion ID slots available. Try disabling some effects, or removing some mods.");
 					}
+					String s = "";
+					for (int i = 0; i < potionIDs.length - 1; i++) {
+						s = s + potionIDs[i] + ", ";
+					}
+					s = s + potionIDs[potionIDs.length - 1];
+					Log.info("Just in case you are a sensible human being, and wish to use manual assignment, here are some suitable potion IDs to use:");
+					Log.info(s);
 				}
 			}
 

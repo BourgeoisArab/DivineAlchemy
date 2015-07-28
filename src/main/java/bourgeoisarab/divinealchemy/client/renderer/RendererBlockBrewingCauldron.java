@@ -38,22 +38,22 @@ public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
 	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f) {
 		TEBrewingCauldron tile = (TEBrewingCauldron) tileEntity;
 		model.render(tile, x, y, z);
-		int level = tile.getFluidAmount();
+		int level = tile.tank.getFluidAmount();
 
 		if (level > 0) {
 
 			FMLClientHandler.instance().getClient().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 			boolean doColour = false;
-			if (tile.getFluid().getFluid() == FluidRegistry.WATER) {
+			if (tile.tank.getFluid().getFluid() == FluidRegistry.WATER) {
 				icon = BlockLiquid.getLiquidIcon("water_still");
 			} else {
 				// icon = BlockLiquid.getLiquidIcon("water_still");
-				icon = tile.getFluid().getFluid().getBlock().getIcon(0, 0);
-				if (tile.getFluid().getFluid() == ModFluids.fluidPotion) {
+				icon = tile.tank.getFluid().getFluid().getBlock().getIcon(0, 0);
+				if (tile.tank.getFluid().getFluid() == ModFluids.fluidPotion) {
 					doColour = true;
 				}
 			}
-			renderFluidLevel(tile, x, y - 0.6875 + level / (1.6 * ((TEBrewingCauldron) tileEntity).getCapacity()), z, doColour);
+			renderFluidLevel(tile, x, y - 0.6875 + level / (1.6 * tile.tank.getCapacity()), z, doColour);
 		}
 	}
 
@@ -79,7 +79,12 @@ public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
 		t.startDrawingQuads();
 		if (doColour) {
 			GL11.glEnable(GL11.GL_BLEND);
-			float[] colour = ColourHelper.getColourFromIngredients(tile.getIngredients());
+			float[] colour;
+			if (tile.getEffects().size() > 0) {
+				colour = ColourHelper.getColourFromEffects(tile.getEffects().getEffects(), tile.getColouring());
+			} else {
+				colour = ColourHelper.getColourFromIngredients(tile.getIngredients().getIngredients(), tile.getColouring());
+			}
 			t.setColorOpaque_F(colour[0], colour[1], colour[2]);
 		} else {
 			t.setColorOpaque_F(1.0F, 1.0F, 1.0F);

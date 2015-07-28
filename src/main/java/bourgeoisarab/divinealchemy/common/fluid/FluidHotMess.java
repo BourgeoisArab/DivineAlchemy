@@ -8,11 +8,7 @@ public class FluidHotMess extends Fluid {
 		super("fluidHotMess");
 		setDensity(1200);
 		setViscosity(1500);
-	}
-
-	@Override
-	public int getColor() {
-		return 0xAA00AA;
+		// setIcons(getBlock().getIcon(0, 0), getBlock().getIcon(2, 0));
 	}
 
 }

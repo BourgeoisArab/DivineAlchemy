@@ -1,11 +1,5 @@
 package bourgeoisarab.divinealchemy.common.item;
 
-import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
-import bourgeoisarab.divinealchemy.reference.Ref;
-import bourgeoisarab.divinealchemy.utility.ColourHelper;
-import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
-import bourgeoisarab.divinealchemy.utility.NBTHelper;
-
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -16,20 +10,30 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.ItemFluidContainer;
+import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
+import bourgeoisarab.divinealchemy.common.potion.Colouring;
+import bourgeoisarab.divinealchemy.common.potion.Effects;
+import bourgeoisarab.divinealchemy.common.potion.ModPotion;
+import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
+import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.utility.ColourHelper;
+import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
+import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPotionBottle extends ItemFluidContainer {
+public class ItemBottlePotion extends ItemFluidContainer {
 
 	@SideOnly(Side.CLIENT)
 	public IIcon splashBottle;
 	@SideOnly(Side.CLIENT)
 	public IIcon overlay;
 
-	public ItemPotionBottle() {
+	public ItemBottlePotion() {
 		super(0, 333);
 		setUnlocalizedName("itemPotionBottle");
 		setMaxStackSize(1);
@@ -52,8 +56,13 @@ public class ItemPotionBottle extends ItemFluidContainer {
 	@Override
 	public int getColorFromItemStack(ItemStack stack, int pass) {
 		if (pass == 0) {
-			int colour = ColourHelper.combineColours(ColourHelper.getColourFromEffects(NBTHelper.getEffectsFromStack(stack)));
-			return colour == -1 ? ColourHelper.combineColours(ColourHelper.potionColour) : colour;
+			Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
+			if (effects == null) {
+				return ColourHelper.potionColourInt;
+			}
+			Colouring colours = NBTEffectHelper.getColouringFromStack(stack);
+			int colour = ColourHelper.combineColours(ColourHelper.getColourFromEffects(effects.getEffects(), colours));
+			return colour == -1 ? ColourHelper.potionColourInt : colour;
 		}
 		return 0xFFFFFF;
 	}
@@ -70,27 +79,39 @@ public class ItemPotionBottle extends ItemFluidContainer {
 
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
-		List<PotionEffect> effects = NBTHelper.getEffectsFromStack(stack);
-
+		if (PotionProperties.getSplash(stack.getItemDamage())) {
+			list.add("Splash");
+		}
+		if (PotionProperties.getBlessed(stack.getItemDamage())) {
+			list.add("Blessed");
+		}
+		if (PotionProperties.getBlessed(stack.getItemDamage())) {
+			list.add("Cursed");
+		}
+		Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
 		if (effects != null) {
-			for (PotionEffect i : effects) {
-				Potion potion = Potion.potionTypes[i.getPotionID()];
+			for (int i = 0; i < effects.size(); i++) {
+				Potion potion = ModPotion.getPotion(effects.getEffect(i).getPotionID());
 				String s1 = I18n.format(potion.getName());
 
-				s1 = s1 + " " + I18n.format("enchantment.level." + (i.getAmplifier() + 1));
+				s1 = s1 + " " + I18n.format("enchantment.level." + (effects.getEffect(i).getAmplifier() + 1));
 
-				list.add(s1 + " (" + Potion.getDurationString(i) + ")");
+				list.add((effects.getSideEffect(i) ? EnumChatFormatting.DARK_RED : "") + s1 + (potion.isInstant() ? "" : " (" + Potion.getDurationString(effects.getEffect(i)) + ")"));
 			}
 		}
 	}
 
 	@Override
 	public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player) {
-		List<PotionEffect> effects = NBTHelper.getEffectsFromStack(stack);
+		Effects e = NBTEffectHelper.getEffectsFromStack(stack);
+		if (e == null) {
+			return stack;
+		}
+		List<PotionEffect> effects = NBTEffectHelper.getEffectsFromStack(stack).getEffects();
 
 		ModPotionHelper.addEffectsToEntity(effects, player);
 
-		if (stack.stackTagCompound.hasKey("AI.Persistent") && stack.stackTagCompound.getBoolean("AI.Persistent")) {
+		if (PotionProperties.getPersistent(stack.getItemDamage())) {
 			if (!player.getEntityData().hasKey("AI.PersistentIDs")) {
 				player.getEntityData().setIntArray("AI.PersistentIDs", ModPotionHelper.potionsToIntArray(effects)[0]);
 			} else {
@@ -101,8 +122,9 @@ public class ItemPotionBottle extends ItemFluidContainer {
 	}
 
 	@Override
-	public int getMaxItemUseDuration(ItemStack stacks) {
-		return 32;
+	public int getMaxItemUseDuration(ItemStack stack) {
+		Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
+		return effects != null ? effects.size() * 16 : 16;
 	}
 
 	@Override
@@ -112,7 +134,7 @@ public class ItemPotionBottle extends ItemFluidContainer {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-		if (stack.getItemDamage() == 0) {
+		if (!PotionProperties.getSplash(stack.getItemDamage())) {
 			player.setItemInUse(stack, getMaxItemUseDuration(stack));
 		} else {
 			if (!player.capabilities.isCreativeMode) {
@@ -120,7 +142,7 @@ public class ItemPotionBottle extends ItemFluidContainer {
 			}
 			world.playSoundAtEntity(player, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
 			if (!world.isRemote) {
-				world.spawnEntityInWorld(new EntitySplashPotion(world, player, NBTHelper.getEffectsFromStack(stack)));
+				world.spawnEntityInWorld(new EntitySplashPotion(world, player, NBTEffectHelper.getEffectsFromStack(stack)));
 			}
 		}
 		return stack;

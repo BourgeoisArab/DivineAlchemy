@@ -19,7 +19,7 @@ public class ItemInstillationTome extends Item {
 	public ItemInstillationTome() {
 		super();
 		if (ConfigHandler.creativeTab) {
-			setCreativeTab(DivineAlchemy.tabAInstillation);
+			setCreativeTab(DivineAlchemy.tabDivineAlchemy);
 		}
 		setUnlocalizedName("itemInstillationTome");
 		setMaxStackSize(1);

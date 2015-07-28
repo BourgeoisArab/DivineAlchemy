@@ -1,5 +1,12 @@
 package bourgeoisarab.divinealchemy.common.item;
 
+import java.util.List;
+
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import bourgeoisarab.divinealchemy.DivineAlchemy;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.potion.ingredient.IngredientEssenceCrystal;
@@ -8,26 +15,20 @@ import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModItems;
 import bourgeoisarab.divinealchemy.reference.Ref;
 
-import java.util.List;
-
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public class ItemEssenceCrystal extends Item {
 
 	public ItemEssenceCrystal() {
 		if (ConfigHandler.creativeTab) {
-			setCreativeTab(DivineAlchemy.tabAInstillation);
+			setCreativeTab(DivineAlchemy.tabDivineAlchemy);
 		}
 		setMaxDamage(0);
 		setHasSubtypes(true);
 		setUnlocalizedName("itemEssenceCrystal");
 		setTextureName(Ref.Location.PREFIX + "essenceCrystal");
+	}
+
+	static {
+		init();
 	}
 
 	public static void init() {
@@ -43,7 +44,6 @@ public class ItemEssenceCrystal extends Item {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public int getColorFromItemStack(ItemStack stack, int i) {
 		Potion potion = ModPotion.getPotion(stack.getItemDamage());
 		return potion == null ? 0xFFFFFF : potion.getLiquidColor();

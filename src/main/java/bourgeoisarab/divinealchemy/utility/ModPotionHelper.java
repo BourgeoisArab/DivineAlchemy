@@ -8,7 +8,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
-import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
 
 public class ModPotionHelper {
 
@@ -46,32 +45,6 @@ public class ModPotionHelper {
 			}
 		}
 		return potion;
-	}
-
-	/**
-	 * @param badEffect of the secondary effect; so an opposite random effect will be returned
-	 **/
-	public static List<PotionEffect> getSideEffects(TEBrewingCauldron tile, boolean badEffect, Random random) {
-		float chance = random.nextFloat();
-		int duration = tile.properties.isUnstable ? (int) (tile.getMaxDuration() * tile.getInstability() * (new Random().nextFloat() * 0.5 + 0.5)) : tile.getMaxDuration();
-		int tier = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
-		int amplifier = tier == 0 ? 0 : tier - 1;
-
-		int number = 0;
-		for (int i = 0; i < 3; i++) {
-			if (chance < tile.getInstability() / Math.pow(3, i)) {
-				number = i;
-			} else {
-				break;
-			}
-		}
-
-		List<PotionEffect> effects = new ArrayList<PotionEffect>();
-
-		for (int i = 0; i < number; i++) {
-			effects.add(new PotionEffect(getRandomPotion(random, badEffect, tier).id, duration, amplifier));
-		}
-		return effects;
 	}
 
 	// /**
@@ -124,24 +97,6 @@ public class ModPotionHelper {
 	// return effectList;
 	// }
 
-	// public static boolean setEffectsForFluid(FluidStack fluid,
-	// List<PotionEffect> effects)
-	// {
-	// if (!(fluid.getFluid() instanceof FluidPotion)) {
-	// FMLLog.warning("",
-	// "Tried to set potion NBT data for invalid fluidstack.");
-	// return false;
-	// }
-	// if (fluid.tag == null) fluid.tag = new NBTTagCompound();
-	// setEffectsForNBT(fluid.tag, effects);
-	// return true;
-	// }
-
-	// public static List<PotionEffect> getEffectsFromFluid(FluidStack fluid)
-	// {
-	// return getEffectsFromNBT(fluid.tag);
-	// }
-
 	/**
 	 * Converts a list of potion effects to a 2D array. This is used for packets.
 	 * 
@@ -177,7 +132,11 @@ public class ModPotionHelper {
 
 		for (int i = 0; i < effects.size(); i++) {
 			PotionEffect effect = effects.get(i);
-			entity.addPotionEffect(new PotionEffect(effect.getPotionID(), effect.getDuration(), effect.getAmplifier()));
+			if (!ModPotion.getPotion(effect.getPotionID()).isInstant()) {
+				entity.addPotionEffect(new PotionEffect(effect.getPotionID(), effect.getDuration(), effect.getAmplifier()));
+			} else {
+				entity.addPotionEffect(new PotionEffect(effect.getPotionID(), 1, effect.getAmplifier()));
+			}
 		}
 	}
 

@@ -9,13 +9,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import bourgeoisarab.divinealchemy.common.potion.IDivinePotion;
+import bourgeoisarab.divinealchemy.common.potion.IEvilPotion;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
-import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
+import bourgeoisarab.divinealchemy.common.tileentity.IEffectBrewingThingy;
+import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
 
 public class PotionIngredient {
 
 	public static final List<PotionIngredient> ingredients = new ArrayList<PotionIngredient>();
+	public static final List<IngredientEssenceCrystal> crystals = new ArrayList<IngredientEssenceCrystal>();
 
 	public static final PotionIngredient magmaCream = new PotionIngredient(new ItemStack(Items.magma_cream), 0, Potion.fireResistance);
 	public static final PotionIngredient sugar = new PotionIngredient(new ItemStack(Items.sugar), 0, Potion.moveSpeed);
@@ -27,7 +31,7 @@ public class PotionIngredient {
 	public static final PotionIngredient goldenCarrot = new PotionIngredient(new ItemStack(Items.golden_carrot), 0, Potion.nightVision);
 	public static final PotionIngredient fish = new PotionIngredient(new ItemStack(Items.fish), 0, Potion.waterBreathing);
 	public static final PotionIngredient rottenFlesh = new PotionIngredient(new ItemStack(Items.rotten_flesh), 0, Potion.hunger);
-	public static final PotionIngredient witherSkull = new PotionIngredient(new ItemStack(Items.skull), 0, Potion.wither).setMetaSensitive(true);
+	public static final PotionIngredient witherSkull = new PotionIngredient(new ItemStack(Items.skull, 1, 1), 0, Potion.wither).setMetaSensitive(true);
 	public static final PotionIngredient feather = new PotionIngredient(new ItemStack(Items.feather), 0, ModPotion.potionFlight);
 
 	public static final PotionIngredient gunpowder = new IngredientGunpowder(new ItemStack(Items.gunpowder), 0);
@@ -72,6 +76,9 @@ public class PotionIngredient {
 		priority = 0;
 		id = ingredients.size();
 		registerIngredient(this);
+		if (this instanceof IngredientEssenceCrystal) {
+			crystals.add((IngredientEssenceCrystal) this);
+		}
 	}
 
 	/**
@@ -96,16 +103,17 @@ public class PotionIngredient {
 		return priority;
 	}
 
-	public void applyEffect(TEBrewingCauldron tile) {
-		tile.addEffect(getEffect(tile));
-
-		if (tile.properties.isUnstable) {
-			addSideEffect(tile, !effect.isBadEffect());
-		}
+	public void applyEffect(IEffectBrewingThingy tile, Random rand, boolean sideEffect) {
+		tile.addEffect(getEffect(tile, sideEffect), sideEffect);
+		tile.removeIngredient(this, ConfigHandler.maxEffects);
 	}
 
 	public Potion getPotion() {
-		return Potion.potionTypes[getEffectID()];
+		return ModPotion.getPotion(getPotionID());
+	}
+
+	public int getColour() {
+		return effect != null ? effect.getLiquidColor() : 0xFFFFFF;
 	}
 
 	public ItemStack getItem() {
@@ -116,19 +124,67 @@ public class PotionIngredient {
 		return stack.stackTagCompound;
 	}
 
-	public static void addSideEffect(TEBrewingCauldron tile, boolean badEffect) {
-		List<PotionEffect> sideEffects = null;
-
-		if (!tile.getWorldObj().isRemote && tile.properties.isUnstable) {
-			sideEffects = ModPotionHelper.getSideEffects(tile, badEffect, tile.getWorldObj().rand);
+	/**
+	 * @param tile
+	 * @param badEffect of the desired side effect
+	 * @param rand
+	 * @return true, if adding ingredients was successful; false, if no more were accepted
+	 */
+	public static boolean addSideEffect(IEffectBrewingThingy tile, boolean badEffect, Random rand) {
+		if (tile.getProperties().isStable) {
+			return true;
 		}
-
-		if (sideEffects != null) {
-			for (int i = 0; i < sideEffects.size(); i++) {
-				tile.addSideEffect(sideEffects.get(i));
+		float chance = rand.nextFloat();
+		int number = 0;
+		for (int i = 0; i < 3; i++) {
+			if (chance < tile.getInstability() / Math.pow(3, i)) {
+				number++;
+			} else {
+				break;
 			}
 		}
+		for (int i = 0; i < number; i++) {
+			PotionIngredient ing = crystals.get(rand.nextInt(crystals.size() - 1));
+			Potion p = ing.getPotion();
+			if (p == null || p.isBadEffect() != badEffect || p instanceof IDivinePotion || p instanceof IEvilPotion || ModPotionHelper.tier1blacklist.contains(p.getId())) {
+				continue;
+			} else {
+				if (!tile.addIngredient(ing, true)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
+
+	// /**
+	// * @param badEffect of the desired side effect
+	// **/
+	// public static List<PotionIngredient> getSideEffects(IEffectBrewingThingy tile, boolean badEffect, Random random) {
+	// float chance = random.nextFloat();
+	// int duration = tile.getProperties().isUnstable ? (int) (tile.getMaxDuration() * tile.getInstability() * (new Random().nextFloat() * 0.5 + 0.5)) : tile.getMaxDuration();
+	// int tier = tile.getTier();
+	// int amplifier = tier / 2;
+	//
+	// int number = 0;
+	// for (int i = 0; i < 3; i++) {
+	// if (chance < tile.getInstability() / Math.pow(3, i)) {
+	// number = i;
+	// } else {
+	// break;
+	// }
+	// }
+	//
+	// List<PotionIngredient> ings = new ArrayList<PotionIngredient>();
+	//
+	// for (int i = 0; i < number; i++) {
+	// PotionIngredient ing = ingredients.get(random.nextInt(ingredients.size() - 1));
+	// if (ing.getPotion().isBadEffect() != badEffect) {
+	// continue;
+	// }
+	// }
+	// return ings;
+	// }
 
 	public static void registerIngredient(PotionIngredient ingredient) {
 		if (!ingredients.contains(ingredient)) {
@@ -139,7 +195,7 @@ public class PotionIngredient {
 	public static PotionIngredient getIngredient(ItemStack stack) {
 		for (int i = 0; i < ingredients.size(); i++) {
 			PotionIngredient ingredient = ingredients.get(i);
-			if (ingredient.getItem().getItem() == stack.getItem()) {
+			if (ingredient.getItem().getItem() == stack.getItem() && ingredient.getItem().stackSize <= stack.stackSize) {
 				if (ingredient.getNBT() == null || ingredient.getNBT().equals(stack.stackTagCompound)) {
 					if (ingredient.metaSensitive) {
 						if (ingredient.getItem().getItemDamage() == stack.getItemDamage()) {
@@ -154,19 +210,25 @@ public class PotionIngredient {
 		return null;
 	}
 
-	public PotionEffect getEffect(TEBrewingCauldron tile) {
-		int duration = tile.properties.isUnstable ? new Random().nextInt(tile.getMaxDuration() / 4) + tile.getMaxDuration() / 4 : tile.getMaxDuration();
+	public PotionEffect getEffect(IEffectBrewingThingy tile, boolean sideEffect) {
+		int duration = !tile.getProperties().isStable ? new Random().nextInt(tile.getMaxDuration() / 4) + tile.getMaxDuration() / 4 : tile.getMaxDuration();
+		if (sideEffect) {
+			duration = (int) (duration * ((tile.getInstability() + 1) / 2));
+		}
+		if (getPotion().isInstant()) {
+			duration = 1;
+		}
 		return new PotionEffect(effect.id, duration, getAmplifier(tile.countIngredient(this), getMaxAmplifier()));
 	}
 
-	public int getEffectID() {
-		return effect.id;
+	public int getPotionID() {
+		return effect != null ? effect.id : 0;
 	}
 
 	public int getIngredientCount(PotionIngredient[] ingredients) {
 		int count = 0;
 		for (PotionIngredient i : ingredients) {
-			if (getEffectID() == i.getEffectID()) {
+			if (getPotionID() == i.getPotionID()) {
 				count++;
 			}
 		}
@@ -187,6 +249,11 @@ public class PotionIngredient {
 			return 3;
 		}
 		return 1;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + ": " + getItem().getDisplayName();
 	}
 
 }

@@ -1,6 +1,6 @@
 package bourgeoisarab.divinealchemy.init.crafting;
 
-import bourgeoisarab.divinealchemy.common.item.ItemPotionBottle;
+import bourgeoisarab.divinealchemy.common.item.ItemBottlePotion;
 import bourgeoisarab.divinealchemy.reference.Ref;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemFood;
@@ -33,7 +33,7 @@ public class PotionFoodCrafting implements IRecipe {
 
 				for (int j = 0; j < inv.getSizeInventory(); j++) {
 					ItemStack stack2 = inv.getStackInSlot(j);
-					if (stack2 != null && stack2.getItem() instanceof ItemPotionBottle) {
+					if (stack2 != null && stack2.getItem() instanceof ItemBottlePotion) {
 						return true;
 					}
 				}
@@ -49,7 +49,7 @@ public class PotionFoodCrafting implements IRecipe {
 			if (foodStack != null && foodStack.getItem() instanceof ItemFood) {
 				for (int j = 0; j < inv.getSizeInventory(); j++) {
 					ItemStack potionStack = inv.getStackInSlot(j);
-					if (potionStack != null && potionStack.getItem() instanceof ItemPotionBottle && potionStack.stackTagCompound != null) {
+					if (potionStack != null && potionStack.getItem() instanceof ItemBottlePotion && potionStack.stackTagCompound != null) {
 						ItemStack returnStack;
 
 						// if

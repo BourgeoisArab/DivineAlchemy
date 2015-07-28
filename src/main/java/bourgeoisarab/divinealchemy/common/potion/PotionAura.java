@@ -7,7 +7,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 
-public class PotionAura extends PotionPerformEffect {
+public class PotionAura extends PotionPerformEffect implements IDivinePotion {
 
 	public static final int duration = 100;
 	private Potion normalPotion;

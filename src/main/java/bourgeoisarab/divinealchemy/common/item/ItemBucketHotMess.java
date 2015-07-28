@@ -15,7 +15,7 @@ public class ItemBucketHotMess extends ItemBucket {
 		setContainerItem(Items.bucket);
 		setTextureName(Ref.Location.PREFIX + "bucket_hotmess");
 		if (ConfigHandler.creativeTab) {
-			setCreativeTab(DivineAlchemy.tabAInstillation);
+			setCreativeTab(DivineAlchemy.tabDivineAlchemy);
 		}
 	}
 

@@ -14,7 +14,7 @@ public class NetworkHandler {
 
 	public static void init() {
 		INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(Ref.MODID);
-		INSTANCE.registerMessage(MessagePotionEffect.class, MessagePotionEffect.class, 0, Side.CLIENT);
+		INSTANCE.registerMessage(MessageTileEntity.class, MessageTileEntity.class, 0, Side.CLIENT);
 		INSTANCE.registerMessage(MessageCancelFlight.class, MessageCancelFlight.class, 1, Side.CLIENT);
 	}
 

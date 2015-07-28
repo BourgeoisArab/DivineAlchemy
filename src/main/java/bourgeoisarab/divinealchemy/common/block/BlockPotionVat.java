@@ -24,7 +24,7 @@ public class BlockPotionVat extends BlockContainer {
 		setHardness(1.0F);
 		setResistance(2.0F);
 		if (ConfigHandler.creativeTab) {
-			setCreativeTab(DivineAlchemy.tabAInstillation);
+			setCreativeTab(DivineAlchemy.tabDivineAlchemy);
 		}
 		setBlockTextureName(Ref.MODID + ":brick_infused");
 	}
