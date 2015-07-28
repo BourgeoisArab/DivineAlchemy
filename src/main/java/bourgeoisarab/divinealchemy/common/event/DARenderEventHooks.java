@@ -1,21 +1,33 @@
 package bourgeoisarab.divinealchemy.common.event;
 
-import java.util.List;
-
-import net.minecraft.client.particle.EntitySpellParticleFX;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderWorldEvent;
-import bourgeoisarab.divinealchemy.DivineAlchemy;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class DARenderEventHooks {
 
 	@SubscribeEvent
-	public void renderLiving(RenderWorldEvent.Post event) {
-		World world = event.renderer.worldObj;
-		List<EntitySpellParticleFX> entities = world.getEntitiesWithinAABB(EntitySpellParticleFX.class, event.renderer.rendererBoundingBox);
-		// Log.info(entities);
-		DivineAlchemy.proxy.getClient().effectRenderer.clearEffects(DivineAlchemy.proxy.getClientWorld());
+	public void render(RenderWorldLastEvent event) {
+		float partialTicks = event.partialTicks;
+		RenderGlobal render = event.context;
+	}
+
+	// @SubscribeEvent
+	public void renderEntity(RenderLivingEvent event) {
+		// EntityLivingBase entity = event.entity;
+		// if (entity.getActivePotionEffect(ModPotion.potionFiendFyre) != null) {
+		// Tessellator t = Tessellator.instance;
+		// DivineAlchemy.proxy.getClient().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
+		// IIcon icon = Blocks.fire.getIcon(0, 0);
+		// t.startDrawingQuads();
+		// t.setColorOpaque_F(1.0F, 0.5F, 0.5F);
+		// t.addVertexWithUV(entity.boundingBox.minX, entity.boundingBox.minY, entity.boundingBox.minZ, icon.getMinU(), icon.getMinV());
+		// t.addVertexWithUV(entity.boundingBox.maxX, entity.boundingBox.minY, entity.boundingBox.minZ, icon.getMinU(), icon.getMinV());
+		// t.addVertexWithUV(entity.boundingBox.minX, entity.boundingBox.maxY, entity.boundingBox.maxZ, icon.getMinU(), icon.getMinV());
+		// t.addVertexWithUV(entity.boundingBox.maxX, entity.boundingBox.maxY, entity.boundingBox.maxZ, icon.getMinU(), icon.getMinV());
+		// t.draw();
+		// }
 	}
 
 }

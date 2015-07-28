@@ -10,11 +10,11 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import org.lwjgl.opengl.GL11;
 
+import bourgeoisarab.divinealchemy.DivineAlchemy;
 import bourgeoisarab.divinealchemy.client.renderer.model.ModelBrewingCauldron;
 import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
 import bourgeoisarab.divinealchemy.init.ModFluids;
 import bourgeoisarab.divinealchemy.utility.ColourHelper;
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
 
@@ -42,7 +42,7 @@ public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
 
 		if (level > 0) {
 
-			FMLClientHandler.instance().getClient().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
+			DivineAlchemy.proxy.getClient().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 			boolean doColour = false;
 			if (tile.tank.getFluid().getFluid() == FluidRegistry.WATER) {
 				icon = BlockLiquid.getLiquidIcon("water_still");

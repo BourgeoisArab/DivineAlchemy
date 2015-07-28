@@ -3,6 +3,7 @@ package bourgeoisarab.divinealchemy.common.item;
 import java.util.List;
 
 import net.minecraft.client.resources.I18n;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -53,6 +54,15 @@ public class ItemEssenceCrystal extends Item {
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean flag) {
 		if (ModPotion.getPotion(stack.getItemDamage()) != null) {
 			list.add(I18n.format(ModPotion.getPotion(stack.getItemDamage()).getName()));
+		}
+	}
+
+	@Override
+	public void getSubItems(Item item, CreativeTabs tab, List list) {
+		for (int i = 0; i < Potion.potionTypes.length; i++) {
+			if (ModPotion.getPotion(i) != null) {
+				list.add(new ItemStack(item, 1, i));
+			}
 		}
 	}
 

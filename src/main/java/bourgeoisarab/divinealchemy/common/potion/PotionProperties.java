@@ -1,11 +1,11 @@
 package bourgeoisarab.divinealchemy.common.potion;
 
-import bourgeoisarab.divinealchemy.common.tileentity.IEffectBrewingThingy;
+import bourgeoisarab.divinealchemy.common.tileentity.IPotionBrewer;
 
 public class PotionProperties {
 
 	/**
-	 * Whether the potion is unstable. Only used in {@link IEffectBrewingThingy}
+	 * Whether the potion is unstable. Only used in {@link IPotionBrewer}
 	 */
 	public boolean isStable;
 	/**

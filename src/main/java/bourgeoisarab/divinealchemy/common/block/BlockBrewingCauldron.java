@@ -97,18 +97,18 @@ public class BlockBrewingCauldron extends BlockContainer {
 	}
 
 	@Override
-	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB axis, List list, Entity entity) {
+	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB bb, List list, Entity entity) {
 		setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.3125F, 1.0F);
-		super.addCollisionBoxesToList(world, x, y, z, axis, list, entity);
+		super.addCollisionBoxesToList(world, x, y, z, bb, list, entity);
 		float f = 0.125F;
 		setBlockBounds(0.0F, 0.0F, 0.0F, f, 1.0F, 1.0F);
-		super.addCollisionBoxesToList(world, x, y, z, axis, list, entity);
+		super.addCollisionBoxesToList(world, x, y, z, bb, list, entity);
 		setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, f);
-		super.addCollisionBoxesToList(world, x, y, z, axis, list, entity);
+		super.addCollisionBoxesToList(world, x, y, z, bb, list, entity);
 		setBlockBounds(1.0F - f, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-		super.addCollisionBoxesToList(world, x, y, z, axis, list, entity);
+		super.addCollisionBoxesToList(world, x, y, z, bb, list, entity);
 		setBlockBounds(0.0F, 0.0F, 1.0F - f, 1.0F, 1.0F, 1.0F);
-		super.addCollisionBoxesToList(world, x, y, z, axis, list, entity);
+		super.addCollisionBoxesToList(world, x, y, z, bb, list, entity);
 		setBlockBoundsForItemRender();
 	}
 

@@ -3,12 +3,8 @@ package bourgeoisarab.divinealchemy.common.event;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 import bourgeoisarab.divinealchemy.common.potion.Colouring;
 import bourgeoisarab.divinealchemy.common.potion.Effects;
 import bourgeoisarab.divinealchemy.common.tileentity.TEPotion;
@@ -34,17 +30,17 @@ public class BucketHandler {
 
 	private ItemStack fillBucket(World world, int x, int y, int z, int side) {
 		Block block = world.getBlock(x, y, z);
-		if (world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof IFluidHandler) {
-			IFluidHandler tile = (IFluidHandler) world.getTileEntity(x, y, z);
-			ForgeDirection dir = ForgeDirection.getOrientation(side);
-			FluidTankInfo info = getTankWithPotion(tile.getTankInfo(dir));
-			if (info != null) {
-				if (info.fluid.amount >= FluidContainerRegistry.BUCKET_VOLUME) {
-					FluidStack drained = tile.drain(dir, new FluidStack(ModFluids.fluidPotion, FluidContainerRegistry.BUCKET_VOLUME), true);
-					return NBTEffectHelper.setEffectsForStack(new ItemStack(ModItems.itemBucketPotion), NBTEffectHelper.getEffectsFromFluid(drained));
-				}
-			}
-		}
+		// if (world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof IFluidHandler) {
+		// IFluidHandler tile = (IFluidHandler) world.getTileEntity(x, y, z);
+		// ForgeDirection dir = ForgeDirection.getOrientation(side);
+		// FluidTankInfo info = getTankWithPotion(tile.getTankInfo(dir));
+		// if (info != null) {
+		// if (info.fluid.amount >= FluidContainerRegistry.BUCKET_VOLUME) {
+		// FluidStack drained = tile.drain(dir, new FluidStack(ModFluids.fluidPotion, FluidContainerRegistry.BUCKET_VOLUME), true);
+		// return NBTEffectHelper.setEffectsForStack(new ItemStack(ModItems.itemBucketPotion), NBTEffectHelper.getEffectsFromFluid(drained));
+		// }
+		// }
+		// }
 		if (block == ModBlocks.blockPotion && world.getBlockMetadata(x, y, z) == 0) {
 			TEPotion tile = (TEPotion) world.getTileEntity(x, y, z);
 			Effects effects = tile.getEffects();

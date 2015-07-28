@@ -1,6 +1,6 @@
 package bourgeoisarab.divinealchemy.common.tileentity;
 
-public interface IBrewingCauldron extends IEffectBrewingThingy {
+public interface IBrewingCauldron extends IPotionBrewer {
 
 	public void setBoil(boolean boil);
 

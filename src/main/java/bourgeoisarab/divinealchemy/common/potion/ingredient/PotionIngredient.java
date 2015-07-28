@@ -12,7 +12,7 @@ import net.minecraft.potion.PotionEffect;
 import bourgeoisarab.divinealchemy.common.potion.IDivinePotion;
 import bourgeoisarab.divinealchemy.common.potion.IEvilPotion;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
-import bourgeoisarab.divinealchemy.common.tileentity.IEffectBrewingThingy;
+import bourgeoisarab.divinealchemy.common.tileentity.IPotionBrewer;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
 
@@ -103,7 +103,7 @@ public class PotionIngredient {
 		return priority;
 	}
 
-	public void applyEffect(IEffectBrewingThingy tile, Random rand, boolean sideEffect) {
+	public void applyEffect(IPotionBrewer tile, Random rand, boolean sideEffect) {
 		tile.addEffect(getEffect(tile, sideEffect), sideEffect);
 		tile.removeIngredient(this, ConfigHandler.maxEffects);
 	}
@@ -130,7 +130,7 @@ public class PotionIngredient {
 	 * @param rand
 	 * @return true, if adding ingredients was successful; false, if no more were accepted
 	 */
-	public static boolean addSideEffect(IEffectBrewingThingy tile, boolean badEffect, Random rand) {
+	public static boolean addSideEffect(IPotionBrewer tile, boolean badEffect, Random rand) {
 		if (tile.getProperties().isStable) {
 			return true;
 		}
@@ -210,7 +210,7 @@ public class PotionIngredient {
 		return null;
 	}
 
-	public PotionEffect getEffect(IEffectBrewingThingy tile, boolean sideEffect) {
+	public PotionEffect getEffect(IPotionBrewer tile, boolean sideEffect) {
 		int duration = !tile.getProperties().isStable ? new Random().nextInt(tile.getMaxDuration() / 4) + tile.getMaxDuration() / 4 : tile.getMaxDuration();
 		if (sideEffect) {
 			duration = (int) (duration * ((tile.getInstability() + 1) / 2));

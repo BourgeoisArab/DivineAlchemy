@@ -19,7 +19,7 @@ import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import bourgeoisarab.divinealchemy.init.ModFluids;
 import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
 
-public abstract class TEPotionBrewerBase extends TileEntityBaseDA implements IFluidHandler, IEffectBrewingThingy {
+public abstract class TEPotionBrewerBase extends TileEntityBaseDA implements IFluidHandler, IPotionBrewer {
 
 	public final FluidTank tank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME);
 	public Ingredients ingredients = new Ingredients();
@@ -145,7 +145,7 @@ public abstract class TEPotionBrewerBase extends TileEntityBaseDA implements IFl
 
 	@Override
 	public int getMaxDuration() {
-		return (int) (Math.pow(2, worldObj.getBlockMetadata(xCoord, yCoord, zCoord)) * 1200);
+		return (int) (Math.pow(2, getTier()) * 1200);
 	}
 
 	@Override

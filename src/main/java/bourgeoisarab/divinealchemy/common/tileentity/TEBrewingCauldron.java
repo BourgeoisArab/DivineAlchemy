@@ -49,7 +49,10 @@ public class TEBrewingCauldron extends TEPotionBrewerBase implements IBrewingCau
 
 	@Override
 	public float getCauldronInstability() {
-		switch (worldObj.getBlockMetadata(xCoord, yCoord, zCoord)) {
+		switch (getTier()) {
+			case 0:
+			default:
+				return 0.95F;
 			case 1:
 				return 0.90F;
 			case 2:
@@ -58,8 +61,6 @@ public class TEBrewingCauldron extends TEPotionBrewerBase implements IBrewingCau
 				return 0.75F;
 			case 4:
 				return 0.50F;
-			default:
-				return 0.95F;
 		}
 	}
 

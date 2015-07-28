@@ -5,7 +5,7 @@ import net.minecraft.potion.PotionEffect;
 import bourgeoisarab.divinealchemy.common.potion.Ingredients;
 import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 
-public interface IEffectBrewingThingy extends IEffectProvider {
+public interface IPotionBrewer extends IEffectProvider {
 
 	public boolean addIngredient(PotionIngredient ing, boolean side);
 
@@ -29,7 +29,7 @@ public interface IEffectBrewingThingy extends IEffectProvider {
 	public void clearEffects();
 
 	/**
-	 * @return tier
+	 * @return tier of the brewer: an int between 0 and 4
 	 */
 	public int getTier();
 

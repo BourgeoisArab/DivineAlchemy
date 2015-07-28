@@ -3,7 +3,7 @@ package bourgeoisarab.divinealchemy.common.potion.ingredient;
 import java.util.Random;
 
 import net.minecraft.item.ItemStack;
-import bourgeoisarab.divinealchemy.common.tileentity.IEffectBrewingThingy;
+import bourgeoisarab.divinealchemy.common.tileentity.IPotionBrewer;
 
 public class IngredientGunpowder extends PotionIngredient {
 
@@ -13,7 +13,7 @@ public class IngredientGunpowder extends PotionIngredient {
 	}
 
 	@Override
-	public void applyEffect(IEffectBrewingThingy tile, Random rand, boolean sideEffect) {
+	public void applyEffect(IPotionBrewer tile, Random rand, boolean sideEffect) {
 		tile.getProperties().isSplash = true;
 	}
 

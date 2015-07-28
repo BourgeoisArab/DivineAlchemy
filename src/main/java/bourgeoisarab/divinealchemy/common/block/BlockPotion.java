@@ -54,8 +54,8 @@ public class BlockPotion extends BlockFluidClassic implements ITileEntityProvide
 
 	@Override
 	public void registerBlockIcons(IIconRegister register) {
-		stillIcon = register.registerIcon(Ref.MODID + ":" + "potion_still");
-		flowingIcon = register.registerIcon(Ref.MODID + ":" + "potion_flow");
+		stillIcon = register.registerIcon(Ref.Location.PREFIX + "potion_still");
+		flowingIcon = register.registerIcon(Ref.Location.PREFIX + "potion_flow");
 		ModFluids.fluidPotion.setIcons(stillIcon, flowingIcon);
 	}
 

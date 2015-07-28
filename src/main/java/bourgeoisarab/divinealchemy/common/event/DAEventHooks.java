@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.EntitySpellParticleFX;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -89,7 +93,7 @@ public class DAEventHooks {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onTankClick(PlayerInteractEvent event) {
 		if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
 			TileEntity entity = event.world.getTileEntity(event.x, event.y, event.z);
@@ -101,8 +105,8 @@ public class DAEventHooks {
 				// Effects e = new Effects();
 				// e.add(new PotionEffect(10, 530, 1), false);
 				// NBTEffectHelper.setEffectsForFluid(fluid, e);
-
-				ItemStack stack = event.entityPlayer.getCurrentEquippedItem();
+				EntityPlayer player = event.entityPlayer;
+				ItemStack stack = player.getCurrentEquippedItem();
 
 				if (stack == null) {
 					Log.info(NBTEffectHelper.getEffectsFromFluid(fluid));
@@ -124,8 +128,8 @@ public class DAEventHooks {
 						}
 						if (newStack != null) {
 							tile.fill(dir, NBTEffectHelper.setEffectsForFluid(new FluidStack(ModFluids.fluidPotion, capacity), effects), true);
-							InventoryHelper.addStackToInventory(event.entityPlayer, stack, newStack, true);
-							event.setCanceled(true);
+							player.inventory.setInventorySlotContents(player.inventory.currentItem, newStack);
+							// event.setCanceled(true);
 						}
 					}
 				} else if (tile.canDrain(dir, ModFluids.fluidPotion)) {
@@ -262,17 +266,54 @@ public class DAEventHooks {
 		event.entityItem.getEntityData().setString(event.player.getCommandSenderName(), Ref.NBT.THROWER);
 	}
 
-	// @SubscribeEvent
-	// public void onParticleSpawn(EntityEvent.EntityConstructing event) {
-	// if (DivineAlchemy.proxy.getClientPlayer().getActivePotionEffect(ModPotion.potionParticle) != null) {
-	// if (event.entity instanceof EntitySpellParticleFX) {
-	// EntitySpellParticleFX particle = (EntitySpellParticleFX) event.entity;
-	// particle.setDead();
-	// // TODO: Kill only the ones in the player's face; not all of them
-	// // Access transformers?
-	// }
-	// }
-	// }
+	@SubscribeEvent
+	public void onParticleSpawn(EntityEvent.EntityConstructing event) {
+		if (event.entity instanceof EntitySpellParticleFX) {
+			EntitySpellParticleFX particle = (EntitySpellParticleFX) event.entity;
+			int partialTicks = 100;
+			// float x = (float)stityFX.interpPosZ - particle.prevPosZ);
+			double offset = 0.5;
+			// AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(x - offset, y - offset, z - offset, x + offset, y + offset, z + offset);
+			// List<EntityLivingBase> entities = particle.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
+			// for (EntityLivingBase player : entities) {
+			// if (player != null && player.getActivePotionEffect(ModPotion.potionParticle) != null) {
+			// particle.setDead();
+			// }
+			// }
+			float x = (float) -(particle.prevPosX + (particle.posX - particle.prevPosX) * partialTicks - EntityFX.interpPosX);
+			float y = (float) -(particle.prevPosY + (particle.posY - particle.prevPosY) * partialTicks - EntityFX.interpPosY);
+			float z = (float) -(particle.prevPosZ + (particle.posZ - particle.prevPosZ) * partialTicks - EntityFX.interpPosZ);
+			// if (particle.worldObj.isRemote) {
+			// EntityPlayer player = DivineAlchemy.proxy.getClientPlayer();
+			// Log.info("Particle: " + x + ", " + y + ", " + z);
+			// Log.info("Player: " + player.posX + ", " + player.posY + ", " + player.posZ);
+			// }
+			// TODO: Kill only the ones in the player's face; not all of them
+		}
+	}
+
+	public void renderParticle(Tessellator t, float partialTicks, float rotationX, float rotationXZ, float rotationZ, float rotationYZ, float rotationXY) {
+		// float minU = (float) particleTextureIndexX / 16.0F;
+		// float maxU = minU + 0.0624375F;
+		// float minV = (float) particleTextureIndexY / 16.0F;
+		// float maxV = minV + 0.0624375F;
+		// float scale = 0.1F * particleScale;
+		//
+		// if (particleIcon != null) {
+		// minU = particleIcon.getMinU();
+		// maxU = particleIcon.getMaxU();
+		// minV = particleIcon.getMinV();
+		// maxV = particleIcon.getMaxV();
+		// }
+		//
+		// float x = (float) (prevPosX + (posX - prevPosX) * (double) partialTicks - EntityFX.interpPosX);
+		// float y = (float) (prevPosY + (posY - prevPosY) * (double) partialTicks - EntityFX.interpPosY);
+		// float z = (float) (prevPosZ + (posZ - prevPosZ) * (double) partialTicks - EntityFX.interpPosZ);
+		// t.addVertexWithUV(x - rotationX * scale - rotationYZ * scale, y - rotationXZ * scale, z - rotationZ * scale - rotationXY * scale, maxU, maxV);
+		// t.addVertexWithUV(x - rotationX * scale + rotationYZ * scale, y + rotationXZ * scale, z - rotationZ * scale + rotationXY * scale, maxU, minV);
+		// t.addVertexWithUV(x + rotationX * scale + rotationYZ * scale, y + rotationXZ * scale, z + rotationZ * scale + rotationXY * scale, minU, minV);
+		// t.addVertexWithUV(x + rotationX * scale - rotationYZ * scale, y - rotationXZ * scale, z + rotationZ * scale - rotationXY * scale, minU, maxV);
+	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onExplosion(ExplosionEvent.Start event) {

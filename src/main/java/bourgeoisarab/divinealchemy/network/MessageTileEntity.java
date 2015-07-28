@@ -36,7 +36,7 @@ public class MessageTileEntity extends MessagePotisionedBase<MessageTileEntity> 
 
 	@Override
 	public void handleClientSide(MessageTileEntity msg, World world, int x, int y, int z, EntityPlayer player) {
-		if (world.getChunkProvider().chunkExists(x, z)) {
+		if (world != null) {
 			TileEntity tile = world.getTileEntity(x, y, z);
 			if (tile instanceof TileEntityBaseDA) {
 				tile.readFromNBT(msg.tag);
