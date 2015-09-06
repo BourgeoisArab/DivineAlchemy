@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import bourgeoisarab.divinealchemy.common.tileentity.TileEntityBaseDA;
+import bourgeoisarab.divinealchemy.utility.Log;
 import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class MessageTileEntity extends MessagePotisionedBase<MessageTileEntity> {
@@ -46,7 +47,7 @@ public class MessageTileEntity extends MessagePotisionedBase<MessageTileEntity> 
 
 	@Override
 	public void handleServerSide(MessageTileEntity msg, World world, int x, int y, int z, EntityPlayer player) {
-
+		Log.warn("TileEntity update message should not be received on the server.");
 	}
 
 }

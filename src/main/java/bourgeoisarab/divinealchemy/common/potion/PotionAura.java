@@ -7,7 +7,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 
-public class PotionAura extends PotionPerformEffect implements IDivinePotion {
+public class PotionAura extends ModPotion implements IDivinePotion {
 
 	public static final int duration = 100;
 	private Potion normalPotion;
@@ -23,7 +23,7 @@ public class PotionAura extends PotionPerformEffect implements IDivinePotion {
 	}
 
 	@Override
-	public void performEffect(EntityLivingBase entity, PotionEffect potionEffect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect potionEffect) {
 		int amplifier = potionEffect.getAmplifier();
 		int radius = getRadius(amplifier);
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius);

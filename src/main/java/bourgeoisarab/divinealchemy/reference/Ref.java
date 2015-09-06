@@ -17,28 +17,6 @@ public final class Ref {
 		public static final String BLOCKS = TEXTURES + "blocks/";
 	}
 
-	public static class NBT {
-
-		public static final String INGREDIENTS_TAG = "DAIngredients";
-		public static final String INGREDIENTS = "IngredientIDs";
-		public static final String SIDE_EFFECT = "SideEffect";
-		public static final String EFFECTS_TAG = "DAEffects";
-		public static final String EFFECT = "PotionEffect";
-		public static final String PROPERTIES = "PotionProperties";
-		public static final String PERSISTENT_IDS = "PersistentIDs";
-		public static final String PERSISTENT = "Persistent";
-		public static final String FOOD_ID = "DAFoodID";
-		public static final String FOOD_LEVEL = "DAFoodLevel";
-		public static final String FOOD_SATURATION = "DAFoodSaturation";
-		public static final String SOUL_AMOUNT = "SoulAmount";
-		public static final String DIVINITY = "Divinity";
-		public static final String INSTABILITY = "Instability";
-		public static final String THROWER = "Thrower";
-		public static final String COLOURS = "Colouring";
-		public static final String EXPLOSIONS_ABSORBED = "AbsorbedExplosions";
-
-	}
-
 	public static class Config {
 
 		public static final String CATEGORY_COMPAT = "Compatability";

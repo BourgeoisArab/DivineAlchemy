@@ -1,4 +1,4 @@
-package bourgeoisarab.divinealchemy.common.entity;
+package bourgeoisarab.divinealchemy.client.renderer.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;

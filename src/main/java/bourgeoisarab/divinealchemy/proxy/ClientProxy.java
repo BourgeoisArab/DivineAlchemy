@@ -1,19 +1,21 @@
 package bourgeoisarab.divinealchemy.proxy;
 
-import bourgeoisarab.divinealchemy.client.renderer.RenderEntitySplashPotion;
-import bourgeoisarab.divinealchemy.client.renderer.RendererBlockBrewingCauldron;
-import bourgeoisarab.divinealchemy.client.renderer.RendererBlockPotion;
-import bourgeoisarab.divinealchemy.client.renderer.RendererItemBrewingCauldron;
-import bourgeoisarab.divinealchemy.common.entity.EntitySpecialCreeper;
-import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
-import bourgeoisarab.divinealchemy.common.entity.RenderSpecialCreeper;
-import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
-import bourgeoisarab.divinealchemy.init.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import bourgeoisarab.divinealchemy.client.renderer.RendererBlockBrewingCauldron;
+import bourgeoisarab.divinealchemy.client.renderer.RendererBlockPotion;
+import bourgeoisarab.divinealchemy.client.renderer.RendererItemBrewingCauldron;
+import bourgeoisarab.divinealchemy.client.renderer.entity.RenderEntitySplashPotion;
+import bourgeoisarab.divinealchemy.client.renderer.entity.RenderSpecialCreeper;
+import bourgeoisarab.divinealchemy.client.renderer.entity.RendererPlayerClone;
+import bourgeoisarab.divinealchemy.common.entity.EntityPlayerClone;
+import bourgeoisarab.divinealchemy.common.entity.EntitySpecialCreeper;
+import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
+import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
+import bourgeoisarab.divinealchemy.init.ModBlocks;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
@@ -42,6 +44,7 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.blockBrewingCauldron), new RendererItemBrewingCauldron(new TEBrewingCauldron(), new RendererBlockBrewingCauldron()));
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpecialCreeper.class, new RenderSpecialCreeper());
 		RenderingRegistry.registerEntityRenderingHandler(EntitySplashPotion.class, new RenderEntitySplashPotion());
+		RenderingRegistry.registerEntityRenderingHandler(EntityPlayerClone.class, new RendererPlayerClone());
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.common.MinecraftForge;
+import bourgeoisarab.divinealchemy.command.CommandDivinity;
 import bourgeoisarab.divinealchemy.common.event.BucketHandler;
 import bourgeoisarab.divinealchemy.common.event.DAEventHooks;
 import bourgeoisarab.divinealchemy.common.event.DARenderEventHooks;
@@ -18,6 +19,7 @@ import bourgeoisarab.divinealchemy.init.ModFluids;
 import bourgeoisarab.divinealchemy.init.ModItems;
 import bourgeoisarab.divinealchemy.init.crafting.Recipes;
 import bourgeoisarab.divinealchemy.network.NetworkHandler;
+import bourgeoisarab.divinealchemy.network.NetworkHandlerDescription;
 import bourgeoisarab.divinealchemy.proxy.CommonProxy;
 import bourgeoisarab.divinealchemy.reference.Ref;
 import bourgeoisarab.divinealchemy.troll.CommandCake;
@@ -73,6 +75,7 @@ public class DivineAlchemy {
 		ModEntities.init();
 
 		NetworkHandler.init();
+		NetworkHandlerDescription.init();
 		proxy.preInit();
 	}
 
@@ -103,8 +106,8 @@ public class DivineAlchemy {
 		try {
 			event.registerServerCommand(new CommandCake());
 		} catch (Exception e) {
-
 		}
+		event.registerServerCommand(new CommandDivinity());
 	}
 
 	public static void expandPotionArray(int arraySize) {

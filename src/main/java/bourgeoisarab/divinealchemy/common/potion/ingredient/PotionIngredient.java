@@ -192,6 +192,10 @@ public class PotionIngredient {
 		}
 	}
 
+	public static PotionIngredient getIngredient(int id) {
+		return id >= 0 && id < ingredients.size() ? ingredients.get(id) : null;
+	}
+
 	public static PotionIngredient getIngredient(ItemStack stack) {
 		for (int i = 0; i < ingredients.size(); i++) {
 			PotionIngredient ingredient = ingredients.get(i);
@@ -225,16 +229,6 @@ public class PotionIngredient {
 		return effect != null ? effect.id : 0;
 	}
 
-	public int getIngredientCount(PotionIngredient[] ingredients) {
-		int count = 0;
-		for (PotionIngredient i : ingredients) {
-			if (getPotionID() == i.getPotionID()) {
-				count++;
-			}
-		}
-		return count;
-	}
-
 	/**
 	 * @param count the number of ingredients present in potion
 	 * @param maxLevel the maximum possible amplifier
@@ -253,7 +247,7 @@ public class PotionIngredient {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + ": " + getItem().getDisplayName();
+		return getClass().getSimpleName() + ": " + (getItem() != null ? getItem().getItem() : null);
 	}
 
 }

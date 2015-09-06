@@ -7,14 +7,15 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class PotionFiendFyre extends PotionPerformEffect {
+public class PotionFiendFyre extends ModPotion {
 
 	public PotionFiendFyre(int id, boolean isBadEffect, int colour) {
 		super(id, isBadEffect, colour);
+		setPotionName("potion.fiendfyre");
 	}
 
 	@Override
-	public void performEffect(EntityLivingBase entity, PotionEffect potionEffect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect potionEffect) {
 		World world = entity.worldObj;
 		entity.extinguish();
 		if (entity.worldObj.getWorldTime() % 10 == 0) {

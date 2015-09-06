@@ -1,5 +1,6 @@
 package bourgeoisarab.divinealchemy.common.tileentity;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -15,20 +16,44 @@ public abstract class TileEntityBaseDA extends TileEntity {
 		if (!worldObj.isRemote) {
 			NetworkHandler.sendToAll(new MessageTileEntity(this));
 		}
+		// if (!worldObj.isRemote) {
+		// for (EntityPlayerMP player : (List<EntityPlayerMP>) worldObj.playerEntities) {
+		// player.playerNetServerHandler.sendPacket(getDescriptionPacket());
+		// }
+		// }
+		// if (!worldObj.isRemote) {
+		// // worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		// for (EntityPlayerMP player : (List<EntityPlayerMP>) worldObj.playerEntities) {
+		// player.playerNetServerHandler.sendPacket(getDescriptionPacket());
+		// }
+		// }
 	}
 
 	@Override
 	public Packet getDescriptionPacket() {
-		Packet packet = super.getDescriptionPacket();
-		NBTTagCompound nbtTag = packet != null ? ((S35PacketUpdateTileEntity) packet).func_148857_g() : new NBTTagCompound();
-		writeToNBT(nbtTag);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, nbtTag);
+		// ByteBuf buf = Unpooled.buffer();
+		// buf.writeInt(xCoord);
+		// buf.writeInt(yCoord);
+		// buf.writeInt(zCoord);
+		// writeToPacket(buf);
+		// return new FMLProxyPacket(buf, NetworkHandlerDescription.CHANNEL);
+		NBTTagCompound nbt = new NBTTagCompound();
+		writeToNBT(nbt);
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, nbt);
+
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		super.onDataPacket(networkManager, packet);
-		readFromNBT(packet.func_148857_g());
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+		readFromNBT(pkt.func_148857_g());
+	}
+
+	public void writeToPacket(ByteBuf buf) {
+
+	}
+
+	public void readFromPacket(ByteBuf buf) {
+
 	}
 
 }

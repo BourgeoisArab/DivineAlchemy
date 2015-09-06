@@ -89,7 +89,7 @@ public class Colouring {
 
 	public boolean add(int colour, boolean add) {
 		if (colour >= 0) {
-			if (add) {
+			if (add && dyes.size() < Byte.MAX_VALUE) {
 				dyes.add(colour);
 			}
 			return true;

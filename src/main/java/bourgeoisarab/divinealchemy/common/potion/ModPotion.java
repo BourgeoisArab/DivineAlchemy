@@ -1,13 +1,21 @@
 package bourgeoisarab.divinealchemy.common.potion;
 
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.attributes.BaseAttributeMap;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
+import bourgeoisarab.divinealchemy.common.event.DAEventHooks;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
+import bourgeoisarab.divinealchemy.network.MessageRemoveEffect;
+import bourgeoisarab.divinealchemy.network.NetworkHandler;
 import bourgeoisarab.divinealchemy.utility.Log;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModPotion extends Potion {
 
-	public static ModPotion potionFlight = new PotionFlight(ConfigHandler.potionIDs[0], false, 0xAAAAFF).setPotionName("potion.flight").setIcon("minecraft:textures/items/feather.png");
+	public static ModPotion potionFlight = new PotionFlight(ConfigHandler.potionIDs[0], false, 0xAAAAFF);
 	public static ModPotion potionEffectResist = new ModPotion(ConfigHandler.potionIDs[1], false, 0xAAFFAA).setPotionName("potion.effectResist");
 	public static ModPotion potionDay = new ModPotion(ConfigHandler.potionIDs[2], false, 0xFFFF00).setPotionName("potion.day");
 	public static ModPotion potionWitherAura = new PotionAura(ConfigHandler.potionIDs[3], true, 0xFFFFFF, wither);
@@ -19,10 +27,13 @@ public class ModPotion extends Potion {
 	public static ModPotion potionHungerAura = new PotionAura(ConfigHandler.potionIDs[9], true, 0xFFFFFF, hunger);
 	public static ModPotion potionNegativeEffectResist = new ModPotion(ConfigHandler.potionIDs[10], false, 0xAAFFAA).setPotionName("potion.negativeEffectResist");
 	public static ModPotion potionParticle = new ModPotion(ConfigHandler.potionIDs[11], false, 0x888888).setPotionName("potion.particle");
-	public static ModPotion potionFiendFyre = new PotionFiendFyre(ConfigHandler.potionIDs[12], true, 0x884400).setPotionName("potion.fiendfyre");
+	public static ModPotion potionFiendFyre = new PotionFiendFyre(ConfigHandler.potionIDs[12], true, 0x884400);
 	public static ModPotion potionSealedMouth = new ModPotion(ConfigHandler.potionIDs[13], true, 0x000000).setPotionName("potion.sealedmouth");
-	public static ModPotion potionReach = new PotionReach(ConfigHandler.potionIDs[14], false, 0xFFFFFF).setPotionName("potion.reach");
-	public static ModPotion potionExplodeAbsorb = new PotionExplosionAbsorb(ConfigHandler.potionIDs[15], false, 0x888888).setPotionName("potion.explodeabsorb");
+	public static ModPotion potionReach = new PotionReach(ConfigHandler.potionIDs[14], false, 0xFFFFFF);
+	public static ModPotion potionExplodeAbsorb = new PotionExplosionAbsorb(ConfigHandler.potionIDs[15], false, 0x888888);
+	public static ModPotion potionDeafness = new ModPotion(ConfigHandler.potionIDs[16], true, 0x284488).setPotionName("potion.deaf");
+	public static ModPotion potionTemporal = new PotionTemporal(ConfigHandler.potionIDs[17], true, 0x444444);
+	public static ModPotion potionClone = new PotionClone(ConfigHandler.potionIDs[18], false, 0xFFFFFF);
 
 	public ResourceLocation icon = null;
 
@@ -31,8 +42,8 @@ public class ModPotion extends Potion {
 	}
 
 	@Override
-	public ModPotion setIconIndex(int i, int i2) {
-		return (ModPotion) super.setIconIndex(i, i2);
+	public ModPotion setIconIndex(int u, int v) {
+		return (ModPotion) super.setIconIndex(u, v);
 	}
 
 	@Override
@@ -45,25 +56,61 @@ public class ModPotion extends Potion {
 		return this;
 	}
 
-	public ModPotion setIcon(ResourceLocation location) {
-		icon = location;
-		return this;
+	@Override
+	public boolean hasStatusIcon() {
+		return icon == null;
 	}
 
 	@Override
-	public boolean hasStatusIcon() {
-		// if (icon == null) {
+	@SideOnly(Side.CLIENT)
+	public void renderInventoryEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc) {
+		if (icon != null) {
+			mc.renderEngine.bindTexture(icon);
+			// net.minecraft.client.renderer.Tessellator t = net.minecraft.client.renderer.Tessellator.instance;
+			// GL11.glDisable(GL11.GL_LIGHTING);
+			//
+			// t.startDrawingQuads();
+			// t.setColorOpaque_I(0xFFFFFF);
+			// t.addVertexWithUV(x, y, 0, 0, 0);
+			// t.addVertexWithUV(x + 16, y, 0, 0, 0);
+			// t.addVertexWithUV(x + 16, y + 16, 0, 0, 0);
+			// t.addVertexWithUV(x, y + 16, 0, 0, 0);
+			// t.draw();
+			mc.ingameGUI.drawRect(0, 0, 32, 32, 0xFF00FF);
+			mc.ingameGUI.drawTexturedModalRect(0, 0, 0, 0, 32, 32);
+		}
+	}
+
+	@Override
+	public boolean shouldRenderInvText(PotionEffect effect) {
 		return true;
-		// }
-		// Minecraft.getMinecraft().renderEngine.bindTexture(icon);
-		// Tessellator t = Tessellator.instance;
-		// t.startDrawingQuads();
-		// t.addVertexWithUV(0, 0, 0, 0, 0);
-		// t.addVertexWithUV(1, 0, 0, 1, 0);
-		// t.addVertexWithUV(1, 1, 0, 1, 1);
-		// t.addVertexWithUV(0, 1, 0, 0, 1);
-		// t.draw();
-		// return false;
+	}
+
+	/**
+	 * Called when the PotionEffect is to be removed from the given entity
+	 * 
+	 * @param entity
+	 * @param amplifier
+	 */
+	public void removeEffect(EntityLivingBase entity, int amplifier) {
+
+	}
+
+	/**
+	 * Called every tick the potion is active through {@link DAEventHooks}
+	 * 
+	 * @param entity to which the effect is to be applied
+	 * @param effect
+	 */
+	public void applyEffect(EntityLivingBase entity, PotionEffect effect) {
+
+	}
+
+	@Override
+	public void removeAttributesModifiersFromEntity(EntityLivingBase entity, BaseAttributeMap map, int amplifier) {
+		super.removeAttributesModifiersFromEntity(entity, map, amplifier);
+		removeEffect(entity, amplifier);
+		NetworkHandler.sendToAll(new MessageRemoveEffect(entity, id, amplifier));
 	}
 
 	public static Potion getPotion(int id) {

@@ -15,7 +15,8 @@ public class NetworkHandler {
 	public static void init() {
 		INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(Ref.MODID);
 		INSTANCE.registerMessage(MessageTileEntity.class, MessageTileEntity.class, 0, Side.CLIENT);
-		INSTANCE.registerMessage(MessageCancelFlight.class, MessageCancelFlight.class, 1, Side.CLIENT);
+		INSTANCE.registerMessage(MessageRemoveEffect.class, MessageRemoveEffect.class, 1, Side.CLIENT);
+		// INSTANCE.registerMessage(MessageSpawnClone.class, MessageSpawnClone.class, 2, Side.SERVER);
 	}
 
 	public static void sendToServer(IMessage msg) {

@@ -7,6 +7,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -15,14 +16,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import bourgeoisarab.divinealchemy.DivineAlchemy;
-import bourgeoisarab.divinealchemy.common.block.multiblock.IMultiBlock;
 import bourgeoisarab.divinealchemy.common.tileentity.TEPotionVat;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.reference.Ref;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockPotionVat extends BlockContainer implements IMultiBlock {
+public class BlockPotionVat extends BlockContainer {
 
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons = new IIcon[5];
@@ -41,11 +41,6 @@ public class BlockPotionVat extends BlockContainer implements IMultiBlock {
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
 		return new TEPotionVat();
-	}
-
-	@Override
-	public void notifyMultiblockChange(World world, int x, int y, int z) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -93,6 +88,7 @@ public class BlockPotionVat extends BlockContainer implements IMultiBlock {
 				tile.orientation = ForgeDirection.NORTH;
 			}
 			world.setBlockMetadataWithNotify(x, y, z, stack.getItemDamage(), 3);
+			tile.checkMultiBlock();
 		}
 	}
 
@@ -101,6 +97,17 @@ public class BlockPotionVat extends BlockContainer implements IMultiBlock {
 		for (int i = 0; i < 5; i++) {
 			list.add(new ItemStack(item, 1, i));
 		}
+	}
+
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+		TileEntity entity = world.getTileEntity(x, y, z);
+		if (entity instanceof TEPotionVat) {
+			TEPotionVat tile = (TEPotionVat) entity;
+			tile.checkMultiBlock();
+			return true;
+		}
+		return false;
 	}
 
 }

@@ -13,7 +13,7 @@ import bourgeoisarab.divinealchemy.common.potion.Ingredients;
 import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
 import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
-import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.reference.NBTNames;
 import bourgeoisarab.divinealchemy.utility.Log;
 
 public class NBTEffectHelper {
@@ -34,7 +34,7 @@ public class NBTEffectHelper {
 		if (tag == null || properties == null) {
 			return null;
 		}
-		tag.setInteger(Ref.NBT.PROPERTIES, properties.getMetaValue());
+		tag.setInteger(NBTNames.PROPERTIES, properties.getMetaValue());
 		return tag;
 	}
 
@@ -42,7 +42,7 @@ public class NBTEffectHelper {
 		if (tag == null) {
 			return null;
 		}
-		return new PotionProperties(tag.getInteger(Ref.NBT.PROPERTIES));
+		return new PotionProperties(tag.getInteger(NBTNames.PROPERTIES));
 	}
 
 	public static NBTTagCompound setIngredientsForNBT(NBTTagCompound tag, Ingredients ingredients) {
@@ -57,22 +57,22 @@ public class NBTEffectHelper {
 			} else {
 				ids[i] = -1;
 			}
-			tagIng.setBoolean(Ref.NBT.SIDE_EFFECT + i, ingredients.getSide(i));
+			tagIng.setBoolean(NBTNames.SIDE_EFFECT + i, ingredients.getSide(i));
 		}
-		tagIng.setIntArray(Ref.NBT.INGREDIENTS, ids);
-		tag.setTag(Ref.NBT.INGREDIENTS_TAG, tagIng);
+		tagIng.setIntArray(NBTNames.INGREDIENTS, ids);
+		tag.setTag(NBTNames.INGREDIENTS_TAG, tagIng);
 		return tag;
 	}
 
 	public static Ingredients getIngredientsFromNBT(NBTTagCompound tag) {
-		if (tag == null || !tag.hasKey(Ref.NBT.INGREDIENTS_TAG)) {
+		if (tag == null || !tag.hasKey(NBTNames.INGREDIENTS_TAG)) {
 			return null;
 		}
-		NBTTagCompound tagIng = tag.getCompoundTag(Ref.NBT.INGREDIENTS_TAG);
-		int[] ids = tagIng.getIntArray(Ref.NBT.INGREDIENTS);
+		NBTTagCompound tagIng = tag.getCompoundTag(NBTNames.INGREDIENTS_TAG);
+		int[] ids = tagIng.getIntArray(NBTNames.INGREDIENTS);
 		Ingredients ingredients = new Ingredients();
 		for (int i = 0; i < ingredients.getIngredients().length; i++) {
-			boolean side = tagIng.getBoolean(Ref.NBT.SIDE_EFFECT + i);
+			boolean side = tagIng.getBoolean(NBTNames.SIDE_EFFECT + i);
 			if (ids[i] >= 0) {
 				ingredients.set(i, PotionIngredient.ingredients.get(ids[i]), side);
 			} else {
@@ -92,25 +92,25 @@ public class NBTEffectHelper {
 		for (int i = 0; i < effects.size(); i++) {
 			PotionEffect e = effects.getEffect(i);
 			if (e != null) {
-				tagEffects.setIntArray(Ref.NBT.EFFECT + i, new int[]{e.getPotionID(), e.getDuration(), e.getAmplifier()});
-				tagEffects.setBoolean(Ref.NBT.SIDE_EFFECT + i, effects.getSideEffect(i));
+				tagEffects.setIntArray(NBTNames.EFFECT + i, new int[]{e.getPotionID(), e.getDuration(), e.getAmplifier()});
+				tagEffects.setBoolean(NBTNames.SIDE_EFFECT + i, effects.getSideEffect(i));
 			}
 		}
-		tag.setTag(Ref.NBT.EFFECTS_TAG, tagEffects);
+		tag.setTag(NBTNames.EFFECTS_TAG, tagEffects);
 		return tag;
 	}
 
 	public static Effects getEffectsFromNBT(NBTTagCompound tag) {
-		if (tag == null || !tag.hasKey(Ref.NBT.EFFECTS_TAG)) {
+		if (tag == null || !tag.hasKey(NBTNames.EFFECTS_TAG)) {
 			return null;
 		}
 		Effects effects = new Effects();
-		NBTTagCompound tagEffects = tag.getCompoundTag(Ref.NBT.EFFECTS_TAG);
+		NBTTagCompound tagEffects = tag.getCompoundTag(NBTNames.EFFECTS_TAG);
 
 		for (int i = 0; i < ConfigHandler.maxEffects; i++) {
-			if (tagEffects.hasKey(Ref.NBT.EFFECT + i)) {
-				int[] e = tagEffects.getIntArray(Ref.NBT.EFFECT + i);
-				effects.add(new PotionEffect(e[0], e[1], e[2]), tagEffects.getBoolean(Ref.NBT.SIDE_EFFECT + i));
+			if (tagEffects.hasKey(NBTNames.EFFECT + i)) {
+				int[] e = tagEffects.getIntArray(NBTNames.EFFECT + i);
+				effects.add(new PotionEffect(e[0], e[1], e[2]), tagEffects.getBoolean(NBTNames.SIDE_EFFECT + i));
 			} else {
 				break;
 			}
@@ -122,15 +122,15 @@ public class NBTEffectHelper {
 		if (tag == null) {
 			return null;
 		}
-		tag.setFloat(Ref.NBT.INSTABILITY, instability);
+		tag.setFloat(NBTNames.INSTABILITY, instability);
 		return tag;
 	}
 
 	public static float getInstabilityFromNBT(NBTTagCompound tag) {
-		if (tag == null || !tag.hasKey(Ref.NBT.INSTABILITY)) {
+		if (tag == null || !tag.hasKey(NBTNames.INSTABILITY)) {
 			return 0;
 		}
-		return tag.getFloat(Ref.NBT.INSTABILITY);
+		return tag.getFloat(NBTNames.INSTABILITY);
 	}
 
 	public static ItemStack setInstabilityForStack(ItemStack stack, float instability) {
@@ -193,7 +193,7 @@ public class NBTEffectHelper {
 		if (tag == null || colouring == null) {
 			return null;
 		}
-		tag.setIntArray(Ref.NBT.COLOURS, colouring.getColourArray());
+		tag.setIntArray(NBTNames.COLOURS, colouring.getColourArray());
 		return tag;
 	}
 
@@ -201,7 +201,7 @@ public class NBTEffectHelper {
 		if (tag == null) {
 			return null;
 		}
-		int[] array = tag.getIntArray(Ref.NBT.COLOURS);
+		int[] array = tag.getIntArray(NBTNames.COLOURS);
 		if (array == null) {
 			return null;
 		}

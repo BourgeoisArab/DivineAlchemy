@@ -1,8 +1,12 @@
 package bourgeoisarab.divinealchemy.common.event;
 
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.sound.PlaySoundEvent17;
+import bourgeoisarab.divinealchemy.DivineAlchemy;
+import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class DARenderEventHooks {
@@ -28,6 +32,14 @@ public class DARenderEventHooks {
 		// t.addVertexWithUV(entity.boundingBox.maxX, entity.boundingBox.maxY, entity.boundingBox.maxZ, icon.getMinU(), icon.getMinV());
 		// t.draw();
 		// }
+	}
+
+	@SubscribeEvent
+	public void playSound(PlaySoundEvent17 event) {
+		EntityPlayer player = DivineAlchemy.proxy.getClientPlayer();
+		if (player != null && player.getActivePotionEffect(ModPotion.potionDeafness) != null) {
+			event.result = null;
+		}
 	}
 
 }

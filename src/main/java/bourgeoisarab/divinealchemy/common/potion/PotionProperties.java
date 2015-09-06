@@ -83,6 +83,13 @@ public class PotionProperties {
 		return getMetaValue(isSplash, isPersistent, isBlessed, isCursed);
 	}
 
+	public void setMetaValue(int meta) {
+		isSplash = getSplash(meta);
+		isPersistent = getPersistent(meta);
+		isBlessed = getBlessed(meta);
+		isCursed = getCursed(meta);
+	}
+
 	public static boolean getSplash(int meta) {
 		return (meta & 1) == 1;
 	}

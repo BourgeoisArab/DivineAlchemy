@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import bourgeoisarab.divinealchemy.common.potion.Effects;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
-import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.reference.NBTNames;
 import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
 
 public class ItemPotionFood extends ItemFood {
@@ -27,23 +27,23 @@ public class ItemPotionFood extends ItemFood {
 
 	@Override
 	public IIcon getIcon(ItemStack stack, int pass) {
-		if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey(Ref.NBT.FOOD_ID)) {
-			return Item.getItemById(stack.stackTagCompound.getInteger(Ref.NBT.FOOD_ID)).getIcon(stack, pass);
+		if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey(NBTNames.FOOD_ID)) {
+			return Item.getItemById(stack.stackTagCompound.getInteger(NBTNames.FOOD_ID)).getIcon(stack, pass);
 		}
 		return super.getIcon(stack, pass);
 	}
 
 	@Override
 	public IIcon getIconIndex(ItemStack stack) {
-		if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey(Ref.NBT.FOOD_ID)) {
-			return Item.getItemById(stack.stackTagCompound.getInteger(Ref.NBT.FOOD_ID)).getIconIndex(stack);
+		if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey(NBTNames.FOOD_ID)) {
+			return Item.getItemById(stack.stackTagCompound.getInteger(NBTNames.FOOD_ID)).getIconIndex(stack);
 		}
 		return super.getIconIndex(stack);
 	}
 
 	@Override
 	public boolean hasEffect(ItemStack stack, int pass) {
-		return stack.stackTagCompound != null && stack.stackTagCompound.hasKey(Ref.NBT.EFFECTS_TAG);
+		return stack.stackTagCompound != null && stack.stackTagCompound.hasKey(NBTNames.EFFECTS_TAG);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class ItemPotionFood extends ItemFood {
 		--stack.stackSize;
 		NBTTagCompound tag = stack.stackTagCompound;
 		if (tag != null) {
-			player.getFoodStats().addStats(tag.getInteger(Ref.NBT.FOOD_LEVEL), tag.getFloat(Ref.NBT.FOOD_SATURATION));
+			player.getFoodStats().addStats(tag.getInteger(NBTNames.FOOD_LEVEL), tag.getFloat(NBTNames.FOOD_SATURATION));
 		}
 		world.playSoundAtEntity(player, "random.burp", 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
 		onFoodEaten(stack, world, player);

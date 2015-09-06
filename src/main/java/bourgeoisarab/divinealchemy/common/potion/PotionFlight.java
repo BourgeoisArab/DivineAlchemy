@@ -3,27 +3,35 @@ package bourgeoisarab.divinealchemy.common.potion;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.attributes.BaseAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.potion.PotionEffect;
 import bourgeoisarab.divinealchemy.common.entity.ai.EntityAIFlight;
-import bourgeoisarab.divinealchemy.network.MessageCancelFlight;
-import bourgeoisarab.divinealchemy.network.NetworkHandler;
 
 public class PotionFlight extends ModPotion {
 
 	public PotionFlight(int id, boolean isBadEffect, int colour) {
 		super(id, isBadEffect, colour);
+		setPotionName("potion.flight");
+		setIcon("minecraft:textures/items/feather.png");
 	}
 
 	@Override
-	public void removeAttributesModifiersFromEntity(EntityLivingBase entity, BaseAttributeMap map, int i1) {
-		super.removeAttributesModifiersFromEntity(entity, map, i1);
+	public void applyEffect(EntityLivingBase entity, PotionEffect effect) {
+		if (entity instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer) entity;
+			player.capabilities.allowFlying = true;
+		} else if (entity instanceof EntityLiving) {
+			EntityLiving living = (EntityLiving) entity;
+			// add flight task to entity
+		}
+	}
+
+	@Override
+	public void removeEffect(EntityLivingBase entity, int amplifier) {
 		if (entity instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) entity;
 			player.capabilities.allowFlying = false;
 			player.capabilities.isFlying = false;
-			NetworkHandler.sendTo(new MessageCancelFlight(), (EntityPlayerMP) player);
 		} else if (entity instanceof EntityLiving) {
 			EntityLiving entityLiving = (EntityLiving) entity;
 			EntityAIBase task = null;

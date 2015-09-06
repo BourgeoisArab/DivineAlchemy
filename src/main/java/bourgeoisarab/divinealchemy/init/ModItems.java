@@ -9,6 +9,7 @@ import bourgeoisarab.divinealchemy.common.item.ItemBucketHotMess;
 import bourgeoisarab.divinealchemy.common.item.ItemBucketPotion;
 import bourgeoisarab.divinealchemy.common.item.ItemEssenceCrystal;
 import bourgeoisarab.divinealchemy.common.item.ItemInstillationTome;
+import bourgeoisarab.divinealchemy.common.item.ItemOrgan;
 import bourgeoisarab.divinealchemy.common.item.ItemPotionFood;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -20,6 +21,7 @@ public class ModItems {
 	public static ItemBucketHotMess itemBucketHotMess;
 	public static ItemPotionFood itemPotionFood;
 	public static ItemEssenceCrystal itemEssenceCrystal;
+	public static ItemOrgan itemOrgan;
 
 	public static void init() {
 		itemInstillationTome = new ItemInstillationTome();
@@ -28,6 +30,7 @@ public class ModItems {
 		itemBucketHotMess = new ItemBucketHotMess(ModBlocks.blockHotMess);
 		itemPotionFood = new ItemPotionFood();
 		itemEssenceCrystal = new ItemEssenceCrystal();
+		itemOrgan = new ItemOrgan();
 	}
 
 	public static void registerItems() {
@@ -37,6 +40,7 @@ public class ModItems {
 		GameRegistry.registerItem(itemBucketHotMess, itemBucketHotMess.getUnlocalizedName());
 		GameRegistry.registerItem(itemPotionFood, itemPotionFood.getUnlocalizedName());
 		GameRegistry.registerItem(itemEssenceCrystal, itemEssenceCrystal.getUnlocalizedName());
+		GameRegistry.registerItem(itemOrgan, itemOrgan.getUnlocalizedName());
 
 		FluidContainerRegistry.registerFluidContainer(ModFluids.fluidPotion, new ItemStack(itemBucketPotion), new ItemStack(Items.bucket));
 		FluidContainerRegistry.registerFluidContainer(new FluidStack(ModFluids.fluidPotion, 333), new ItemStack(itemPotionBottle), new ItemStack(Items.glass_bottle));

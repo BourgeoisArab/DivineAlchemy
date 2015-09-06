@@ -1,13 +1,13 @@
 package bourgeoisarab.divinealchemy.init.crafting;
 
-import bourgeoisarab.divinealchemy.common.item.ItemBottlePotion;
-import bourgeoisarab.divinealchemy.reference.Ref;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import bourgeoisarab.divinealchemy.common.item.ItemBottlePotion;
+import bourgeoisarab.divinealchemy.reference.NBTNames;
 
 public class PotionFoodCrafting implements IRecipe {
 
@@ -17,7 +17,9 @@ public class PotionFoodCrafting implements IRecipe {
 	public boolean matches(InventoryCrafting inv, World world) {
 		int stackCount = 0;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			if (inv.getStackInSlot(i) != null) stackCount++;
+			if (inv.getStackInSlot(i) != null) {
+				stackCount++;
+			}
 		}
 		if (stackCount != 2) {
 			return false;
@@ -27,7 +29,7 @@ public class PotionFoodCrafting implements IRecipe {
 			ItemStack stack1 = inv.getStackInSlot(i);
 
 			if (stack1 != null && stack1.getItem() instanceof ItemFood) {
-				if (stack1.stackTagCompound != null && stack1.stackTagCompound.hasKey(Ref.NBT.EFFECTS_TAG)) {
+				if (stack1.stackTagCompound != null && stack1.stackTagCompound.hasKey(NBTNames.EFFECTS_TAG)) {
 					return false;
 				}
 
@@ -80,10 +82,10 @@ public class PotionFoodCrafting implements IRecipe {
 						// item.func_150906_h(foodStack));
 						// }
 
-						returnStack.stackTagCompound.setTag(Ref.NBT.EFFECTS_TAG, potionStack.stackTagCompound.getCompoundTag(Ref.NBT.EFFECTS_TAG));
+						returnStack.stackTagCompound.setTag(NBTNames.EFFECTS_TAG, potionStack.stackTagCompound.getCompoundTag(NBTNames.EFFECTS_TAG));
 
-						if (potionStack.stackTagCompound.hasKey(Ref.NBT.PERSISTENT)) {
-							returnStack.stackTagCompound.setBoolean(Ref.NBT.PERSISTENT, potionStack.stackTagCompound.getBoolean(Ref.NBT.PERSISTENT));
+						if (potionStack.stackTagCompound.hasKey(NBTNames.PERSISTENT)) {
+							returnStack.stackTagCompound.setBoolean(NBTNames.PERSISTENT, potionStack.stackTagCompound.getBoolean(NBTNames.PERSISTENT));
 						}
 
 						result = returnStack.copy();

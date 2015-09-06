@@ -1,4 +1,4 @@
-package bourgeoisarab.divinealchemy.client.renderer;
+package bourgeoisarab.divinealchemy.client.renderer.entity;
 
 import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
 import bourgeoisarab.divinealchemy.init.ModItems;

@@ -4,6 +4,7 @@ public class PotionExplosionAbsorb extends ModPotion implements IEvilPotion {
 
 	public PotionExplosionAbsorb(int id, boolean isBadEffect, int colour) {
 		super(id, isBadEffect, colour);
+		setPotionName("potion.explodeabsorb");
 	}
 
 	@Override

@@ -7,10 +7,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.particle.EntityBubbleFX;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.particle.EntitySpellParticleFX;
-import net.minecraft.client.particle.EntitySplashFX;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -35,7 +31,7 @@ import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
 import bourgeoisarab.divinealchemy.init.ModFluids;
 import bourgeoisarab.divinealchemy.init.ModItems;
-import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.reference.NBTNames;
 import bourgeoisarab.divinealchemy.utility.ColourHelper;
 import bourgeoisarab.divinealchemy.utility.InventoryHelper;
 import bourgeoisarab.divinealchemy.utility.Log;
@@ -195,9 +191,11 @@ public class BlockBrewingCauldron extends BlockContainer {
 			float level = tile.tank.getFluidAmount();
 			world.spawnParticle("splash", x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tile.tank.getCapacity()), z + (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
 			world.spawnParticle("smoke", x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tile.tank.getCapacity()), z + (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
-			EntityBubbleFX bubble = new EntityBubbleFX(world, x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tile.tank.getCapacity()), z + (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
+			net.minecraft.client.particle.EntityBubbleFX bubble = new net.minecraft.client.particle.EntityBubbleFX(world, x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tile.tank.getCapacity()), z
+					+ (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
 			DivineAlchemy.proxy.getClient().effectRenderer.addEffect(bubble);
-			EntitySplashFX splash = new EntitySplashFX(world, x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tile.tank.getCapacity()), z + (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
+			net.minecraft.client.particle.EntitySplashFX splash = new net.minecraft.client.particle.EntitySplashFX(world, x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tile.tank.getCapacity()), z
+					+ (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
 			DivineAlchemy.proxy.getClient().effectRenderer.addEffect(splash);
 		}
 	}
@@ -216,10 +214,10 @@ public class BlockBrewingCauldron extends BlockContainer {
 
 		if (entity instanceof EntityItem) {
 			EntityItem item = (EntityItem) entity;
-			EntityPlayer thrower = world.getPlayerEntityByName(item.getEntityData().getString(Ref.NBT.EFFECT));
+			EntityPlayer thrower = world.getPlayerEntityByName(item.getEntityData().getString(NBTNames.EFFECT));
 			ItemStack stack = item.getEntityItem();
 
-			EntityFX particle = new EntitySpellParticleFX(world, entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F, 0.0F);
+			net.minecraft.client.particle.EntitySpellParticleFX particle = new net.minecraft.client.particle.EntitySpellParticleFX(world, entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F, 0.0F);
 			PotionIngredient ing = PotionIngredient.getIngredient(stack);
 			if (!tile.addDye(stack, true) && ing != null) {
 				if (!world.isRemote) {

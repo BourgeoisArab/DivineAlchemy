@@ -1,4 +1,4 @@
-package bourgeoisarab.divinealchemy.common.entity;
+package bourgeoisarab.divinealchemy.client.renderer.entity;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelCreeper;
@@ -9,6 +9,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
+
+import bourgeoisarab.divinealchemy.client.renderer.model.ModelSpecialCreeper;
+import bourgeoisarab.divinealchemy.common.entity.EntitySpecialCreeper;
 
 public class RenderSpecialCreeper extends RenderLiving {
 

@@ -1,19 +1,19 @@
 package bourgeoisarab.divinealchemy.common.potion;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.attributes.BaseAttributeMap;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.potion.PotionEffect;
 import bourgeoisarab.divinealchemy.utility.Log;
 
-public class PotionReach extends PotionPerformEffect {
+public class PotionReach extends ModPotion {
 
 	public PotionReach(int id, boolean isBadEffect, int colour) {
 		super(id, isBadEffect, colour);
+		setPotionName("potion.reach");
 	}
 
 	@Override
-	public void performEffect(EntityLivingBase entity, PotionEffect effect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect effect) {
 		if (entity instanceof EntityPlayerMP) {
 			EntityPlayerMP player = (EntityPlayerMP) entity;
 			player.theItemInWorldManager.setBlockReachDistance(5.0D + (effect.getAmplifier() + 1) * 2);
@@ -22,8 +22,7 @@ public class PotionReach extends PotionPerformEffect {
 	}
 
 	@Override
-	public void removeAttributesModifiersFromEntity(EntityLivingBase entity, BaseAttributeMap map, int i) {
-		super.removeAttributesModifiersFromEntity(entity, map, i);
+	public void removeEffect(EntityLivingBase entity, int amplifier) {
 		if (entity instanceof EntityPlayerMP) {
 			EntityPlayerMP player = (EntityPlayerMP) entity;
 			player.theItemInWorldManager.setBlockReachDistance(5.0D);

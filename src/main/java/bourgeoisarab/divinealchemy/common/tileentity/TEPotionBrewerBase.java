@@ -1,5 +1,6 @@
 package bourgeoisarab.divinealchemy.common.tileentity;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
@@ -29,21 +30,43 @@ public abstract class TEPotionBrewerBase extends TileEntityBaseDA implements IFl
 	public float instability = 0.0F;
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
-		tank.readFromNBT(nbt);
-		ingredients = NBTEffectHelper.getIngredientsFromNBT(nbt);
-		effects = NBTEffectHelper.getEffectsFromNBT(nbt);
-		colouring = NBTEffectHelper.getColouringFromNBT(nbt);
-	}
-
-	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		tank.writeToNBT(nbt);
 		NBTEffectHelper.setIngredientsForNBT(nbt, ingredients);
 		NBTEffectHelper.setEffectsForNBT(nbt, effects);
 		NBTEffectHelper.setColouringForNBT(nbt, colouring);
+		NBTEffectHelper.setPropertiesForNBT(nbt, properties);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbt) {
+		super.readFromNBT(nbt);
+		tank.readFromNBT(nbt);
+		ingredients = NBTEffectHelper.getIngredientsFromNBT(nbt);
+		effects = NBTEffectHelper.getEffectsFromNBT(nbt);
+		colouring = NBTEffectHelper.getColouringFromNBT(nbt);
+		properties = NBTEffectHelper.getPropertiesFromNBT(nbt);
+	}
+
+	@Override
+	public void writeToPacket(ByteBuf buf) {
+		// ByteBufHelper.writeFluid(buf, tank.getFluid());
+		// ByteBufHelper.writeIngredients(buf, ingredients);
+		// ByteBufHelper.writeEffects(buf, effects);
+		// ByteBufHelper.writeColouring(buf, colouring);
+		// buf.writeBoolean(properties.isStable);
+		// buf.writeByte(properties.getMetaValue());
+	}
+
+	@Override
+	public void readFromPacket(ByteBuf buf) {
+		// tank.setFluid(ByteBufHelper.readFluid(buf));
+		// ingredients = ByteBufHelper.readIngredients(buf);
+		// effects = ByteBufHelper.readEffects(buf);
+		// colouring = ByteBufHelper.readColouring(buf);
+		// properties.isStable = buf.readBoolean();
+		// properties.setMetaValue(buf.readByte());
 	}
 
 	@Override

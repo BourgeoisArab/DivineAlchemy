@@ -4,26 +4,30 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.particle.EntitySpellParticleFX;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.village.MerchantRecipe;
+import net.minecraft.village.MerchantRecipeList;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
@@ -35,14 +39,14 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import bourgeoisarab.divinealchemy.DivineAlchemy;
 import bourgeoisarab.divinealchemy.common.potion.Effects;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
-import bourgeoisarab.divinealchemy.common.potion.PotionPerformEffect;
 import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
 import bourgeoisarab.divinealchemy.common.tileentity.IEffectProvider;
 import bourgeoisarab.divinealchemy.init.ModFluids;
 import bourgeoisarab.divinealchemy.init.ModItems;
-import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.reference.NBTNames;
 import bourgeoisarab.divinealchemy.utility.InventoryHelper;
 import bourgeoisarab.divinealchemy.utility.Log;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
@@ -68,11 +72,11 @@ public class DAEventHooks {
 			ModPotionHelper.addEffectsToEntity(effects, event.entityPlayer);
 
 			if (properties.isPersistent) {
-				if (!event.entityPlayer.getEntityData().hasKey(Ref.NBT.PERSISTENT_IDS)) {
-					event.entityPlayer.getEntityData().setIntArray(Ref.NBT.PERSISTENT_IDS, ModPotionHelper.potionsToIntArray(effects)[0]);
+				if (!event.entityPlayer.getEntityData().hasKey(NBTNames.PERSISTENT_IDS)) {
+					event.entityPlayer.getEntityData().setIntArray(NBTNames.PERSISTENT_IDS, ModPotionHelper.potionsToIntArray(effects)[0]);
 				} else {
-					event.entityPlayer.getEntityData().setIntArray(Ref.NBT.PERSISTENT_IDS,
-							ModPotionHelper.mergeIntArrays(event.entityPlayer.getEntityData().getIntArray(Ref.NBT.PERSISTENT_IDS), ModPotionHelper.potionsToIntArray(effects)[0]));
+					event.entityPlayer.getEntityData().setIntArray(NBTNames.PERSISTENT_IDS,
+							ModPotionHelper.mergeIntArrays(event.entityPlayer.getEntityData().getIntArray(NBTNames.PERSISTENT_IDS), ModPotionHelper.potionsToIntArray(effects)[0]));
 				}
 			}
 		}
@@ -170,7 +174,7 @@ public class DAEventHooks {
 
 	@SubscribeEvent
 	public void onPlayerDeath(PlayerEvent.Clone event) {
-		int[] originalIDs = event.original.getEntityData().getIntArray(Ref.NBT.PERSISTENT_IDS);
+		int[] originalIDs = event.original.getEntityData().getIntArray(NBTNames.PERSISTENT_IDS);
 		List<PotionEffect> effects = new ArrayList<PotionEffect>();
 
 		for (int id : originalIDs) {
@@ -185,7 +189,7 @@ public class DAEventHooks {
 			newIDs[i] = effects.get(i).getPotionID();
 		}
 
-		event.entityPlayer.getEntityData().setIntArray(Ref.NBT.PERSISTENT_IDS, newIDs);
+		event.entityPlayer.getEntityData().setIntArray(NBTNames.PERSISTENT_IDS, newIDs);
 		NBTEffectHelper.setEffectsForNBT(event.entityPlayer.getEntityData(), new Effects(effects, new ArrayList<Boolean>()));
 	}
 
@@ -207,88 +211,77 @@ public class DAEventHooks {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onEntityUpdate(LivingUpdateEvent event) {
 		EntityLivingBase entity = event.entityLiving;
+		// PotionEffects
 		int[] persistentIDs = new int[]{};
-		if (entity.getEntityData().hasKey(Ref.NBT.PERSISTENT_IDS)) {
-			persistentIDs = entity.getEntityData().getIntArray(Ref.NBT.PERSISTENT_IDS);
+		if (entity.getEntityData().hasKey(NBTNames.PERSISTENT_IDS)) {
+			persistentIDs = entity.getEntityData().getIntArray(NBTNames.PERSISTENT_IDS);
 		}
-
 		Iterator<PotionEffect> it = entity.getActivePotionEffects().iterator();
 		while (it.hasNext()) {
 			PotionEffect effect = it.next();
-			if (ModPotion.getPotion(effect.getPotionID()) instanceof PotionPerformEffect) {
-				((PotionPerformEffect) ModPotion.getPotion(effect.getPotionID())).performEffect(entity, effect);
+			Potion p = ModPotion.getPotion(effect.getPotionID());
+			if (p instanceof ModPotion) {
+				((ModPotion) p).applyEffect(entity, effect);
 			}
 			if (ArrayUtils.contains(persistentIDs, effect.getPotionID())) {
 				effect.setCurativeItems(new ArrayList<ItemStack>());
 			}
 		}
-		if (entity.getActivePotionEffect(ModPotion.potionFlight) != null) {
-			if (entity instanceof EntityPlayer) {
-				EntityPlayer player = (EntityPlayer) entity;
-				player.capabilities.allowFlying = true;
-			} else if (entity instanceof EntityLiving) {
-				EntityLiving living = (EntityLiving) entity;
-				// add flight task to entity
-			}
-		}
-		if (entity.getActivePotionEffect(ModPotion.potionEffectResist) != null && entity.getActivePotionEffects().size() > 1) {
-			PotionEffect effect = entity.getActivePotionEffect(ModPotion.potionEffectResist);
-			entity.clearActivePotions();
-			entity.addPotionEffect(effect);
-		}
-		if (entity.getActivePotionEffect(ModPotion.potionNegativeEffectResist) != null && entity.getActivePotionEffects().size() > 1) {
-			Iterator<PotionEffect> i = entity.getActivePotionEffects().iterator();
-			ItemStack cure = new ItemStack(Blocks.dragon_egg);
-			while (i.hasNext()) {
-				PotionEffect effect = i.next();
-				if (ModPotion.getPotion(effect.getPotionID()).isBadEffect()) {
-					effect.addCurativeItem(cure);
-				}
-			}
-			entity.curePotionEffects(cure);
-		}
 
-		if (entity.getActivePotionEffect(ModPotion.potionDay) != null && entity.worldObj.getWorldTime() > 12000) {
-			entity.worldObj.setWorldTime(1000);
+		// Villager trades
+		if (entity instanceof EntityVillager) {
+			EntityVillager villager = (EntityVillager) entity;
+			if (!villager.isTrading() && villager.getEntityData().hasKey(NBTNames.OLD_TRADES)) {
+				NBTTagCompound tag = new NBTTagCompound();
+				villager.writeEntityToNBT(tag);
+				tag.setTag("Offers", villager.getEntityData().getCompoundTag(NBTNames.OLD_TRADES));
+				villager.readEntityFromNBT(tag);
+				villager.getEntityData().removeTag(NBTNames.OLD_TRADES);
+			}
 		}
-		// if (entity instanceof EntityPlayer) {
-		// if (entity.getActivePotionEffect(ModPotion.potionParticle) != null) {
-		//
-		// }
-		// }
+	}
+
+	@SubscribeEvent
+	public void onJump(LivingJumpEvent event) {
+		EntityLivingBase entity = event.entityLiving;
+		if (entity.getActivePotionEffect(ModPotion.potionTemporal) != null) {
+			entity.motionY *= 2;
+		}
 	}
 
 	@SubscribeEvent
 	public void onItemThrow(ItemTossEvent event) {
-		event.entityItem.getEntityData().setString(event.player.getCommandSenderName(), Ref.NBT.THROWER);
+		event.entityItem.getEntityData().setString(event.player.getCommandSenderName(), NBTNames.THROWER);
 	}
 
 	@SubscribeEvent
 	public void onParticleSpawn(EntityEvent.EntityConstructing event) {
 		if (event.entity instanceof EntitySpellParticleFX) {
-			EntitySpellParticleFX particle = (EntitySpellParticleFX) event.entity;
-			int partialTicks = 100;
-			// float x = (float)stityFX.interpPosZ - particle.prevPosZ);
-			double offset = 0.5;
-			// AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(x - offset, y - offset, z - offset, x + offset, y + offset, z + offset);
-			// List<EntityLivingBase> entities = particle.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
-			// for (EntityLivingBase player : entities) {
-			// if (player != null && player.getActivePotionEffect(ModPotion.potionParticle) != null) {
-			// particle.setDead();
-			// }
-			// }
-			float x = (float) -(particle.prevPosX + (particle.posX - particle.prevPosX) * partialTicks - EntityFX.interpPosX);
-			float y = (float) -(particle.prevPosY + (particle.posY - particle.prevPosY) * partialTicks - EntityFX.interpPosY);
-			float z = (float) -(particle.prevPosZ + (particle.posZ - particle.prevPosZ) * partialTicks - EntityFX.interpPosZ);
-			// if (particle.worldObj.isRemote) {
-			// EntityPlayer player = DivineAlchemy.proxy.getClientPlayer();
-			// Log.info("Particle: " + x + ", " + y + ", " + z);
-			// Log.info("Player: " + player.posX + ", " + player.posY + ", " + player.posZ);
-			// }
-			// TODO: Kill only the ones in the player's face; not all of them
+			if (event.entity.worldObj.isRemote && DivineAlchemy.proxy.getClientPlayer().getActivePotionEffect(ModPotion.potionParticle) != null) {
+				event.entity.setDead();
+				// int partialTicks = 100;
+				// // float x = (float)stityFX.interpPosZ - particle.prevPosZ);
+				// double offset = 0.5;
+				// // AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(x - offset, y - offset, z - offset, x + offset, y + offset, z + offset);
+				// // List<EntityLivingBase> entities = particle.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
+				// // for (EntityLivingBase player : entities) {
+				// // if (player != null && player.getActivePotionEffect(ModPotion.potionParticle) != null) {
+				// // particle.setDead();
+				// // }
+				// // }
+				// float x = (float) -(particle.prevPosX + (particle.posX - particle.prevPosX) * partialTicks - EntityFX.interpPosX);
+				// float y = (float) -(particle.prevPosY + (particle.posY - particle.prevPosY) * partialTicks - EntityFX.interpPosY);
+				// float z = (float) -(particle.prevPosZ + (particle.posZ - particle.prevPosZ) * partialTicks - EntityFX.interpPosZ);
+				// if (particle.worldObj.isRemote) {
+				// EntityPlayer player = DivineAlchemy.proxy.getClientPlayer();
+				// Log.info("Particle: " + x + ", " + y + ", " + z);
+				// Log.info("Player: " + player.posX + ", " + player.posY + ", " + player.posZ);
+				// }
+				// TODO: Kill only the ones in the player's face; not all of them
+			}
 		}
 	}
 
@@ -332,6 +325,31 @@ public class DAEventHooks {
 		}
 		for (EntityPlayer player : players) {
 			NBTPlayerHelper.addAbsorbedExplosion(player, size / 4 / players.size());
+		}
+	}
+
+	@SubscribeEvent
+	public void onVillagerTrade(EntityInteractEvent event) {
+		if (event.target instanceof EntityVillager/* && NBTPlayerHelper.getAbsDivinity(event.entityPlayer) > 0.4F */) {
+			EntityVillager villager = (EntityVillager) event.target;
+			MerchantRecipeList oldRecipes = villager.getRecipes(event.entityPlayer);
+			villager.getEntityData().setTag(NBTNames.OLD_TRADES, oldRecipes.getRecipiesAsTags());
+			float multiplier = 1.0F;
+			for (int i = 0; i < oldRecipes.size(); i++) {
+				MerchantRecipe recipe = (MerchantRecipe) oldRecipes.get(i);
+				ItemStack buy = recipe.getItemToBuy();
+				buy.stackSize = (int) (buy.stackSize * multiplier);
+				if (buy.stackSize < 1) {
+					buy.stackSize = 1;
+				}
+				ItemStack buySecond = recipe.getSecondItemToBuy();
+				if (buySecond != null) {
+					buySecond.stackSize = (int) (buySecond.stackSize * multiplier);
+					if (buySecond.stackSize < 1) {
+						buySecond.stackSize = 1;
+					}
+				}
+			}
 		}
 	}
 }
