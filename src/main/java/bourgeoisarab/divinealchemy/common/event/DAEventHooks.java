@@ -330,24 +330,27 @@ public class DAEventHooks {
 
 	@SubscribeEvent
 	public void onVillagerTrade(EntityInteractEvent event) {
-		if (event.target instanceof EntityVillager/* && NBTPlayerHelper.getAbsDivinity(event.entityPlayer) > 0.4F */) {
+		float divinity = NBTPlayerHelper.getAbsDivinity(event.entityPlayer);
+		if (event.target instanceof EntityVillager && divinity > 0.4F) {
 			EntityVillager villager = (EntityVillager) event.target;
 			MerchantRecipeList oldRecipes = villager.getRecipes(event.entityPlayer);
 			villager.getEntityData().setTag(NBTNames.OLD_TRADES, oldRecipes.getRecipiesAsTags());
-			float multiplier = 1.0F;
+			float discount = 1.0F - (divinity - 0.3F) * 1.4285F;
 			for (int i = 0; i < oldRecipes.size(); i++) {
 				MerchantRecipe recipe = (MerchantRecipe) oldRecipes.get(i);
 				ItemStack buy = recipe.getItemToBuy();
-				buy.stackSize = (int) (buy.stackSize * multiplier);
-				if (buy.stackSize < 1) {
+				buy.stackSize = (int) (buy.stackSize * discount);
+				if (buy.stackSize < 1 && divinity < 1.0F) {
 					buy.stackSize = 1;
 				}
+
 				ItemStack buySecond = recipe.getSecondItemToBuy();
 				if (buySecond != null) {
-					buySecond.stackSize = (int) (buySecond.stackSize * multiplier);
-					if (buySecond.stackSize < 1) {
+					buySecond.stackSize = (int) (buySecond.stackSize * discount);
+					if (buySecond.stackSize < 1 && divinity < 1.0F) {
 						buySecond.stackSize = 1;
 					}
+
 				}
 			}
 		}
