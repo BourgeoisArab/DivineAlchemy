@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -13,12 +12,14 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.ItemFluidContainer;
 import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
 import bourgeoisarab.divinealchemy.common.potion.Colouring;
 import bourgeoisarab.divinealchemy.common.potion.Effects;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
+import bourgeoisarab.divinealchemy.reference.NBTNames;
 import bourgeoisarab.divinealchemy.reference.Ref;
 import bourgeoisarab.divinealchemy.utility.ColourHelper;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
@@ -34,8 +35,8 @@ public class ItemBottlePotion extends ItemFluidContainer {
 	public IIcon overlay;
 
 	public ItemBottlePotion() {
-		super(0, 333);
-		setUnlocalizedName("itemPotionBottle");
+		super(0, FluidContainerRegistry.BUCKET_VOLUME);
+		setUnlocalizedName("potionBottle");
 		setMaxStackSize(1);
 		setMaxDamage(0);
 		setHasSubtypes(true);
@@ -79,14 +80,17 @@ public class ItemBottlePotion extends ItemFluidContainer {
 
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
-		if (PotionProperties.getSplash(stack.getItemDamage())) {
-			list.add("Splash");
+		int uses = stack.stackTagCompound != null ? stack.stackTagCompound.getInteger(NBTNames.REMAINING_USES) : 0;
+		list.add(uses == 0 ? I18n.format("item.potion.empty") : I18n.format("item.potion.uses"));
+		PotionProperties properties = NBTEffectHelper.getPropertiesFromNBT(getFluid(stack).tag);
+		if (properties.isSplash) {
+			list.add(I18n.format("item.potion.splash"));
 		}
-		if (PotionProperties.getBlessed(stack.getItemDamage())) {
-			list.add("Blessed");
+		if (properties.isBlessed) {
+			list.add(I18n.format("item.potion.blessed"));
 		}
-		if (PotionProperties.getBlessed(stack.getItemDamage())) {
-			list.add("Cursed");
+		if (properties.isCursed) {
+			list.add(I18n.format("item.potion.cursed"));
 		}
 		Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
 		if (effects != null) {
@@ -103,6 +107,7 @@ public class ItemBottlePotion extends ItemFluidContainer {
 
 	@Override
 	public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player) {
+		int usesLeft = stack.getItemDamage();
 		Effects e = NBTEffectHelper.getEffectsFromStack(stack);
 		if (e == null) {
 			return stack;
@@ -118,7 +123,10 @@ public class ItemBottlePotion extends ItemFluidContainer {
 				player.getEntityData().setIntArray("AI.PersistentIDs", ModPotionHelper.mergeIntArrays(player.getEntityData().getIntArray("AI.PersistentIDs"), ModPotionHelper.potionsToIntArray(effects)[0]));
 			}
 		}
-		return player.capabilities.isCreativeMode ? stack : new ItemStack(Items.glass_bottle);
+		if (!player.capabilities.isCreativeMode) {
+			stack.setItemDamage(usesLeft - 1);
+		}
+		return stack;
 	}
 
 	@Override
@@ -134,7 +142,7 @@ public class ItemBottlePotion extends ItemFluidContainer {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-		if (!PotionProperties.getSplash(stack.getItemDamage())) {
+		if (stack.getItemDamage() > 0 && !NBTEffectHelper.getPropertiesFromNBT(getFluid(stack).tag).isSplash) {
 			player.setItemInUse(stack, getMaxItemUseDuration(stack));
 		} else {
 			if (!player.capabilities.isCreativeMode) {

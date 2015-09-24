@@ -14,12 +14,13 @@ import bourgeoisarab.divinealchemy.common.potion.IEvilPotion;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.tileentity.IPotionBrewer;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
+import bourgeoisarab.divinealchemy.init.ModItems;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
 
 public class PotionIngredient {
 
 	public static final List<PotionIngredient> ingredients = new ArrayList<PotionIngredient>();
-	public static final List<IngredientEssenceCrystal> crystals = new ArrayList<IngredientEssenceCrystal>();
+	public static final IngredientEssenceCrystal[] crystals = new IngredientEssenceCrystal[128];
 
 	public static final PotionIngredient magmaCream = new PotionIngredient(new ItemStack(Items.magma_cream), 0, Potion.fireResistance);
 	public static final PotionIngredient sugar = new PotionIngredient(new ItemStack(Items.sugar), 0, Potion.moveSpeed);
@@ -77,7 +78,7 @@ public class PotionIngredient {
 		id = ingredients.size();
 		registerIngredient(this);
 		if (this instanceof IngredientEssenceCrystal) {
-			crystals.add((IngredientEssenceCrystal) this);
+			crystals[potion.id] = (IngredientEssenceCrystal) this;
 		}
 	}
 
@@ -144,7 +145,10 @@ public class PotionIngredient {
 			}
 		}
 		for (int i = 0; i < number; i++) {
-			PotionIngredient ing = crystals.get(rand.nextInt(crystals.size() - 1));
+			PotionIngredient ing = crystals[rand.nextInt(crystals.length - 1)];
+			if (ing == null) {
+				continue;
+			}
 			Potion p = ing.getPotion();
 			if (p == null || p.isBadEffect() != badEffect || p instanceof IDivinePotion || p instanceof IEvilPotion || ModPotionHelper.tier1blacklist.contains(p.getId())) {
 				continue;
@@ -197,17 +201,18 @@ public class PotionIngredient {
 	}
 
 	public static PotionIngredient getIngredient(ItemStack stack) {
+		if (stack.getItem() == ModItems.essenceCrystal) {
+			return crystals[stack.getItemDamage()];
+		}
 		for (int i = 0; i < ingredients.size(); i++) {
 			PotionIngredient ingredient = ingredients.get(i);
 			if (ingredient.getItem().getItem() == stack.getItem() && ingredient.getItem().stackSize <= stack.stackSize) {
-				if (ingredient.getNBT() == null || ingredient.getNBT().equals(stack.stackTagCompound)) {
-					if (ingredient.metaSensitive) {
-						if (ingredient.getItem().getItemDamage() == stack.getItemDamage()) {
-							return ingredient;
-						}
-					} else {
+				if (ingredient.metaSensitive) {
+					if (ingredient.getItem().getItemDamage() == stack.getItemDamage()) {
 						return ingredient;
 					}
+				} else {
+					return ingredient;
 				}
 			}
 		}

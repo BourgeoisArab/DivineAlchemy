@@ -29,7 +29,7 @@ public class BlockPotionVat extends BlockContainer {
 
 	public BlockPotionVat() {
 		super(Material.iron);
-		setBlockName("blockPotionVat");
+		setBlockName("potionVat");
 		setHardness(1.0F);
 		setResistance(2.0F);
 		if (ConfigHandler.creativeTab) {

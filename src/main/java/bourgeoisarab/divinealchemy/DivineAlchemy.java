@@ -11,6 +11,7 @@ import bourgeoisarab.divinealchemy.command.CommandDivinity;
 import bourgeoisarab.divinealchemy.common.event.BucketHandler;
 import bourgeoisarab.divinealchemy.common.event.DAEventHooks;
 import bourgeoisarab.divinealchemy.common.event.DARenderEventHooks;
+import bourgeoisarab.divinealchemy.common.event.RuntimeEventHooks;
 import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
@@ -47,7 +48,7 @@ public class DivineAlchemy {
 
 		@Override
 		public Item getTabIconItem() {
-			return Item.getItemFromBlock(ModBlocks.blockBrewingCauldron);
+			return Item.getItemFromBlock(ModBlocks.brewingCauldron);
 		}
 
 		@Override
@@ -94,6 +95,7 @@ public class DivineAlchemy {
 		DAEventHooks eventHooks = new DAEventHooks();
 		MinecraftForge.EVENT_BUS.register(eventHooks);
 		FMLCommonHandler.instance().bus().register(eventHooks);
+		MinecraftForge.EVENT_BUS.register(new RuntimeEventHooks());
 		MinecraftForge.EVENT_BUS.register(new DARenderEventHooks());
 		try {
 			FMLCommonHandler.instance().bus().register(new TrollEvents());

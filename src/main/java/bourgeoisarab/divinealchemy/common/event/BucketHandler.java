@@ -41,22 +41,22 @@ public class BucketHandler {
 		// }
 		// }
 		// }
-		if (block == ModBlocks.blockPotion && world.getBlockMetadata(x, y, z) == 0) {
+		if (block == ModBlocks.potion && world.getBlockMetadata(x, y, z) == 0) {
 			TEPotion tile = (TEPotion) world.getTileEntity(x, y, z);
 			Effects effects = tile.getEffects();
 			Colouring colouring = tile.getColouring();
 			world.setBlockToAir(x, y, z);
-			return NBTEffectHelper.setColouringForStack(NBTEffectHelper.setEffectsForStack(new ItemStack(ModItems.itemBucketPotion, 1, tile.getProperties().getMetaValue()), effects), colouring);
-		} else if (block == ModBlocks.blockHotMess && world.getBlockMetadata(x, y, z) == 0) {
+			return NBTEffectHelper.setColouringForStack(NBTEffectHelper.setEffectsForStack(new ItemStack(ModItems.bucketPotion, 1, tile.getProperties().getMetaValue()), effects), colouring);
+		} else if (block == ModBlocks.hotMess && world.getBlockMetadata(x, y, z) == 0) {
 			world.setBlockToAir(x, y, z);
-			return new ItemStack(ModItems.itemBucketHotMess);
+			return new ItemStack(ModItems.bucketHotMess);
 		}
 		return null;
 	}
 
 	private FluidTankInfo getTankWithPotion(FluidTankInfo[] info) {
 		for (FluidTankInfo i : info) {
-			if (i != null && i.fluid != null && i.fluid.getFluid() == ModFluids.fluidPotion) {
+			if (i != null && i.fluid != null && i.fluid.getFluid() == ModFluids.potion) {
 				return i;
 			}
 		}

@@ -20,7 +20,7 @@ public class PotionClone extends ModPotion {
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entity, PotionEffect effect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect effect, int amplifier) {
 		if (entity instanceof EntityPlayerMP && !entity.worldObj.isRemote && entity.worldObj.getWorldTime() % 10 == 0) {
 			World world = entity.worldObj;
 			EntityPlayerMP player = (EntityPlayerMP) entity;

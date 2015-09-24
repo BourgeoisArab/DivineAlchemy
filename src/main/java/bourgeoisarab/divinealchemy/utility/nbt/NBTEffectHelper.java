@@ -4,6 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidContainerItem;
 import bourgeoisarab.divinealchemy.common.fluid.FluidPotion;
 import bourgeoisarab.divinealchemy.common.item.ItemBottlePotion;
 import bourgeoisarab.divinealchemy.common.item.ItemBucketPotion;
@@ -133,21 +134,21 @@ public class NBTEffectHelper {
 		return tag.getFloat(NBTNames.INSTABILITY);
 	}
 
-	public static ItemStack setInstabilityForStack(ItemStack stack, float instability) {
-		if (stack == null) {
-			return null;
-		}
-		initTagCompound(stack);
-		setInstabilityForNBT(stack.stackTagCompound, instability);
-		return stack;
-	}
-
-	public static float getInstabilityFromStack(ItemStack stack) {
-		if (stack == null) {
-			return 0;
-		}
-		return getInstabilityFromNBT(stack.stackTagCompound);
-	}
+	// public static ItemStack setInstabilityForStack(ItemStack stack, float instability) {
+	// if (stack == null) {
+	// return null;
+	// }
+	// initTagCompound(stack);
+	// setInstabilityForNBT(stack.stackTagCompound, instability);
+	// return stack;
+	// }
+	//
+	// public static float getInstabilityFromStack(ItemStack stack) {
+	// if (stack == null) {
+	// return 0;
+	// }
+	// return getInstabilityFromNBT(stack.stackTagCompound);
+	// }
 
 	public static ItemStack setEffectsForStack(ItemStack stack, Effects effects) {
 		if (stack == null || effects == null) {
@@ -157,8 +158,15 @@ public class NBTEffectHelper {
 		if (!(stack.getItem() instanceof ItemBucketPotion || stack.getItem() instanceof ItemBottlePotion)) {
 			Log.warn("Tried to set potion NBT data for invalid itemstack.");
 		}
-		initTagCompound(stack);
-		setEffectsForNBT(stack.stackTagCompound, effects);
+		if (stack.getItem() instanceof IFluidContainerItem) {
+			FluidStack fluid = setEffectsForFluid(((IFluidContainerItem) stack.getItem()).getFluid(stack), effects);
+			if (fluid != null) {
+				fluid.writeToNBT(stack.stackTagCompound);
+			}
+		} else {
+			initTagCompound(stack);
+			setEffectsForNBT(stack.stackTagCompound, effects);
+		}
 		return stack;
 	}
 
@@ -166,7 +174,9 @@ public class NBTEffectHelper {
 		if (stack == null) {
 			return null;
 		}
-
+		if (stack.getItem() instanceof IFluidContainerItem) {
+			return getEffectsFromFluid(((IFluidContainerItem) stack.getItem()).getFluid(stack));
+		}
 		return getEffectsFromNBT(stack.stackTagCompound);
 	}
 
@@ -212,13 +222,24 @@ public class NBTEffectHelper {
 		if (stack == null || colouring == null) {
 			return null;
 		}
-		setColouringForNBT(stack.stackTagCompound, colouring);
+		if (stack.getItem() instanceof IFluidContainerItem) {
+			FluidStack fluid = setColouringForFluid(((IFluidContainerItem) stack.getItem()).getFluid(stack), colouring);
+			if (fluid != null) {
+				fluid.writeToNBT(stack.stackTagCompound);
+			}
+		} else {
+			initTagCompound(stack);
+			setColouringForNBT(stack.stackTagCompound, colouring);
+		}
 		return stack;
 	}
 
 	public static Colouring getColouringFromStack(ItemStack stack) {
 		if (stack == null) {
 			return null;
+		}
+		if (stack.getItem() instanceof IFluidContainerItem) {
+			return getColouringFromFluid(((IFluidContainerItem) stack.getItem()).getFluid(stack));
 		}
 		return getColouringFromNBT(stack.stackTagCompound);
 	}
@@ -236,5 +257,12 @@ public class NBTEffectHelper {
 			return null;
 		}
 		return getColouringFromNBT(stack.tag);
+	}
+
+	public static boolean getHiddenFoodEffects(ItemStack stack) {
+		if (stack == null || stack.stackTagCompound == null) {
+			return false;
+		}
+		return stack.stackTagCompound.getBoolean(NBTNames.HIDDEN_EFFECTS);
 	}
 }

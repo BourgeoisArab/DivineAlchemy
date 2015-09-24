@@ -24,7 +24,7 @@ public class ItemEssenceCrystal extends Item {
 		}
 		setMaxDamage(0);
 		setHasSubtypes(true);
-		setUnlocalizedName("itemEssenceCrystal");
+		setUnlocalizedName("essenceCrystal");
 		setTextureName(Ref.Location.PREFIX + "essenceCrystal");
 	}
 
@@ -41,7 +41,7 @@ public class ItemEssenceCrystal extends Item {
 	}
 
 	public static void registerCrystal(int meta) {
-		PotionIngredient.registerIngredient(new IngredientEssenceCrystal(new ItemStack(ModItems.itemEssenceCrystal, 1, meta), 0, meta).setMetaSensitive(true));
+		PotionIngredient.registerIngredient(new IngredientEssenceCrystal(new ItemStack(ModItems.essenceCrystal, 1, meta), 0, meta).setMetaSensitive(true));
 	}
 
 	@Override

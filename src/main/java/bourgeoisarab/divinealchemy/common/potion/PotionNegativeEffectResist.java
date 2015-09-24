@@ -14,7 +14,7 @@ public class PotionNegativeEffectResist extends ModPotion {
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entity, PotionEffect potionEffect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect potionEffect, int amplifier) {
 		if (entity.getActivePotionEffects().size() > 1) {
 			Iterator<PotionEffect> i = entity.getActivePotionEffects().iterator();
 			ItemStack cure = new ItemStack(Blocks.dragon_egg);

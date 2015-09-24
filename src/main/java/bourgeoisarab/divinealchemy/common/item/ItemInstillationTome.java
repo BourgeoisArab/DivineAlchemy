@@ -1,9 +1,5 @@
 package bourgeoisarab.divinealchemy.common.item;
 
-import bourgeoisarab.divinealchemy.DivineAlchemy;
-import bourgeoisarab.divinealchemy.init.ConfigHandler;
-import bourgeoisarab.divinealchemy.reference.Ref;
-
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -11,6 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import bourgeoisarab.divinealchemy.DivineAlchemy;
+import bourgeoisarab.divinealchemy.init.ConfigHandler;
+import bourgeoisarab.divinealchemy.reference.Ref;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -21,7 +20,7 @@ public class ItemInstillationTome extends Item {
 		if (ConfigHandler.creativeTab) {
 			setCreativeTab(DivineAlchemy.tabDivineAlchemy);
 		}
-		setUnlocalizedName("itemInstillationTome");
+		setUnlocalizedName("instillationTome");
 		setMaxStackSize(1);
 	}
 

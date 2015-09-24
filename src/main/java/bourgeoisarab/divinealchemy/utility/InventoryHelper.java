@@ -45,7 +45,7 @@ public class InventoryHelper {
 				}
 				if (!filled && tile.drain(dir, capacity, false) != null && tile.drain(dir, capacity, false).amount >= capacity) {
 					if (stack.getItem() == Items.glass_bottle) {
-						Item item = tile.canDrain(dir, ModFluids.fluidPotion) ? ModItems.itemPotionBottle : Items.potionitem;
+						Item item = tile.canDrain(dir, ModFluids.potion) ? ModItems.bottlePotion : Items.potionitem;
 						tile.drain(dir, 333, true);
 						return new ItemStack(item);
 					}

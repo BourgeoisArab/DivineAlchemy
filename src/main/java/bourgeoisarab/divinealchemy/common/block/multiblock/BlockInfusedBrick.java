@@ -12,7 +12,7 @@ public class BlockInfusedBrick extends BlockMultiBlock {
 		if (ConfigHandler.creativeTab) {
 			setCreativeTab(DivineAlchemy.tabDivineAlchemy);
 		}
-		setBlockName("blockInfusedBrick");
+		setBlockName("infusedBrick");
 		setBlockTextureName(Ref.MODID + ":brick_infused");
 		setHardness(10.0F);
 		setResistance(1750.0F);

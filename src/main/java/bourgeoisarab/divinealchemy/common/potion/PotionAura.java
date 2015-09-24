@@ -23,8 +23,7 @@ public class PotionAura extends ModPotion implements IDivinePotion {
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entity, PotionEffect potionEffect) {
-		int amplifier = potionEffect.getAmplifier();
+	public void applyEffect(EntityLivingBase entity, PotionEffect potionEffect, int amplifier) {
 		int radius = getRadius(amplifier);
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius);
 		List entities = entity.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, box);

@@ -47,8 +47,8 @@ public class BlockBrewingCauldron extends BlockContainer {
 		if (ConfigHandler.creativeTab) {
 			setCreativeTab(DivineAlchemy.tabDivineAlchemy);
 		}
-		setBlockName("blockBrewingCauldron");
-		setBlockTextureName("minecraft:" + "cauldron_side");
+		setBlockName("brewingCauldron");
+		setBlockTextureName("minecraft:cauldron_side");
 		setHardness(1.0F);
 		setResistance(2.0F);
 		boilblocks.add(Blocks.lava);
@@ -166,7 +166,7 @@ public class BlockBrewingCauldron extends BlockContainer {
 		}
 
 		if (returnStack != null && returnStack != heldStack) {
-			if (returnStack.getItem() == ModItems.itemBucketPotion || returnStack.getItem() == ModItems.itemPotionBottle) {
+			if (returnStack.getItem() == ModItems.bucketPotion || returnStack.getItem() == ModItems.bottlePotion) {
 				NBTTagCompound stackTag = returnStack.stackTagCompound;
 				returnStack = new ItemStack(returnStack.getItem(), returnStack.stackSize, tile.getProperties().getMetaValue());
 				returnStack.stackTagCompound = stackTag;
@@ -219,6 +219,7 @@ public class BlockBrewingCauldron extends BlockContainer {
 
 			net.minecraft.client.particle.EntitySpellParticleFX particle = new net.minecraft.client.particle.EntitySpellParticleFX(world, entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F, 0.0F);
 			PotionIngredient ing = PotionIngredient.getIngredient(stack);
+			Log.info(ing);
 			if (!tile.addDye(stack, true) && ing != null) {
 				if (!world.isRemote) {
 					while (stack.stackSize > 0) {
@@ -229,7 +230,7 @@ public class BlockBrewingCauldron extends BlockContainer {
 							}
 						} else if (tile.addIngredient(ing, false)) {
 							if (tile.tank.getFluid().getFluid() == FluidRegistry.WATER) {
-								tile.tank.setFluid(new FluidStack(ModFluids.fluidPotion, tile.tank.getFluidAmount()));
+								tile.tank.setFluid(new FluidStack(ModFluids.potion, tile.tank.getFluidAmount()));
 							}
 							if (!PotionIngredient.addSideEffect(tile, !ing.getPotion().isBadEffect(), world.rand)) {
 								tile.makeHotMess();
@@ -265,8 +266,8 @@ public class BlockBrewingCauldron extends BlockContainer {
 
 		} else if (entity instanceof EntityLivingBase) {
 			((EntityLivingBase) entity).attackEntityFrom(DamageSource.magic, 2.0F);
-			if (tile.tank.getFluid().getFluid() == ModFluids.fluidHotMess) {
-				ModBlocks.blockHotMess.onEntityCollidedWithBlock(world, x, y, z, entity);
+			if (tile.tank.getFluid().getFluid() == ModFluids.hotMess) {
+				ModBlocks.hotMess.onEntityCollidedWithBlock(world, x, y, z, entity);
 			}
 		}
 	}

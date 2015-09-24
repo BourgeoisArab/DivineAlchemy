@@ -10,7 +10,7 @@ public class PotionEffectResist extends ModPotion {
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entity, PotionEffect effect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect effect, int amplifier) {
 		if (entity.getActivePotionEffects().size() > 1) {
 			entity.clearActivePotions();
 			entity.addPotionEffect(effect);

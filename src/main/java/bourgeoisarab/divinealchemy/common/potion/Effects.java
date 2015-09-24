@@ -134,19 +134,27 @@ public class Effects {
 
 	@Override
 	public String toString() {
-		String s = getClass().getName() + ": [";
+		String s = getClass().getName() + ":[";
 		if (effects.size() <= 0) {
 			return s + "]";
 		}
 		for (int i = 0; i < effects.size() - 1; i++) {
 			if (effects.get(i) != null) {
-				s = s + effects.get(i) + " (" + sideValues.get(i) + ")";
+				s = s + effects.get(i) + "(" + sideValues.get(i) + ")";
 			}
 			if (effects.get(i + 1) != null) {
-				s = s + ", ";
+				s = s + ",";
 			}
 		}
 		return s + effects.get(effects.size() - 1) + " (" + sideValues.get(effects.size() - 1) + ")" + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		int code = 1;
+		code = 31 * code + effects.hashCode();
+		code = 31 * code + sideValues.hashCode();
+		return code;
 	}
 
 	@Override
@@ -157,16 +165,12 @@ public class Effects {
 				return false;
 			}
 			for (int i = 0; i < size(); i++) {
-				if (!effectsEqual(getEffect(i), e.getEffect(i)) || getSideEffect(i) != e.getSideEffect(i)) {
+				if (!getEffect(i).equals(e.getEffect(i)) || getSideEffect(i) != e.getSideEffect(i)) {
 					return false;
 				}
 			}
 			return true;
 		}
 		return false;
-	}
-
-	public static boolean effectsEqual(PotionEffect e1, PotionEffect e2) {
-		return e1.getPotionID() == e2.getPotionID() && e1.getDuration() == e2.getDuration() && e1.getAmplifier() == e2.getAmplifier() && e1.getIsAmbient() == e2.getIsAmbient();
 	}
 }

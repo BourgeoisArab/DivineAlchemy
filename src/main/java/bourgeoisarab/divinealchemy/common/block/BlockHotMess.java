@@ -25,9 +25,9 @@ public class BlockHotMess extends BlockFluidClassic {
 	protected IIcon flowingIcon;
 
 	public BlockHotMess() {
-		super(ModFluids.fluidHotMess, Material.water);
-		setBlockName("blockHotMess");
-		ModFluids.fluidHotMess.setBlock(this);
+		super(ModFluids.hotMess, Material.water);
+		setBlockName("hotMess");
+		ModFluids.hotMess.setBlock(this);
 		setQuantaPerBlock(4);
 	}
 
@@ -40,7 +40,7 @@ public class BlockHotMess extends BlockFluidClassic {
 	public void registerBlockIcons(IIconRegister register) {
 		stillIcon = register.registerIcon(Ref.MODID + ":hotmess_still");
 		flowingIcon = register.registerIcon(Ref.MODID + ":hotmess_flow");
-		ModFluids.fluidHotMess.setIcons(stillIcon, flowingIcon);
+		ModFluids.hotMess.setIcons(stillIcon, flowingIcon);
 	}
 
 	@Override

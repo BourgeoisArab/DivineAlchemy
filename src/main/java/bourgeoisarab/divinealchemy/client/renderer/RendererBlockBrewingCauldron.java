@@ -49,7 +49,7 @@ public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
 			} else {
 				// icon = BlockLiquid.getLiquidIcon("water_still");
 				icon = tile.tank.getFluid().getFluid().getBlock().getIcon(0, 0);
-				if (tile.tank.getFluid().getFluid() == ModFluids.fluidPotion) {
+				if (tile.tank.getFluid().getFluid() == ModFluids.potion) {
 					doColour = true;
 				}
 			}

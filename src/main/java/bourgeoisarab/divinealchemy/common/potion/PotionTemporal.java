@@ -18,12 +18,12 @@ public class PotionTemporal extends ModPotion {
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entity, PotionEffect effect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect effect, int amplifier) {
 		// Log.info("x: " + entity.motionX);
 		// Log.info("y: " + entity.motionY);
 		// Log.info("z: " + entity.motionZ);
 		NBTTagCompound tag = entity.getEntityData();
-		double multiplier = Math.pow(4, -effect.getAmplifier() - 1);
+		double multiplier = Math.pow(4, -amplifier - 1);
 		if (tag.getBoolean(SLOWED)) {
 			double lastMotionX = tag.getDouble(LAST_X);
 			double lastMotionY = tag.getDouble(LAST_Y);

@@ -46,6 +46,11 @@ public class PotionProperties {
 	}
 
 	@Override
+	public int hashCode() {
+		return getMetaValue();
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof PotionProperties) {
 			PotionProperties p = (PotionProperties) obj;

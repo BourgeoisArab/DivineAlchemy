@@ -16,7 +16,7 @@ public abstract class BlockMultiBlock extends Block {
 	protected void notifyMultiBlockChange(World world, int x, int y, int z, int meta) {
 		for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
 			Block block = world.getBlock(x + d.offsetX, y + d.offsetY, z + d.offsetZ);
-			if (block == ModBlocks.blockPotionVat) {
+			if (block == ModBlocks.potionVat) {
 				TEPotionVat tile = (TEPotionVat) world.getTileEntity(x + d.offsetX, y + d.offsetY, z + d.offsetZ);
 				tile.checkMultiBlock();
 				break;

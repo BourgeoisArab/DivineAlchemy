@@ -7,44 +7,44 @@ import net.minecraftforge.fluids.FluidStack;
 import bourgeoisarab.divinealchemy.common.item.ItemBottlePotion;
 import bourgeoisarab.divinealchemy.common.item.ItemBucketHotMess;
 import bourgeoisarab.divinealchemy.common.item.ItemBucketPotion;
+import bourgeoisarab.divinealchemy.common.item.ItemButcherKnife;
 import bourgeoisarab.divinealchemy.common.item.ItemEssenceCrystal;
 import bourgeoisarab.divinealchemy.common.item.ItemInstillationTome;
 import bourgeoisarab.divinealchemy.common.item.ItemOrgan;
-import bourgeoisarab.divinealchemy.common.item.ItemPotionFood;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ModItems {
 
-	public static ItemInstillationTome itemInstillationTome;
-	public static ItemBottlePotion itemPotionBottle;
-	public static ItemBucketPotion itemBucketPotion;
-	public static ItemBucketHotMess itemBucketHotMess;
-	public static ItemPotionFood itemPotionFood;
-	public static ItemEssenceCrystal itemEssenceCrystal;
-	public static ItemOrgan itemOrgan;
+	public static ItemInstillationTome instillationTome;
+	public static ItemBottlePotion bottlePotion;
+	public static ItemBucketPotion bucketPotion;
+	public static ItemBucketHotMess bucketHotMess;
+	public static ItemEssenceCrystal essenceCrystal;
+	public static ItemOrgan organ;
+	public static ItemButcherKnife butcherKnife;
 
 	public static void init() {
-		itemInstillationTome = new ItemInstillationTome();
-		itemPotionBottle = new ItemBottlePotion();
-		itemBucketPotion = new ItemBucketPotion(ModBlocks.blockPotion);
-		itemBucketHotMess = new ItemBucketHotMess(ModBlocks.blockHotMess);
-		itemPotionFood = new ItemPotionFood();
-		itemEssenceCrystal = new ItemEssenceCrystal();
-		itemOrgan = new ItemOrgan();
+		instillationTome = new ItemInstillationTome();
+		bottlePotion = new ItemBottlePotion();
+		bucketPotion = new ItemBucketPotion(ModBlocks.potion);
+		bucketHotMess = new ItemBucketHotMess(ModBlocks.hotMess);
+		essenceCrystal = new ItemEssenceCrystal();
+		organ = new ItemOrgan();
+		butcherKnife = new ItemButcherKnife();
 	}
 
 	public static void registerItems() {
-		GameRegistry.registerItem(itemInstillationTome, itemInstillationTome.getUnlocalizedName());
-		GameRegistry.registerItem(itemPotionBottle, itemPotionBottle.getUnlocalizedName());
-		GameRegistry.registerItem(itemBucketPotion, itemBucketPotion.getUnlocalizedName());
-		GameRegistry.registerItem(itemBucketHotMess, itemBucketHotMess.getUnlocalizedName());
-		GameRegistry.registerItem(itemPotionFood, itemPotionFood.getUnlocalizedName());
-		GameRegistry.registerItem(itemEssenceCrystal, itemEssenceCrystal.getUnlocalizedName());
-		GameRegistry.registerItem(itemOrgan, itemOrgan.getUnlocalizedName());
+		GameRegistry.registerItem(instillationTome, instillationTome.getUnlocalizedName());
+		GameRegistry.registerItem(bottlePotion, bottlePotion.getUnlocalizedName());
+		GameRegistry.registerItem(bucketPotion, bucketPotion.getUnlocalizedName());
+		GameRegistry.registerItem(bucketHotMess, bucketHotMess.getUnlocalizedName());
+		GameRegistry.registerItem(essenceCrystal, essenceCrystal.getUnlocalizedName());
+		GameRegistry.registerItem(organ, organ.getUnlocalizedName());
+		GameRegistry.registerItem(butcherKnife, butcherKnife.getUnlocalizedName());
 
-		FluidContainerRegistry.registerFluidContainer(ModFluids.fluidPotion, new ItemStack(itemBucketPotion), new ItemStack(Items.bucket));
-		FluidContainerRegistry.registerFluidContainer(new FluidStack(ModFluids.fluidPotion, 333), new ItemStack(itemPotionBottle), new ItemStack(Items.glass_bottle));
-		FluidContainerRegistry.registerFluidContainer(ModFluids.fluidHotMess, new ItemStack(itemBucketHotMess), new ItemStack(Items.bucket));
+		FluidContainerRegistry.registerFluidContainer(ModFluids.potion, new ItemStack(bucketPotion), new ItemStack(Items.bucket));
+		FluidContainerRegistry.registerFluidContainer(new FluidStack(ModFluids.potion, 333), new ItemStack(bottlePotion), new ItemStack(Items.glass_bottle));
+		FluidContainerRegistry.registerFluidContainer(ModFluids.hotMess, new ItemStack(bucketHotMess), new ItemStack(Items.bucket));
 	}
 
 }

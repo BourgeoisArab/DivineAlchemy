@@ -179,7 +179,7 @@ public abstract class TEPotionBrewerBase extends TileEntityBaseDA implements IFl
 
 	@Override
 	public void finaliseEffects() {
-		if (ingredients.countIngredients() <= 0 || tank.getFluid() == null || tank.getFluid().getFluid() != ModFluids.fluidPotion) {
+		if (ingredients.countIngredients() <= 0 || tank.getFluid() == null || tank.getFluid().getFluid() != ModFluids.potion) {
 			return;
 		}
 		if (!worldObj.isRemote) {
@@ -221,7 +221,7 @@ public abstract class TEPotionBrewerBase extends TileEntityBaseDA implements IFl
 
 	@Override
 	public boolean addDye(ItemStack stack, boolean add) {
-		if (tank.getFluid() != null && tank.getFluid().getFluid() == ModFluids.fluidPotion) {
+		if (tank.getFluid() != null && tank.getFluid().getFluid() == ModFluids.potion) {
 			return colouring.add(stack, add);
 		}
 		return false;
@@ -245,7 +245,7 @@ public abstract class TEPotionBrewerBase extends TileEntityBaseDA implements IFl
 		if (tank.getFluid() == null) {
 			return null;
 		}
-		if (tank.getFluid().getFluid() == ModFluids.fluidPotion && ingredients.countIngredients() > 0) {
+		if (tank.getFluid().getFluid() == ModFluids.potion && ingredients.countIngredients() > 0) {
 			finaliseEffects();
 		}
 		FluidStack drain = tank.drain(maxDrain, doDrain);
@@ -256,7 +256,7 @@ public abstract class TEPotionBrewerBase extends TileEntityBaseDA implements IFl
 
 	@Override
 	public boolean canFill(ForgeDirection from, Fluid fluid) {
-		if (fluid == FluidRegistry.WATER || fluid == ModFluids.fluidHotMess) {
+		if (fluid == FluidRegistry.WATER || fluid == ModFluids.hotMess) {
 			if (tank.getFluid() != null) {
 				if (tank.getFluid().getFluid() == fluid && tank.getFluidAmount() < FluidContainerRegistry.BUCKET_VOLUME) {
 					return true;

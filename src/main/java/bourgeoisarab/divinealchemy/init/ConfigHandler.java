@@ -22,7 +22,7 @@ public class ConfigHandler {
 	public static boolean creativeTab = true;
 
 	public static boolean useDynamicPotionIDs;
-	public static final int totalPotionCount = 19;
+	public static final int totalPotionCount = 20;
 	public static int[] potionIDs = new int[totalPotionCount];
 
 	public static void init(File configFile) {

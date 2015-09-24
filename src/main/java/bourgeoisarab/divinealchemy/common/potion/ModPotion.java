@@ -34,6 +34,7 @@ public class ModPotion extends Potion {
 	public static ModPotion potionDeafness = new ModPotion(ConfigHandler.potionIDs[16], true, 0x284488).setPotionName("potion.deaf");
 	public static ModPotion potionTemporal = new PotionTemporal(ConfigHandler.potionIDs[17], true, 0x444444);
 	public static ModPotion potionClone = new PotionClone(ConfigHandler.potionIDs[18], false, 0xFFFFFF);
+	public static ModPotion potionSmite = new PotionSmite(ConfigHandler.potionIDs[19], true, 0xFFFFFF);
 
 	public ResourceLocation icon = null;
 
@@ -102,7 +103,7 @@ public class ModPotion extends Potion {
 	 * @param entity to which the effect is to be applied
 	 * @param effect
 	 */
-	public void applyEffect(EntityLivingBase entity, PotionEffect effect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect effect, int amplifier) {
 
 	}
 

@@ -10,7 +10,7 @@ public class PotionDay extends ModPotion {
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entity, PotionEffect effect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect effect, int amplifier) {
 		if (entity.worldObj.getWorldTime() > 12000) {
 			entity.worldObj.setWorldTime(1000);
 		}

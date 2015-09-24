@@ -15,7 +15,7 @@ public class PotionFiendFyre extends ModPotion {
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entity, PotionEffect potionEffect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect potionEffect, int amplifier) {
 		World world = entity.worldObj;
 		entity.extinguish();
 		if (entity.worldObj.getWorldTime() % 10 == 0) {

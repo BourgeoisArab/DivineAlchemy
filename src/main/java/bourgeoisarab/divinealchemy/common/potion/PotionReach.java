@@ -13,7 +13,7 @@ public class PotionReach extends ModPotion {
 	}
 
 	@Override
-	public void applyEffect(EntityLivingBase entity, PotionEffect effect) {
+	public void applyEffect(EntityLivingBase entity, PotionEffect effect, int amplifier) {
 		if (entity instanceof EntityPlayerMP) {
 			EntityPlayerMP player = (EntityPlayerMP) entity;
 			player.theItemInWorldManager.setBlockReachDistance(5.0D + (effect.getAmplifier() + 1) * 2);

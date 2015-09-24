@@ -14,37 +14,27 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ModBlocks {
 
-	public static Block blockBrewingCauldron;
-	public static Block blockPotion;
-	public static Block blockHotMess;
-
-	public static Block blockInfusedBrick;
-
-	public static Block blockPotionVat;
-
-	// public static Block blockGenerator;
-	// public static Block blockElectrode;
+	public static Block brewingCauldron;
+	public static Block potion;
+	public static Block hotMess;
+	public static Block infusedBrick;
+	public static Block potionVat;
 
 	public static void init() {
-		blockBrewingCauldron = new BlockBrewingCauldron();
-		blockPotion = new BlockPotion();
-		blockInfusedBrick = new BlockInfusedBrick();
-		blockHotMess = new BlockHotMess();
-		blockPotionVat = new BlockPotionVat();
+		brewingCauldron = new BlockBrewingCauldron();
+		potion = new BlockPotion();
+		infusedBrick = new BlockInfusedBrick();
+		hotMess = new BlockHotMess();
+		potionVat = new BlockPotionVat();
 
 	}
 
 	public static void registerBlocks() {
-		GameRegistry.registerBlock(blockBrewingCauldron, ItemBlockBrewingCauldron.class, blockBrewingCauldron.getUnlocalizedName());
-		GameRegistry.registerBlock(blockPotion, blockPotion.getUnlocalizedName());
-		GameRegistry.registerBlock(blockInfusedBrick, blockInfusedBrick.getUnlocalizedName());
-		GameRegistry.registerBlock(blockHotMess, blockHotMess.getUnlocalizedName());
-		GameRegistry.registerBlock(blockPotionVat, blockPotionVat.getUnlocalizedName());
-
-		// if (ConfigHandler.CoFHCompat) {
-		// GameRegistry.registerBlock(blockGenerator, blockGenerator.getUnlocalizedName());
-		// GameRegistry.registerBlock(blockElectrode, blockElectrode.getUnlocalizedName());
-		// }
+		GameRegistry.registerBlock(brewingCauldron, ItemBlockBrewingCauldron.class, brewingCauldron.getUnlocalizedName());
+		GameRegistry.registerBlock(potion, potion.getUnlocalizedName());
+		GameRegistry.registerBlock(infusedBrick, infusedBrick.getUnlocalizedName());
+		GameRegistry.registerBlock(hotMess, hotMess.getUnlocalizedName());
+		GameRegistry.registerBlock(potionVat, potionVat.getUnlocalizedName());
 	}
 
 	public static void registerTileEntities() {

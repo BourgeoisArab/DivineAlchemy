@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 import bourgeoisarab.divinealchemy.common.item.ItemBottlePotion;
 import bourgeoisarab.divinealchemy.reference.NBTNames;
 
-public class PotionFoodCrafting implements IRecipe {
+public class CraftingPotionFood implements IRecipe {
 
 	private ItemStack result = null;
 
@@ -54,33 +54,11 @@ public class PotionFoodCrafting implements IRecipe {
 					if (potionStack != null && potionStack.getItem() instanceof ItemBottlePotion && potionStack.stackTagCompound != null) {
 						ItemStack returnStack;
 
-						// if
-						// (!ModPotionHelper.getPotionsFromStack(potionStack).contains(Potion.regeneration.getId()))
-						// {
 						returnStack = new ItemStack(foodStack.getItem(), 1, foodStack.getItemDamage());
 
 						if (returnStack.stackTagCompound == null) {
 							returnStack.stackTagCompound = new NBTTagCompound();
 						}
-						// }
-						// else {
-						// returnStack = new ItemStack(ModItems.itemPotionFood);
-						//
-						// if (returnStack.stackTagCompound == null) {
-						// returnStack.stackTagCompound = new NBTTagCompound();
-						// }
-						//
-						// returnStack.setStackDisplayName(foodStack.getDisplayName());
-						//
-						// ItemFood item = (ItemFood) foodStack.getItem();
-						//
-						// returnStack.stackTagCompound.setInteger(Reference.NBT.FOOD_ID,
-						// Item.getIdFromItem(item));
-						// returnStack.stackTagCompound.setInteger(Reference.NBT.FOOD_LEVEL,
-						// item.func_150905_g(foodStack));
-						// returnStack.stackTagCompound.setFloat(Reference.NBT.FOOD_SATURATION,
-						// item.func_150906_h(foodStack));
-						// }
 
 						returnStack.stackTagCompound.setTag(NBTNames.EFFECTS_TAG, potionStack.stackTagCompound.getCompoundTag(NBTNames.EFFECTS_TAG));
 

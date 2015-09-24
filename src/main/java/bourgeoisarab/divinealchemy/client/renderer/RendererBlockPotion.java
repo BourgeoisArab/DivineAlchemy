@@ -26,7 +26,7 @@ public class RendererBlockPotion implements ISimpleBlockRenderingHandler {
 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
-		if (block != ModBlocks.blockPotion) {
+		if (block != ModBlocks.potion) {
 			return false;
 		}
 		return renderBlockLiquid(world, x, y, z, block, renderer);
@@ -43,7 +43,7 @@ public class RendererBlockPotion implements ISimpleBlockRenderingHandler {
 	}
 
 	public boolean setPotionColour(IBlockAccess world, int x, int y, int z, Block block) {
-		if (block == ModBlocks.blockPotion) {
+		if (block == ModBlocks.potion) {
 			TEPotion tile = ((BlockPotion) block).getTileEntity(world, x, y, z);
 			if (tile == null) {
 				return false;

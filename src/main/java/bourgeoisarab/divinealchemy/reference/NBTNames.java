@@ -23,5 +23,8 @@ public final class NBTNames {
 	public static final String DIMENSIONS = "Dimensions";
 	public static final String MULTIBLOCK = "Multiblock";
 	public static final String OLD_TRADES = "OldRecipes";
+	public static final String BUTCHER = "Butcher";
+	public static final String HIDDEN_EFFECTS = "Hidden";
+	public static final String REMAINING_USES = "Remaining";
 
 }

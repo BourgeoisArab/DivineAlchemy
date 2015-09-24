@@ -12,21 +12,21 @@ public class NBTPlayerHelper {
 	 * Calculates the total divinity the player should have. Doesn't actually change it
 	 * 
 	 * @param currentDivinity
-	 * @param modifier
-	 * @param modifierMax the maximum divinity that can be reached with that task
+	 * @param modifier - recommended value: 0.1F
+	 * @param asymptote the maximum divinity that can be reached with that task
 	 * @return final divinity
 	 */
-	public static float getProcessedDivinity(float currentDivinity, float modifier, float modifierMax) {
-		return currentDivinity + (equation(currentDivinity + modifier, modifierMax) - equation(currentDivinity, modifierMax));
+	public static float getProcessedSigmoid(float currentDivinity, float modifier, float asymptote) {
+		return currentDivinity + (sigmoid(currentDivinity + modifier, asymptote) - sigmoid(currentDivinity, asymptote));
 	}
 
-	public static float equation(float n, float asymptote) {
+	public static float sigmoid(float n, float asymptote) {
 		return (float) (2 * asymptote / (1 + Math.pow(10, -4 * n)) - asymptote);
 	}
 
 	public static void setDivnity(EntityPlayer player, float divinity) {
 		if (player != null) {
-			player.getEntityData().setFloat(NBTNames.DIVINITY, divinity);
+			player.getEntityData().setFloat(NBTNames.DIVINITY, divinity <= 1.0F ? divinity : 1.0F);
 		}
 	}
 

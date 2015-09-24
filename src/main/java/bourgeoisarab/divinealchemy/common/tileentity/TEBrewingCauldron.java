@@ -105,7 +105,7 @@ public class TEBrewingCauldron extends TEPotionBrewerBase implements IBrewingCau
 	}
 
 	public void makeHotMess() {
-		tank.setFluid(new FluidStack(ModFluids.fluidHotMess, tank.getFluidAmount()));
+		tank.setFluid(new FluidStack(ModFluids.hotMess, tank.getFluidAmount()));
 		clearEffects();
 		sendUpdateToClient();
 	}

@@ -40,9 +40,9 @@ public class BlockPotion extends BlockFluidClassic implements ITileEntityProvide
 	protected static final int duration = 100;
 
 	public BlockPotion() {
-		super(ModFluids.fluidPotion, Material.water);
-		ModFluids.fluidPotion.setBlock(this);
-		setBlockName("blockPotion");
+		super(ModFluids.potion, Material.water);
+		ModFluids.potion.setBlock(this);
+		setBlockName("potion");
 		setQuantaPerBlock(4);
 		isBlockContainer = true;
 	}
@@ -56,7 +56,7 @@ public class BlockPotion extends BlockFluidClassic implements ITileEntityProvide
 	public void registerBlockIcons(IIconRegister register) {
 		stillIcon = register.registerIcon(Ref.Location.PREFIX + "potion_still");
 		flowingIcon = register.registerIcon(Ref.Location.PREFIX + "potion_flow");
-		ModFluids.fluidPotion.setIcons(stillIcon, flowingIcon);
+		ModFluids.potion.setIcons(stillIcon, flowingIcon);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class BlockPotion extends BlockFluidClassic implements ITileEntityProvide
 		TileEntity entity = world.getTileEntity(x, y, z);
 		if (entity instanceof TEPotion) {
 			TEPotion tile = (TEPotion) entity;
-			if (block == ModBlocks.blockPotion && (tile.getEffects() == null || tile.getEffects().size() < 1)) {
+			if (block == ModBlocks.potion && (tile.getEffects() == null || tile.getEffects().size() < 1)) {
 				return true;
 			}
 		}

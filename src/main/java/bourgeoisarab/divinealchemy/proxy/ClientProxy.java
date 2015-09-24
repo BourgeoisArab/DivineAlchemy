@@ -41,7 +41,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerBlockHandler(new RendererBlockPotion());
 		// ClientRegistry.bindTileEntitySpecialRenderer(TEChannel.class, new RendererBlockChannel());
 		// ClientRegistry.bindTileEntitySpecialRenderer(TEItemReceptacle.class, new RendererBlockItemReceptacle());
-		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.blockBrewingCauldron), new RendererItemBrewingCauldron(new TEBrewingCauldron(), new RendererBlockBrewingCauldron()));
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.brewingCauldron), new RendererItemBrewingCauldron(new TEBrewingCauldron(), new RendererBlockBrewingCauldron()));
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpecialCreeper.class, new RenderSpecialCreeper());
 		RenderingRegistry.registerEntityRenderingHandler(EntitySplashPotion.class, new RenderEntitySplashPotion());
 		RenderingRegistry.registerEntityRenderingHandler(EntityPlayerClone.class, new RendererPlayerClone());

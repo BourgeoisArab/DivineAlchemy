@@ -6,7 +6,14 @@ import java.util.List;
 
 import net.minecraft.client.particle.EntitySpellParticleFX;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.passive.EntityCow;
+import net.minecraft.entity.passive.EntityHorse;
+import net.minecraft.entity.passive.EntityPig;
+import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -17,25 +24,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -43,11 +49,8 @@ import bourgeoisarab.divinealchemy.DivineAlchemy;
 import bourgeoisarab.divinealchemy.common.potion.Effects;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
-import bourgeoisarab.divinealchemy.common.tileentity.IEffectProvider;
-import bourgeoisarab.divinealchemy.init.ModFluids;
 import bourgeoisarab.divinealchemy.init.ModItems;
 import bourgeoisarab.divinealchemy.reference.NBTNames;
-import bourgeoisarab.divinealchemy.utility.InventoryHelper;
 import bourgeoisarab.divinealchemy.utility.Log;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
 import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
@@ -61,22 +64,23 @@ public class DAEventHooks {
 	@SubscribeEvent
 	public void onFoodEaten(PlayerUseItemEvent.Finish event) {
 		ItemStack stack = event.item;
-
 		if (stack.getItem() instanceof ItemFood) {
 			if (stack.stackTagCompound == null) {
 				return;
 			}
 
-			List<PotionEffect> effects = NBTEffectHelper.getEffectsFromStack(stack).getEffects();
+			Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
 			PotionProperties properties = NBTEffectHelper.getPropertiesFromNBT(stack.stackTagCompound);
-			ModPotionHelper.addEffectsToEntity(effects, event.entityPlayer);
+			if (effects != null) {
+				ModPotionHelper.addEffectsToEntity(effects.getEffects(), event.entityPlayer);
+			}
 
-			if (properties.isPersistent) {
+			if (properties != null && properties.isPersistent) {
 				if (!event.entityPlayer.getEntityData().hasKey(NBTNames.PERSISTENT_IDS)) {
-					event.entityPlayer.getEntityData().setIntArray(NBTNames.PERSISTENT_IDS, ModPotionHelper.potionsToIntArray(effects)[0]);
+					event.entityPlayer.getEntityData().setIntArray(NBTNames.PERSISTENT_IDS, ModPotionHelper.potionsToIntArray(effects.getEffects())[0]);
 				} else {
 					event.entityPlayer.getEntityData().setIntArray(NBTNames.PERSISTENT_IDS,
-							ModPotionHelper.mergeIntArrays(event.entityPlayer.getEntityData().getIntArray(NBTNames.PERSISTENT_IDS), ModPotionHelper.potionsToIntArray(effects)[0]));
+							ModPotionHelper.mergeIntArrays(event.entityPlayer.getEntityData().getIntArray(NBTNames.PERSISTENT_IDS), ModPotionHelper.potionsToIntArray(effects.getEffects())[0]));
 				}
 			}
 		}
@@ -97,83 +101,9 @@ public class DAEventHooks {
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void onTankClick(PlayerInteractEvent event) {
-		if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
-			TileEntity entity = event.world.getTileEntity(event.x, event.y, event.z);
-			if (entity instanceof IFluidHandler && !(entity instanceof IEffectProvider)) {
-				IFluidHandler tile = (IFluidHandler) entity;
-				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[event.face];
-				FluidStack fluid = getFluid(tile, dir);
-
-				// Effects e = new Effects();
-				// e.add(new PotionEffect(10, 530, 1), false);
-				// NBTEffectHelper.setEffectsForFluid(fluid, e);
-				EntityPlayer player = event.entityPlayer;
-				ItemStack stack = player.getCurrentEquippedItem();
-
-				if (stack == null) {
-					Log.info(NBTEffectHelper.getEffectsFromFluid(fluid));
-					return;
-				}
-
-				if (fluid == null && tile.canFill(dir, ModFluids.fluidPotion)) {
-					Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
-					PotionProperties properties = new PotionProperties(stack.getItemDamage());
-					if (stack != null && effects != null) {
-						int capacity = 0;
-						ItemStack newStack = null;
-						if (stack.getItem() == ModItems.itemPotionBottle) {
-							capacity = 333;
-							newStack = new ItemStack(Items.glass_bottle);
-						} else if (stack.getItem() == ModItems.itemBucketPotion) {
-							capacity = FluidContainerRegistry.BUCKET_VOLUME;
-							newStack = new ItemStack(Items.bucket);
-						}
-						if (newStack != null) {
-							tile.fill(dir, NBTEffectHelper.setEffectsForFluid(new FluidStack(ModFluids.fluidPotion, capacity), effects), true);
-							player.inventory.setInventorySlotContents(player.inventory.currentItem, newStack);
-							// event.setCanceled(true);
-						}
-					}
-				} else if (tile.canDrain(dir, ModFluids.fluidPotion)) {
-					FluidStack f = getFluid(tile, dir);
-					Effects effects = NBTEffectHelper.getEffectsFromFluid(f);
-					PotionProperties properties = NBTEffectHelper.getPropertiesFromNBT(f != null ? f.tag : null);
-					if (stack != null) {
-						ItemStack newStack = null;
-						int capacity = 0;
-						if (stack.getItem() == Items.glass_bottle) {
-							newStack = new ItemStack(ModItems.itemPotionBottle, 1, properties != null ? properties.getMetaValue() : 0);
-							capacity = 333;
-						} else if (stack.getItem() == Items.bucket) {
-							newStack = new ItemStack(ModItems.itemBucketPotion, 1, properties != null ? properties.getMetaValue() : 0);
-							capacity = FluidContainerRegistry.BUCKET_VOLUME;
-						}
-						if (newStack != null) {
-							FluidStack drained = tile.drain(dir, capacity, false);
-							if (drained != null && drained.amount >= capacity) {
-								tile.drain(dir, capacity, true);
-								InventoryHelper.addStackToInventory(event.entityPlayer, stack, newStack, true);
-								event.setCanceled(true);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private FluidStack getFluid(IFluidHandler tile, ForgeDirection dir) {
-		FluidTankInfo[] info = tile.getTankInfo(dir);
-		if (info.length < 1) {
-			return null;
-		}
-		return info[0].fluid;
-	}
-
 	@SubscribeEvent
 	public void onPlayerDeath(PlayerEvent.Clone event) {
+		// Transfer of death-persistent potion IDs
 		int[] originalIDs = event.original.getEntityData().getIntArray(NBTNames.PERSISTENT_IDS);
 		List<PotionEffect> effects = new ArrayList<PotionEffect>();
 
@@ -190,13 +120,14 @@ public class DAEventHooks {
 		}
 
 		event.entityPlayer.getEntityData().setIntArray(NBTNames.PERSISTENT_IDS, newIDs);
+		// Transfer of previously active persistent effects to be applied after respawn
 		NBTEffectHelper.setEffectsForNBT(event.entityPlayer.getEntityData(), new Effects(effects, new ArrayList<Boolean>()));
 	}
 
 	@SubscribeEvent
 	public void onRespawn(PlayerRespawnEvent event) {
 		EntityPlayer player = event.player;
-		// Persisting Effects
+		// Reapplying previously active persistent effects
 		Effects effects = NBTEffectHelper.getEffectsFromNBT(player.getEntityData());
 		if (effects != null) {
 			ModPotionHelper.addEffectsToEntity(effects.getEffects(), player);
@@ -214,6 +145,7 @@ public class DAEventHooks {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onEntityUpdate(LivingUpdateEvent event) {
 		EntityLivingBase entity = event.entityLiving;
+
 		// PotionEffects
 		int[] persistentIDs = new int[]{};
 		if (entity.getEntityData().hasKey(NBTNames.PERSISTENT_IDS)) {
@@ -223,15 +155,21 @@ public class DAEventHooks {
 		while (it.hasNext()) {
 			PotionEffect effect = it.next();
 			Potion p = ModPotion.getPotion(effect.getPotionID());
+			if (p != null && p.isInstant()) {
+				ArrayList<ItemStack> list = new ArrayList<ItemStack>();
+				list.add(new ItemStack(Items.brewing_stand));
+				effect.setCurativeItems(list);
+				entity.curePotionEffects(new ItemStack(Items.brewing_stand));
+			}
 			if (p instanceof ModPotion) {
-				((ModPotion) p).applyEffect(entity, effect);
+				((ModPotion) p).applyEffect(entity, effect, effect.getAmplifier());
 			}
 			if (ArrayUtils.contains(persistentIDs, effect.getPotionID())) {
 				effect.setCurativeItems(new ArrayList<ItemStack>());
 			}
 		}
 
-		// Villager trades
+		// Resetting to normal trades if not trading
 		if (entity instanceof EntityVillager) {
 			EntityVillager villager = (EntityVillager) entity;
 			if (!villager.isTrading() && villager.getEntityData().hasKey(NBTNames.OLD_TRADES)) {
@@ -249,6 +187,7 @@ public class DAEventHooks {
 		EntityLivingBase entity = event.entityLiving;
 		if (entity.getActivePotionEffect(ModPotion.potionTemporal) != null) {
 			entity.motionY *= 2;
+			// TODO
 		}
 	}
 
@@ -351,6 +290,78 @@ public class DAEventHooks {
 						buySecond.stackSize = 1;
 					}
 
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onLightning(EntityStruckByLightningEvent event) {
+		World world = event.entity.worldObj;
+		if (event.entity instanceof EntityPlayer && !world.isRemote) {
+			EntityPlayer player = (EntityPlayer) event.entity;
+			float divinity = NBTPlayerHelper.getDivinity(player);
+			if (divinity <= -0.5F) {
+				Log.info("Second lightning strike");
+				// if (world.rand.nextFloat() < Math.abs(divinity)) {
+				// world.addWeatherEffect(new EntityLightningBolt(world, player.posX, player.posY, player.posZ));
+				// }
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void livingDrops(LivingDropsEvent event) {
+		EntityLivingBase entity = event.entityLiving;
+		if (!entity.worldObj.isRemote) {
+			if (entity.getEntityData().hasKey(NBTNames.BUTCHER)) {
+				World world = entity.worldObj;
+				EntityPlayer player = world.getPlayerEntityByName(entity.getEntityData().getString(NBTNames.BUTCHER));
+				float divinity = NBTPlayerHelper.getAbsDivinity(player);
+				if (world.rand.nextFloat() < divinity * 1.42857F) {
+					ItemStack stack = new ItemStack(ModItems.organ);
+					int organ = world.rand.nextInt(ModItems.organ.organs.length);
+					if (entity instanceof EntityPlayer || entity instanceof EntityVillager) {
+						stack.setItemDamage(ModItems.organ.getMetaValue(organ, 0));
+					} else if (entity instanceof EntityCow || entity instanceof EntitySheep || entity instanceof EntityHorse || entity instanceof EntityPig) {
+						stack.setItemDamage(ModItems.organ.getMetaValue(organ, 1));
+					} else if (entity instanceof EntityZombie) {
+						stack.setItemDamage(ModItems.organ.getMetaValue(organ, 2));
+					}
+					EntityItem item = new EntityItem(world, entity.posX, entity.posY, entity.posZ, stack);
+					event.drops.add(item);
+				}
+				NBTPlayerHelper.setDivnity(player, NBTPlayerHelper.getProcessedSigmoid(divinity, 0.12F, 0.75F));
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onPlayerAttack(AttackEntityEvent event) {
+		EntityPlayer player = event.entityPlayer;
+		if (player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getItem() == ModItems.butcherKnife) {
+			event.target.getEntityData().setString(NBTNames.BUTCHER, player.getCommandSenderName());
+		}
+	}
+
+	@SubscribeEvent
+	public void onItemUpdate(ItemTooltipEvent event) {
+		ItemStack stack = event.itemStack;
+		List<String> list = event.toolTip;
+		if (stack.getItem() instanceof ItemFood && !NBTEffectHelper.getHiddenFoodEffects(stack)) {
+			if (PotionProperties.getBlessed(stack.getItemDamage())) {
+				list.add("Blessed");
+			}
+			if (PotionProperties.getBlessed(stack.getItemDamage())) {
+				list.add("Cursed");
+			}
+			Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
+			if (effects != null) {
+				for (int i = 0; i < effects.size(); i++) {
+					Potion potion = ModPotion.getPotion(effects.getEffect(i).getPotionID());
+					String s1 = I18n.format(potion.getName());
+					s1 = s1 + " " + I18n.format("enchantment.level." + (effects.getEffect(i).getAmplifier() + 1));
+					list.add((effects.getSideEffect(i) ? EnumChatFormatting.DARK_RED : "") + s1 + (potion.isInstant() ? "" : " (" + Potion.getDurationString(effects.getEffect(i)) + ")"));
 				}
 			}
 		}

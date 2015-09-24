@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL12;
 
 public class RenderEntitySplashPotion extends Render {
 
-	private final ItemStack stack = new ItemStack(ModItems.itemPotionBottle, 1, 1);
+	private final ItemStack stack = new ItemStack(ModItems.bottlePotion, 1, 1);
 
 	@Override
 	public void doRender(Entity e, double x, double y, double z, float p_76986_8_, float p_76986_9_) {
@@ -65,7 +65,7 @@ public class RenderEntitySplashPotion extends Render {
 		// bindEntityTexture(entity);
 		Tessellator tessellator = Tessellator.instance;
 
-		float[] col = ColourHelper.getFloatColours(ColourHelper.separateColours(ModItems.itemPotionBottle.getColorFromItemStack(stack, 1)));
+		float[] col = ColourHelper.getFloatColours(ColourHelper.separateColours(ModItems.bottlePotion.getColorFromItemStack(stack, 1)));
 		GL11.glColor3f(col[0], col[1], col[2]);
 
 		GL11.glPushMatrix();
