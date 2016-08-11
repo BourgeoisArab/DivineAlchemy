@@ -3,12 +3,11 @@ package bourgeoisarab.divinealchemy.common.potion;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.potion.PotionEffect;
-import bourgeoisarab.divinealchemy.utility.Log;
 
 public class PotionReach extends ModPotion {
 
-	public PotionReach(int id, boolean isBadEffect, int colour) {
-		super(id, isBadEffect, colour);
+	public PotionReach(String name, boolean isBadEffect, int colour) {
+		super(name, isBadEffect, colour);
 		setPotionName("potion.reach");
 	}
 
@@ -17,7 +16,7 @@ public class PotionReach extends ModPotion {
 		if (entity instanceof EntityPlayerMP) {
 			EntityPlayerMP player = (EntityPlayerMP) entity;
 			player.theItemInWorldManager.setBlockReachDistance(5.0D + (effect.getAmplifier() + 1) * 2);
-			Log.info(player.theItemInWorldManager.getBlockReachDistance());
+			// Log.info(player.theItemInWorldManager.getBlockReachDistance());
 		}
 	}
 

@@ -2,7 +2,6 @@ package bourgeoisarab.divinealchemy.common.item;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -10,19 +9,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import bourgeoisarab.divinealchemy.DivineAlchemy;
-import bourgeoisarab.divinealchemy.reference.Ref;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemOrgan extends ItemFood {
 
 	public final String[] organs = new String[]{"heart", "lungs", "kidneys", "intestines", "liver", "brain", "stomach"};
-	protected IIcon[] icons = new IIcon[organs.length];
-	public final String[] types = new String[]{I18n.format("item.organ.human"), I18n.format("item.organ.animal"), I18n.format("item.organ.zombie")};
+	public final String[] types = new String[]{"item.organ.human", "item.organ.animal", "item.organ.zombie"};
 
 	public ItemOrgan() {
 		super(2, true);
@@ -30,28 +26,6 @@ public class ItemOrgan extends ItemFood {
 		setHasSubtypes(true);
 		setMaxDamage(0);
 		setCreativeTab(DivineAlchemy.tabDivineAlchemy);
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister register) {
-		itemIcon = register.registerIcon(Ref.Location.PREFIX + "heart");
-		for (int i = 0; i < icons.length; i++) {
-			icons[i] = register.registerIcon(Ref.Location.PREFIX + organs[i].toLowerCase());
-		}
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(ItemStack stack, int pass) {
-		return getIconFromDamageForRenderPass(stack.getItemDamage(), pass);
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int meta) {
-		int organ = getOrgan(meta);
-		return organ < icons.length ? icons[getOrgan(meta)] : null;
 	}
 
 	@Override
@@ -76,7 +50,7 @@ public class ItemOrgan extends ItemFood {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean flag) {
-		list.add(types[getType(stack.getItemDamage())]);
+		list.add(I18n.format(types[getType(stack.getItemDamage())]));
 	}
 
 	@Override

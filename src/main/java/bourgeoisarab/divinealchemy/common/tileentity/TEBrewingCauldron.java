@@ -1,28 +1,56 @@
 package bourgeoisarab.divinealchemy.common.tileentity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-import net.minecraft.client.particle.EntityBubbleFX;
-import net.minecraft.client.particle.EntitySplashFX;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import bourgeoisarab.divinealchemy.DivineAlchemy;
-import bourgeoisarab.divinealchemy.common.block.BlockBrewingCauldron;
+import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModFluids;
 
-public class TEBrewingCauldron extends TEPotionBrewerBase implements IBrewingCauldron {
+public class TEBrewingCauldron extends TEPotionBrewer {
 
-	private final int totalBoilTime = 50;
+	public static final List<Block> boilblocks = new ArrayList<Block>();
+	static {
+		boilblocks.add(Blocks.lava);
+		boilblocks.add(Blocks.fire);
+	}
+
+	private static final int totalBoilTime = 50;
 	private int boilTime = -1;
 	private boolean boiling = false;
 
-	public static final float INSTABILITY = 0.015625F;
+	public static final float INSTABILITY = 0.5F / ConfigHandler.maxEffects;
 
 	public TEBrewingCauldron() {
-
+		tank.setCapacity(FluidContainerRegistry.BUCKET_VOLUME * 1);
 	}
 
-	@Override
+	public boolean canBoil() {
+		FluidStack fluid = tank.getFluid();
+		return fluid != null && fluid.amount > 0 && (fluid.getFluid() == FluidRegistry.WATER || fluid.getFluid() == ModFluids.potion);
+	}
+
+	public boolean checkFuelSource() {
+		Block block = worldObj.getBlockState(pos.offset(EnumFacing.DOWN)).getBlock();
+		boolean boil = false;
+		FluidStack fluid = tank.getFluid();
+		if (boilblocks.contains(block)) {
+			// setRequiresPower(false);
+		} else if (canBoil()) {
+			// setRequiresPower(true);
+		}
+		return boil;
+	}
+
+	// @Override
 	public void setBoil(boolean boil) {
 		if (!boil) {
 			boilTime = -1;
@@ -37,17 +65,17 @@ public class TEBrewingCauldron extends TEPotionBrewerBase implements IBrewingCau
 		sendUpdateToClient();
 	}
 
-	@Override
+	// @Override
 	public boolean isBoiling() {
 		return boiling;
 	}
 
-	@Override
-	public float getInstability() {
-		return getCauldronInstability() + ingredients.countIngredients(false) * INSTABILITY;
-	}
+	// @Override
+	// public float getInstability() {
+	// return getCauldronInstability() + ingredients.countIngredients(false) * INSTABILITY;
+	// }
 
-	@Override
+	// @Override
 	public float getCauldronInstability() {
 		switch (getTier()) {
 			case 0:
@@ -77,37 +105,45 @@ public class TEBrewingCauldron extends TEPotionBrewerBase implements IBrewingCau
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if (tank.getFluid() == null || tank.getFluidAmount() == 0) {
-			clearEffects();
-			setBoil(false);
-		}
-		if (tank.getFluid() != null) {
-			((BlockBrewingCauldron) getBlockType()).checkBoil(worldObj, xCoord, yCoord, zCoord);
-		}
+	public void update() {
+		super.update();
+		// if (!canBoil()) {
+		// clearEffects();
+		// setBoil(false);
+		// setRequiresPower(false);
+		// } else if (isRunning()) {
+		// setBoil(true);
+		// } else {
+		// setBoil(false);
+		// }
+
 		if (worldObj.getWorldTime() % 10 == 0) {
 			if (boilTime >= 0 && boilTime < totalBoilTime) {
 				boilTime += 10;
 			}
+			if (worldObj.getWorldTime() % 100 == 0) {
+				checkFuelSource();
+			}
 		}
-		if (worldObj.isRemote && isBoiling() && worldObj.rand.nextFloat() < 0.5F) {
-			int x = xCoord, y = yCoord, z = zCoord;
+		if (isBoiling() && worldObj.rand.nextFloat() < 0.6F) {
+			int x = pos.getX(), y = pos.getY(), z = pos.getZ();
 			Random rand = worldObj.rand;
 			float level = tank.getFluidAmount();
-			worldObj.spawnParticle("splash", x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tank.getCapacity()), z + (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
-			worldObj.spawnParticle("smoke", x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tank.getCapacity()), z + (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
-			EntityBubbleFX bubble = new EntityBubbleFX(worldObj, x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tank.getCapacity()), z + (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
-			DivineAlchemy.proxy.getClient().effectRenderer.addEffect(bubble);
-			EntitySplashFX splash = new EntitySplashFX(worldObj, x + (rand.nextFloat() * 0.625 + 0.1875), y - 0.6875 + level / (1.6 * tank.getCapacity()), z + (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0, 0.0);
-			DivineAlchemy.proxy.getClient().effectRenderer.addEffect(splash);
+			worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x + (rand.nextFloat() * 0.625 + 0.1875), y + (0.6875 * ((double) level / tank.getCapacity()) + 0.1875), z + (rand.nextFloat() * 0.625 + 0.1875), 0.0, 0.0,
+					0.0);
 		}
 	}
 
-	public void makeHotMess() {
-		tank.setFluid(new FluidStack(ModFluids.hotMess, tank.getFluidAmount()));
-		clearEffects();
-		sendUpdateToClient();
+	@Override
+	public boolean isRunning() {
+		// TODO:
+		return true;
 	}
+
+	// public void makeHotMess() {
+	// tank.setFluid(new FluidStack(ModFluids.hotMess, tank.getFluidAmount()));
+	// clearEffects();
+	// sendUpdateToClient();
+	// }
 
 }

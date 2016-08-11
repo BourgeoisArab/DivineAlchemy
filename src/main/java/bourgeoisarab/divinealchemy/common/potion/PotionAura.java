@@ -12,8 +12,8 @@ public class PotionAura extends ModPotion implements IDivinePotion {
 	public static final int duration = 100;
 	private Potion normalPotion;
 
-	public PotionAura(int id, boolean isBadEffect, int colour, Potion potion) {
-		super(id, isBadEffect, colour);
+	public PotionAura(String name, boolean isBadEffect, int colour, Potion potion) {
+		super(name, isBadEffect, colour);
 		normalPotion = potion;
 		setPotionName(normalPotion.getName() + "Aura");
 	}
@@ -25,7 +25,7 @@ public class PotionAura extends ModPotion implements IDivinePotion {
 	@Override
 	public void applyEffect(EntityLivingBase entity, PotionEffect potionEffect, int amplifier) {
 		int radius = getRadius(amplifier);
-		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius);
+		AxisAlignedBB box = AxisAlignedBB.fromBounds(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius);
 		List entities = entity.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, box);
 		for (Object i : entities) {
 			EntityLivingBase e = (EntityLivingBase) i;

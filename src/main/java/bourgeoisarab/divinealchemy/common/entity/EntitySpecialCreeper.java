@@ -1,8 +1,5 @@
 package bourgeoisarab.divinealchemy.common.entity;
 
-import bourgeoisarab.divinealchemy.common.entity.ai.EntityAISpecialCreeperSwell;
-import bourgeoisarab.divinealchemy.init.ConfigHandler;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +26,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import cofh.api.energy.IEnergyContainerItem;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import bourgeoisarab.divinealchemy.common.entity.ai.EntityAISpecialCreeperSwell;
+import bourgeoisarab.divinealchemy.init.ConfigHandler;
 
 public class EntitySpecialCreeper extends EntityMob {
 
@@ -55,8 +53,8 @@ public class EntitySpecialCreeper extends EntityMob {
 		tasks.addTask(5, new EntityAIWander(this, 0.8D));
 		tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
 		tasks.addTask(6, new EntityAILookIdle(this));
-		targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true));
-		targetTasks.addTask(2, new EntityAIHurtByTarget(this, false));
+		targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+		targetTasks.addTask(2, new EntityAIHurtByTarget(this, false, new Class[0]));
 	}
 
 	@Override
@@ -65,22 +63,22 @@ public class EntitySpecialCreeper extends EntityMob {
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.25D);
 	}
 
-	@Override
-	public boolean isAIEnabled() {
-		return true;
-	}
+	// @Override
+	// public boolean isAIDisabled() {
+	// return true;
+	// }
 
-	/**
-	 * The number of iterations PathFinder.getSafePoint will execute before giving up.
-	 */
-	@Override
-	public int getMaxSafePointTries() {
-		return getAttackTarget() == null ? 3 : 3 + (int) (getHealth() - 1.0F);
-	}
+	// /**
+	// * The number of iterations PathFinder.getSafePoint will execute before giving up.
+	// */
+	// @Override
+	// public int getMaxSafePointTries() {
+	// return getAttackTarget() == null ? 3 : 3 + (int) (getHealth() - 1.0F);
+	// }
 
 	@Override
-	protected void fall(float distance) {
-		super.fall(distance);
+	public void fall(float distance, float damageMultiplier) {
+		super.fall(distance, damageMultiplier);
 		timeSinceIgnited = (int) (timeSinceIgnited + distance * 1.5F);
 
 		if (timeSinceIgnited > fuseTime - 5) {
@@ -268,9 +266,9 @@ public class EntitySpecialCreeper extends EntityMob {
 
 	private void explode() {
 		if (!worldObj.isRemote) {
-			boolean flag = worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
+			boolean flag = worldObj.getGameRules().getBoolean("mobGriefing");
 			worldObj.playSoundEffect(posX, posY, posZ, "random.explode", 4.0F, (1.0F + (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
-			EntityPlayer player = worldObj.getClosestVulnerablePlayerToEntity(this, explosionRadius);
+			EntityPlayer player = worldObj.getClosestPlayerToEntity(this, explosionRadius);
 			// if (getPowered()) {
 			// worldObj.createExplosion(this, posX, posY, posZ, explosionRadius * 2, false);
 			// } else {
@@ -278,7 +276,7 @@ public class EntitySpecialCreeper extends EntityMob {
 			// }
 
 			List entities = worldObj.getEntitiesWithinAABBExcludingEntity(this,
-					AxisAlignedBB.getBoundingBox(posX - explosionRadius, posY - explosionRadius, posZ - explosionRadius, posX + explosionRadius, posY + explosionRadius, posZ + explosionRadius));
+					AxisAlignedBB.fromBounds(posX - explosionRadius, posY - explosionRadius, posZ - explosionRadius, posX + explosionRadius, posY + explosionRadius, posZ + explosionRadius));
 			for (int i = 0; i < entities.size(); i++) {
 				Object entity = entities.get(i);
 				if (entity != null && entity instanceof EntityPlayer) {
@@ -300,16 +298,17 @@ public class EntitySpecialCreeper extends EntityMob {
 		dataWatcher.updateObject(18, Byte.valueOf((byte) 1));
 	}
 
+	// TODO: COFH compatability
 	private List<Integer> getEnergyItems(InventoryPlayer inv) {
 		List<Integer> list = new ArrayList<Integer>();
-		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			ItemStack stack = inv.getStackInSlot(i);
-			if (stack != null && stack.getItem() instanceof IEnergyContainerItem) {
-				if (((IEnergyContainerItem) stack.getItem()).getEnergyStored(stack) > 0) {
-					list.add(i);
-				}
-			}
-		}
+		// for (int i = 0; i < inv.getSizeInventory(); i++) {
+		// ItemStack stack = inv.getStackInSlot(i);
+		// if (stack != null && stack.getItem() instanceof IEnergyContainerItem) {
+		// if (((IEnergyContainerItem) stack.getItem()).getEnergyStored(stack) > 0) {
+		// list.add(i);
+		// }
+		// }
+		// }
 		return list;
 	}
 
@@ -317,15 +316,15 @@ public class EntitySpecialCreeper extends EntityMob {
 	 * @param colours of slot numbers with energy items
 	 */
 	private void dischargeRandomItem(List<Integer> items, InventoryPlayer inv) {
-		if (/* !worldObj.isRemote && */items.size() > 0) {
-			ItemStack stack = inv.getStackInSlot(items.get(worldObj.rand.nextInt(items.size())));
-			if (stack != null && stack.getItem() instanceof IEnergyContainerItem) {
-				IEnergyContainerItem item = (IEnergyContainerItem) stack.getItem();
-				while (item.getEnergyStored(stack) > 0) {
-					item.extractEnergy(stack, item.getEnergyStored(stack), false);
-				}
-			}
-		}
+		// if (/* !worldObj.isRemote && */items.size() > 0) {
+		// ItemStack stack = inv.getStackInSlot(items.get(worldObj.rand.nextInt(items.size())));
+		// if (stack != null && stack.getItem() instanceof IEnergyContainerItem) {
+		// IEnergyContainerItem item = (IEnergyContainerItem) stack.getItem();
+		// while (item.getEnergyStored(stack) > 0) {
+		// item.extractEnergy(stack, item.getEnergyStored(stack), false);
+		// }
+		// }
+		// }
 	}
 
 }

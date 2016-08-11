@@ -14,7 +14,6 @@ import bourgeoisarab.divinealchemy.common.potion.ingredient.IngredientEssenceCry
 import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModItems;
-import bourgeoisarab.divinealchemy.reference.Ref;
 
 public class ItemEssenceCrystal extends Item {
 
@@ -25,7 +24,6 @@ public class ItemEssenceCrystal extends Item {
 		setMaxDamage(0);
 		setHasSubtypes(true);
 		setUnlocalizedName("essenceCrystal");
-		setTextureName(Ref.Location.PREFIX + "essenceCrystal");
 	}
 
 	static {

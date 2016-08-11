@@ -6,8 +6,8 @@ import net.minecraft.potion.PotionEffect;
 
 public class PotionSmite extends ModPotion {
 
-	public PotionSmite(int id, boolean isBadEffect, int colour) {
-		super(id, isBadEffect, colour);
+	public PotionSmite(String name, boolean isBadEffect, int colour) {
+		super(name, isBadEffect, colour);
 		setPotionName("potion.smite");
 	}
 

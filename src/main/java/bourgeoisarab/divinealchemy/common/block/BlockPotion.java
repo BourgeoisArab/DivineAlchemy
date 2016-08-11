@@ -5,97 +5,86 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.FluidStack;
-import bourgeoisarab.divinealchemy.common.potion.Colouring;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import bourgeoisarab.divinealchemy.common.potion.Effects;
 import bourgeoisarab.divinealchemy.common.potion.IBlockEffect;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.tileentity.TEPotion;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
 import bourgeoisarab.divinealchemy.init.ModFluids;
-import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.utility.ColourHelper;
 import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockPotion extends BlockFluidClassic implements ITileEntityProvider {
-
-	@SideOnly(Side.CLIENT)
-	protected IIcon stillIcon;
-	@SideOnly(Side.CLIENT)
-	protected IIcon flowingIcon;
 
 	protected static final int duration = 100;
 
 	public BlockPotion() {
 		super(ModFluids.potion, Material.water);
 		ModFluids.potion.setBlock(this);
-		setBlockName("potion");
+		setUnlocalizedName("potion");
 		setQuantaPerBlock(4);
 		isBlockContainer = true;
 	}
 
 	@Override
-	public IIcon getIcon(int side, int meta) {
-		return side == 0 || side == 1 ? stillIcon : flowingIcon;
+	@SideOnly(Side.CLIENT)
+	public int colorMultiplier(IBlockAccess world, BlockPos pos, int pass) {
+		TileEntity te = world.getTileEntity(pos);
+		if (te instanceof TEPotion) {
+			TEPotion tile = (TEPotion) te;
+			Effects effects = tile.getEffects();
+			return ColourHelper.combineColours(ColourHelper.getColourFromEffects(effects.getEffects(), tile.getColouring()));
+		}
+		return 0xFFFFFF;
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister register) {
-		stillIcon = register.registerIcon(Ref.Location.PREFIX + "potion_still");
-		flowingIcon = register.registerIcon(Ref.Location.PREFIX + "potion_flow");
-		ModFluids.potion.setIcons(stillIcon, flowingIcon);
-	}
-
-	@Override
-	public boolean canDisplace(IBlockAccess world, int x, int y, int z) {
-		Block block = world.getBlock(x, y, z);
+	public boolean canDisplace(IBlockAccess world, BlockPos pos) {
+		Block block = world.getBlockState(pos).getBlock();
 
 		if (block.getMaterial().isLiquid()) {
 			return false;
 		}
-		TileEntity entity = world.getTileEntity(x, y, z);
+		TileEntity entity = world.getTileEntity(pos);
 		if (entity instanceof TEPotion) {
 			TEPotion tile = (TEPotion) entity;
 			if (block == ModBlocks.potion && (tile.getEffects() == null || tile.getEffects().size() < 1)) {
 				return true;
 			}
 		}
-		return super.canDisplace(world, x, y, z);
+		return super.canDisplace(world, pos);
 	}
 
 	@Override
-	public boolean displaceIfPossible(World world, int x, int y, int z) {
-		if (world.getBlock(x, y, z).getMaterial().isLiquid()) {
+	public boolean displaceIfPossible(World world, BlockPos pos) {
+		if (world.getBlockState(pos).getBlock().getMaterial().isLiquid()) {
 			return false;
 		}
-		return super.displaceIfPossible(world, x, y, z);
+		return super.displaceIfPossible(world, pos);
 	}
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
-		// if (meta == 0) {
 		return new TEPotion();
-		// } else {
-		// return null;
-		// }
 	}
 
-	public TEPotion getTileEntity(IBlockAccess world, int x, int y, int z) {
+	public TEPotion getTileEntity(IBlockAccess world, BlockPos pos) {
 		// if (world.getBlockMetadata(x, y, z) == 0) {
-		return (TEPotion) world.getTileEntity(x, y, z);
+		return (TEPotion) world.getTileEntity(pos);
 		// }
 		// int[] coords = getSourceBlockCoords(world, x, y, z);
 		// if (coords == null) {
@@ -146,24 +135,14 @@ public class BlockPotion extends BlockFluidClassic implements ITileEntityProvide
 	// }
 
 	@Override
-	public boolean renderAsNormalBlock() {
-		return false;
-	}
-
-	@Override
-	public int getRenderType() {
-		return 100;
-	}
-
-	@Override
-	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
-		TEPotion tile = getTileEntity(world, x, y, z);
+	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
+		TEPotion tile = getTileEntity(world, pos);
 
 		if (entity instanceof EntityLivingBase && tile != null) {
 
-			List<PotionEffect> effects = tile.getEffects().getEffects();
-
-			if (effects != null) {
+			Effects e = tile.getEffects();
+			if (e != null) {
+				List<PotionEffect> effects = tile.getEffects().getEffects();
 				for (int i = 0; i < effects.size(); i++) {
 					PotionEffect effect = new PotionEffect(effects.get(i).getPotionID(), duration, effects.get(i).getAmplifier());
 
@@ -177,7 +156,7 @@ public class BlockPotion extends BlockFluidClassic implements ITileEntityProvide
 						}
 					}
 					if (p instanceof IBlockEffect) {
-						((IBlockEffect) p).applyBlockEffect(world, x, y, z, (EntityLivingBase) entity, activeEffect);
+						((IBlockEffect) p).applyBlockEffect(world, pos, (EntityLivingBase) entity, activeEffect);
 					}
 				}
 			}
@@ -185,71 +164,69 @@ public class BlockPotion extends BlockFluidClassic implements ITileEntityProvide
 	}
 
 	@Override
-	protected void flowIntoBlock(World world, int x, int y, int z, int meta) {
-		super.flowIntoBlock(world, x, y, z, meta);
-		if (world.getTileEntity(x, y, z) instanceof TEPotion) {
-			TEPotion t = (TEPotion) world.getTileEntity(x, y, z);
-			if (t.getEffects() != null && t.getEffects().size() <= 0) {
-				Effects effects = null;
-				Colouring colouring = null;
-				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-					TileEntity entity = world.getTileEntity(x + dir.offsetX, y + dir.offsetY, z + dir.offsetZ);
+	protected void flowIntoBlock(World world, BlockPos pos, int meta) {
+		super.flowIntoBlock(world, pos, meta);
+		if (world.getTileEntity(pos) instanceof TEPotion) {
+			TEPotion t = (TEPotion) world.getTileEntity(pos);
+			Effects e = t.getEffects();
+			// Log.info(e);
+			if (e == null || e != null && e.size() <= 0) {
+				FluidStack fluid = null;
+				for (EnumFacing dir : EnumFacing.VALUES) {
+					TileEntity entity = world.getTileEntity(pos.offset(dir));
 					if (entity instanceof TEPotion) {
-						TEPotion tile = (TEPotion) entity;
-						effects = tile.getEffects();
-						colouring = tile.getColouring();
+						fluid = ((TEPotion) entity).getFluid();
 						break;
 					}
 				}
-				t.setEffects(effects);
-				t.setColouring(colouring);
+				t.setFluid(fluid);
 			}
 		}
 	}
 
 	@Override
-	public boolean canDrain(World world, int x, int y, int z) {
+	public boolean canDrain(World world, BlockPos pos) {
 		// Overrides super method to fix refilling of potion buckets when CoFHCore is installed
 		// Uses custom bucket handler {@link BucketHandler}
-		return false;
+		return super.canDrain(world, pos);
 	}
 
 	@Override
-	public FluidStack drain(World world, int x, int y, int z, boolean doDrain) {
-		if (!isSourceBlock(world, x, y, z)) {
+	public FluidStack drain(World world, BlockPos pos, boolean doDrain) {
+		if (!isSourceBlock(world, pos)) {
 			return null;
 		}
 		if (doDrain) {
-			world.setBlock(x, y, z, Blocks.air);
+			world.setBlockToAir(pos);
 		}
 
-		if (world.getTileEntity(x, y, z) instanceof TEPotion) {
-			TEPotion tile = (TEPotion) world.getTileEntity(x, y, z);
-			return NBTEffectHelper.setEffectsForFluid(stack.copy(), tile.getEffects());
+		if (world.getTileEntity(pos) instanceof TEPotion) {
+			TEPotion tile = (TEPotion) world.getTileEntity(pos);
+			return NBTEffectHelper.setEffects(stack.copy(), tile.getEffects());
 		}
 		return stack.copy();
 	}
 
 	@Override
-	public void breakBlock(World world, int xCoord, int yCoord, int zCoord, Block block, int i1) {
-		Effects effects = ((TEPotion) world.getTileEntity(xCoord, yCoord, zCoord)).getEffects();
-		super.breakBlock(world, xCoord, yCoord, zCoord, block, i1);
-		world.removeTileEntity(xCoord, yCoord, zCoord);
-		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-			TileEntity entity = world.getTileEntity(xCoord + dir.offsetX, yCoord + dir.offsetY, zCoord + dir.offsetZ);
-			if (entity instanceof TEPotion && !isSourceBlock(world, xCoord + dir.offsetX, yCoord + dir.offsetY, zCoord + dir.offsetZ)) {
-				if (effects == ((TEPotion) entity).getEffects()) {
-					world.setBlockToAir(xCoord + dir.offsetX, yCoord + dir.offsetY, zCoord + dir.offsetZ);
+	public void breakBlock(World world, BlockPos pos, IBlockState state) {
+		FluidStack fluid = ((TEPotion) world.getTileEntity(pos)).getFluid();
+		super.breakBlock(world, pos, state);
+		world.removeTileEntity(pos);
+		for (EnumFacing dir : EnumFacing.VALUES) {
+			TileEntity entity = world.getTileEntity(pos.offset(dir));
+			if (entity instanceof TEPotion && !isSourceBlock(world, pos.offset(dir))) {
+				if (fluid.isFluidEqual(((TEPotion) entity).getFluid())) {
+					world.setBlockToAir(pos.offset(dir));
 				}
 			}
 		}
 	}
 
 	@Override
-	public boolean onBlockEventReceived(World world, int x, int y, int z, int n, int m) {
-		super.onBlockEventReceived(world, x, y, z, n, m);
-		TileEntity tile = world.getTileEntity(x, y, z);
-		return tile != null ? tile.receiveClientEvent(n, m) : false;
+	public boolean onBlockEventReceived(World world, BlockPos pos, IBlockState state, int eventID, int eventParam) {
+		super.onBlockEventReceived(world, pos, state, eventID, eventParam);
+		TileEntity tile = world.getTileEntity(pos);
+		return tile != null ? tile.receiveClientEvent(eventID, eventParam) : false;
 	}
 
 }

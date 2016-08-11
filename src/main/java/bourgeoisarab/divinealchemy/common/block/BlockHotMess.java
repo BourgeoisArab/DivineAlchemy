@@ -1,50 +1,35 @@
 package bourgeoisarab.divinealchemy.common.block;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import bourgeoisarab.divinealchemy.common.potion.IDivinePotion;
 import bourgeoisarab.divinealchemy.common.potion.IEvilPotion;
 import bourgeoisarab.divinealchemy.init.ModFluids;
-import bourgeoisarab.divinealchemy.reference.Ref;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockHotMess extends BlockFluidClassic {
 
-	@SideOnly(Side.CLIENT)
-	protected IIcon stillIcon;
-	@SideOnly(Side.CLIENT)
-	protected IIcon flowingIcon;
-
 	public BlockHotMess() {
 		super(ModFluids.hotMess, Material.water);
-		setBlockName("hotMess");
+		setUnlocalizedName("hotmess");
 		ModFluids.hotMess.setBlock(this);
 		setQuantaPerBlock(4);
 	}
 
 	@Override
-	public IIcon getIcon(int side, int meta) {
-		return side == 0 || side == 1 ? stillIcon : flowingIcon;
+	public int getRenderType() {
+		return 3;
 	}
 
 	@Override
-	public void registerBlockIcons(IIconRegister register) {
-		stillIcon = register.registerIcon(Ref.MODID + ":hotmess_still");
-		flowingIcon = register.registerIcon(Ref.MODID + ":hotmess_flow");
-		ModFluids.hotMess.setIcons(stillIcon, flowingIcon);
-	}
-
-	@Override
-	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
+	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
 		if (!world.isRemote) {
 			if (entity instanceof EntityLivingBase) {
 				EntityLivingBase entityLiving = (EntityLivingBase) entity;

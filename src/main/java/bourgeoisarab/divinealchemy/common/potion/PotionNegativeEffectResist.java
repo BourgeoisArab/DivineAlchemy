@@ -9,8 +9,8 @@ import net.minecraft.potion.PotionEffect;
 
 public class PotionNegativeEffectResist extends ModPotion {
 
-	public PotionNegativeEffectResist(int id, boolean isBadEffect, int colour) {
-		super(id, isBadEffect, colour);
+	public PotionNegativeEffectResist(String name, boolean isBadEffect, int colour) {
+		super(name, isBadEffect, colour);
 	}
 
 	@Override
@@ -20,7 +20,7 @@ public class PotionNegativeEffectResist extends ModPotion {
 			ItemStack cure = new ItemStack(Blocks.dragon_egg);
 			while (i.hasNext()) {
 				PotionEffect effect = i.next();
-				if (ModPotion.getPotion(effect.getPotionID()).isBadEffect()) {
+				if (ModPotion.getPotion(effect.getPotionID()).isBadEffect) {
 					effect.addCurativeItem(cure);
 				}
 			}

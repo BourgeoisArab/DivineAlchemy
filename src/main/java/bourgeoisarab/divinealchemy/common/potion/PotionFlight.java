@@ -2,17 +2,15 @@ package bourgeoisarab.divinealchemy.common.potion;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.PotionEffect;
-import bourgeoisarab.divinealchemy.common.entity.ai.EntityAIFlight;
 
 public class PotionFlight extends ModPotion {
 
-	public PotionFlight(int id, boolean isBadEffect, int colour) {
-		super(id, isBadEffect, colour);
+	public PotionFlight(String name, boolean isBadEffect, int colour) {
+		super(name, isBadEffect, colour);
 		setPotionName("potion.flight");
-		setIcon("minecraft:textures/items/feather.png");
+		// setIcon("minecraft:textures/items/feather.png");
 	}
 
 	@Override
@@ -32,16 +30,17 @@ public class PotionFlight extends ModPotion {
 			EntityPlayer player = (EntityPlayer) entity;
 			player.capabilities.allowFlying = false;
 			player.capabilities.isFlying = false;
-		} else if (entity instanceof EntityLiving) {
-			EntityLiving entityLiving = (EntityLiving) entity;
-			EntityAIBase task = null;
-			for (int i = 0; i < entityLiving.tasks.taskEntries.size(); i++) {
-				if (entityLiving.tasks.taskEntries.get(i) instanceof EntityAIFlight) {
-					task = (EntityAIBase) entityLiving.tasks.taskEntries.get(i);
-				}
-			}
-			entityLiving.tasks.removeTask(task);
 		}
+		// else if (entity instanceof EntityLiving) {
+		// EntityLiving entityLiving = (EntityLiving) entity;
+		// EntityAIBase task = null;
+		// for (int i = 0; i < entityLiving.tasks.taskEntries.size(); i++) {
+		// if (entityLiving.tasks.taskEntries.get(i) instanceof EntityAIFlight) {
+		// task = (EntityAIBase) entityLiving.tasks.taskEntries.get(i);
+		// }
+		// }
+		// entityLiving.tasks.removeTask(task);
+		// }
 	}
 
 }

@@ -2,8 +2,8 @@ package bourgeoisarab.divinealchemy.common.potion;
 
 public class PotionExplosionAbsorb extends ModPotion implements IEvilPotion {
 
-	public PotionExplosionAbsorb(int id, boolean isBadEffect, int colour) {
-		super(id, isBadEffect, colour);
+	public PotionExplosionAbsorb(String name, boolean isBadEffect, int colour) {
+		super(name, isBadEffect, colour);
 		setPotionName("potion.explodeabsorb");
 	}
 

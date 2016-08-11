@@ -2,9 +2,9 @@ package bourgeoisarab.divinealchemy.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import bourgeoisarab.divinealchemy.common.entity.EntityPlayerClone;
 import bourgeoisarab.divinealchemy.utility.Log;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class MessageSpawnClone extends MessageBase<MessageSpawnClone> {
 
@@ -25,7 +25,7 @@ public class MessageSpawnClone extends MessageBase<MessageSpawnClone> {
 		z = clone.posZ;
 		yaw = clone.rotationYaw;
 		yawHead = clone.rotationYawHead;
-		master = clone.master.getDisplayName();
+		master = clone.master.getDisplayName().toString();
 	}
 
 	@Override

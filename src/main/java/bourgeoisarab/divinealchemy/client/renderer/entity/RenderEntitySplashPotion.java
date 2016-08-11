@@ -1,19 +1,25 @@
 package bourgeoisarab.divinealchemy.client.renderer.entity;
 
-import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
-import bourgeoisarab.divinealchemy.init.ModItems;
-import bourgeoisarab.divinealchemy.utility.ColourHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
+import bourgeoisarab.divinealchemy.init.ModItems;
+import bourgeoisarab.divinealchemy.utility.ColourHelper;
+
 public class RenderEntitySplashPotion extends Render {
+
+	public RenderEntitySplashPotion(RenderManager manager) {
+		super(manager);
+	}
 
 	private final ItemStack stack = new ItemStack(ModItems.bottlePotion, 1, 1);
 
@@ -63,42 +69,43 @@ public class RenderEntitySplashPotion extends Render {
 		GL11.glScalef(0.5F, 0.5F, 0.5F);
 
 		// bindEntityTexture(entity);
-		Tessellator tessellator = Tessellator.instance;
+		Tessellator tessellator = Tessellator.getInstance();
+		WorldRenderer renderer = tessellator.getWorldRenderer();
 
 		float[] col = ColourHelper.getFloatColours(ColourHelper.separateColours(ModItems.bottlePotion.getColorFromItemStack(stack, 1)));
 		GL11.glColor3f(col[0], col[1], col[2]);
 
 		GL11.glPushMatrix();
-		IIcon iicon = stack.getItem().getIcon(stack, 1);
-		draw(tessellator, iicon);
+		// IIcon iicon = stack.getItem().getIcon(stack, 1);
+		// draw(tessellator, iicon);
 		GL11.glPopMatrix();
 
 		GL11.glColor3f(1.0F, 1.0F, 1.0F);
-		iicon = stack.getItem().getIcon(stack, 0);
-		draw(tessellator, iicon);
+		// iicon = stack.getItem().getIcon(stack, 0);
+		// draw(tessellator, iicon);
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		GL11.glPopMatrix();
 
 	}
 
-	private void draw(Tessellator t, IIcon icon) {
-		float f = icon.getMinU();
-		float f1 = icon.getMaxU();
-		float f2 = icon.getMinV();
-		float f3 = icon.getMaxV();
-		float f4 = 1.0F;
-		float f5 = 0.5F;
-		float f6 = 0.25F;
-		GL11.glRotatef(180.0F - renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(-renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-		t.startDrawingQuads();
-		t.setNormal(0.0F, 1.0F, 0.0F);
-		t.addVertexWithUV(0.0F - f5, 0.0F - f6, 0.0D, f, f3);
-		t.addVertexWithUV(f4 - f5, 0.0F - f6, 0.0D, f1, f3);
-		t.addVertexWithUV(f4 - f5, f4 - f6, 0.0D, f1, f2);
-		t.addVertexWithUV(0.0F - f5, f4 - f6, 0.0D, f, f2);
-		t.draw();
-	}
+	// private void draw(Tessellator t, WorldRenderer r, IIcon icon) {
+	// float f = icon.getMinU();
+	// float f1 = icon.getMaxU();
+	// float f2 = icon.getMinV();
+	// float f3 = icon.getMaxV();
+	// float f4 = 1.0F;
+	// float f5 = 0.5F;
+	// float f6 = 0.25F;
+	// GL11.glRotatef(180.0F - renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+	// GL11.glRotatef(-renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+	// t.startDrawingQuads();
+	// r.setNormal(0.0F, 1.0F, 0.0F);
+	// r.addVertexWithUV(0.0F - f5, 0.0F - f6, 0.0D, f, f3);
+	// r.addVertexWithUV(f4 - f5, 0.0F - f6, 0.0D, f1, f3);
+	// r.addVertexWithUV(f4 - f5, f4 - f6, 0.0D, f1, f2);
+	// r.addVertexWithUV(0.0F - f5, f4 - f6, 0.0D, f, f2);
+	// r.draw();
+	// }
 
 	@Override
 	protected ResourceLocation getEntityTexture(Entity entity) {

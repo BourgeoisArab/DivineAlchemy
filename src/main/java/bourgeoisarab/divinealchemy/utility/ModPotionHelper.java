@@ -32,7 +32,7 @@ public class ModPotionHelper {
 		Potion potion;
 		do {
 			potion = Potion.potionTypes[random.nextInt(Potion.potionTypes.length - 1)];
-		} while (potion == null || potion.isBadEffect() != badEffect || tier == 1 && tier1blacklist.contains(potion.id));
+		} while (potion == null || potion.isBadEffect != badEffect || tier == 1 && tier1blacklist.contains(potion.id));
 		return potion;
 	}
 

@@ -1,13 +1,12 @@
 package bourgeoisarab.divinealchemy.init.crafting;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
 import bourgeoisarab.divinealchemy.init.ModItems;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class Recipes {
 
@@ -17,8 +16,8 @@ public class Recipes {
 		GameRegistry.addRecipe(new ItemStack(ModBlocks.brewingCauldron, 1, 2), new Object[]{"I I", "ICI", "III", 'I', Items.diamond, 'C', new ItemStack(ModBlocks.brewingCauldron, 1, 1)});
 		GameRegistry.addRecipe(new ItemStack(ModBlocks.brewingCauldron, 1, 3), new Object[]{"I I", "ICI", "III", 'I', Items.emerald, 'C', new ItemStack(ModBlocks.brewingCauldron, 1, 2)});
 		GameRegistry.addRecipe(new ItemStack(ModBlocks.brewingCauldron, 1, 4), new Object[]{"I I", "ICI", "III", 'I', Items.nether_star, 'C', new ItemStack(ModBlocks.brewingCauldron, 1, 3)});
-		GameRegistry.addRecipe(new ItemStack(ModBlocks.infusedBrick, 4), new Object[]{"SCS", "CPC", "SCS", 'S', Blocks.sand, 'C', Items.clay_ball, 'P', ModItems.bottlePotion});
-		GameRegistry.addRecipe(new ItemStack(ModBlocks.infusedBrick, 4), new Object[]{"CSC", "SPS", "CSC", 'S', Blocks.sand, 'C', Items.clay_ball, 'P', ModItems.bottlePotion});
+		// GameRegistry.addRecipe(new ItemStack(ModBlocks.infusedBrick, 4), new Object[]{"SCS", "CPC", "SCS", 'S', Blocks.sand, 'C', Items.clay_ball, 'P', ModItems.bottlePotion});
+		// GameRegistry.addRecipe(new ItemStack(ModBlocks.infusedBrick, 4), new Object[]{"CSC", "SPS", "CSC", 'S', Blocks.sand, 'C', Items.clay_ball, 'P', ModItems.bottlePotion});
 		// for (int i = 0; i < 5; i++) {
 		// GameRegistry.addRecipe(new ItemStack(ModBlocks.blockPotionVat, 1, i),
 		// new Object[]{"BDB", "ICI", "BIB", 'B', ModBlocks.blockInfusedBrick,
@@ -27,6 +26,7 @@ public class Recipes {
 		// }
 		GameRegistry.addRecipe(new ItemStack(ModItems.instillationTome), new Object[]{"PWP", "WBW", "PWP", 'P', Items.blaze_powder, 'W', Items.nether_wart, 'B', Items.book});
 		GameRegistry.addRecipe(new ItemStack(ModItems.instillationTome), new Object[]{"WPW", "PBP", "WPW", 'P', Items.blaze_powder, 'W', Items.nether_wart, 'B', Items.book});
+		GameRegistry.addShapelessRecipe(new ItemStack(Items.glass_bottle), new ItemStack(ModItems.bottlePotion, 1, 0));
 
 		String foodCrafting = "Food Crafting";
 		GameRegistry.addRecipe(new CraftingPotionFood());

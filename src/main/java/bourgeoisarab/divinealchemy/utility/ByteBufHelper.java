@@ -7,12 +7,12 @@ import java.util.List;
 import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import bourgeoisarab.divinealchemy.common.potion.Colouring;
 import bourgeoisarab.divinealchemy.common.potion.Effects;
 import bourgeoisarab.divinealchemy.common.potion.Ingredients;
 import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
 
 public class ByteBufHelper {
 

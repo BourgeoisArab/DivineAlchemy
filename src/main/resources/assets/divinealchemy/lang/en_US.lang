@@ -1,0 +1,57 @@
+itemGroup.tabDivineAlchemy=Divine Alchemy
+
+fluid.fluidPotion=Potion
+fluid.fluidHotMess=Hot Mess
+
+tile.brewingCauldron.name=Brewing Cauldron
+tile.potion.name=Potion
+tile.potionTank.name=Tank
+tile.obelisk.name=Obelisk Brick
+tile.obelisk.receptacle.name=Crystal Receptacle
+
+item.instillationTome.name=The Dichotomy of Good and Evil
+item.potionBottle.name=Potion Bottle
+item.enderBottle.name=Ender Bottle
+item.enderBottle.bound=Bound to %s
+item.enderBottle.unbound=Unbound
+item.bucketPotion.name=Potion Bucket
+item.bucketHotMess.name=Bucket of Hot Mess
+item.essenceCrystal.name=Essence Crystal
+item.organ.name=Organ
+item.organ.heart.name=Heart
+item.organ.lungs.name=Lungs
+item.organ.kidneys.name=Kidneys
+item.organ.intestines.name=Intestines
+item.organ.liver.name=Liver
+item.organ.brain.name=Brain
+item.organ.stomach.name=Stomach
+item.organ.pancreas.name=Pancreas
+item.organ.human=Human
+item.organ.animal=Animal
+item.organ.zombie=Rotten
+item.butcherKnife.name=Butchering Knife
+item.crystalBasic.name=Magic Shard
+item.crystalMedium.name=Magic Crystal
+item.crystalBig.name=Magic Cluster
+
+item.potion.empty=Empty
+item.potion.uses=%s uses remaining
+item.potion.use=1 use remaining
+item.potion.splash=Splash
+item.potion.blessed=Blessed
+item.potion.cursed=Cursed
+
+entity.ChargeCreeper.name=Discharge Creeper
+
+potion.flight=Flight
+potion.effectResist=Magic Resistance
+potion.day=Daytime
+potion.witherAura=Wither Aura
+
+commands.divinity.usage=/divinity <set|add> [player] <value> OR /divinity get <player>
+commands.divinity.outOfBounds=Value must be between -1.0 and 1.0
+commands.divinity.setDivinity=%s's divinity was set to %s
+commands.divinity.addDivinity=%s's divinity was offset by %s
+commands.divinity.getDivinity=%s's divinity is %s
+commands.power.usage=/power [player]
+commands.power.get=%s's current power: %s/%s

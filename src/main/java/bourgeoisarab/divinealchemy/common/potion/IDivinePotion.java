@@ -1,6 +1,5 @@
 package bourgeoisarab.divinealchemy.common.potion;
 
-
-public interface IDivinePotion {
+public interface IDivinePotion extends IAlignedPotion {
 
 }

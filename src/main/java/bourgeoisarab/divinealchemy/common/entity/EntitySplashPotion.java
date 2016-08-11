@@ -45,7 +45,7 @@ public class EntitySplashPotion extends EntityThrowable {
 	protected void onImpact(MovingObjectPosition pos) {
 		if (!worldObj.isRemote) {
 			if (effects != null && effects.size() > 0) {
-				AxisAlignedBB bb = boundingBox.expand(4.0D, 2.0D, 4.0D);
+				AxisAlignedBB bb = getCollisionBoundingBox().expand(4.0D, 2.0D, 4.0D);
 				List entities = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
 				if (entities != null && entities.size() > 0) {
 					for (int i = 0; i < entities.size(); i++) {
@@ -59,7 +59,7 @@ public class EntitySplashPotion extends EntityThrowable {
 							for (PotionEffect j : effects.getEffects()) {
 								Potion potion = ModPotion.getPotion(j.getPotionID());
 								if (potion.isInstant()) {
-									potion.affectEntity(getThrower(), entity, j.getAmplifier(), affect);
+									potion.affectEntity(getThrower(), getThrower(), entity, j.getAmplifier(), affect);
 								} else {
 									PotionEffect effect = new PotionEffect(j.getPotionID(), (int) (affect * j.getDuration() + 0.5D), j.getAmplifier());
 									entity.addPotionEffect(effect);
@@ -82,13 +82,13 @@ public class EntitySplashPotion extends EntityThrowable {
 	@Override
 	public void readEntityFromNBT(NBTTagCompound nbt) {
 		super.readEntityFromNBT(nbt);
-		effects = NBTEffectHelper.getEffectsFromNBT(nbt);
+		effects = NBTEffectHelper.getEffects(nbt);
 	}
 
 	@Override
 	public void writeEntityToNBT(NBTTagCompound nbt) {
 		super.writeEntityToNBT(nbt);
-		NBTEffectHelper.setEffectsForNBT(nbt, effects);
+		NBTEffectHelper.setEffects(nbt, effects);
 	}
 
 	public Effects getEffects() {

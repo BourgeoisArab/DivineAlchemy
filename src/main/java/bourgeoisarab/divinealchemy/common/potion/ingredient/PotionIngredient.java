@@ -9,18 +9,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import bourgeoisarab.divinealchemy.common.potion.IDivinePotion;
-import bourgeoisarab.divinealchemy.common.potion.IEvilPotion;
+import bourgeoisarab.divinealchemy.common.potion.IAlignedPotion;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
-import bourgeoisarab.divinealchemy.common.tileentity.IPotionBrewer;
-import bourgeoisarab.divinealchemy.init.ConfigHandler;
+import bourgeoisarab.divinealchemy.common.tileentity.TEPotionBrewer;
 import bourgeoisarab.divinealchemy.init.ModItems;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
 
 public class PotionIngredient {
 
 	public static final List<PotionIngredient> ingredients = new ArrayList<PotionIngredient>();
-	public static final IngredientEssenceCrystal[] crystals = new IngredientEssenceCrystal[128];
+	public static final IngredientEssenceCrystal[] crystals = new IngredientEssenceCrystal[256];
+	// public static final Map<Integer, IngredientEssenceCrystal> crystalMap = Maps.newHashMap();
 
 	public static final PotionIngredient magmaCream = new PotionIngredient(new ItemStack(Items.magma_cream), 0, Potion.fireResistance);
 	public static final PotionIngredient sugar = new PotionIngredient(new ItemStack(Items.sugar), 0, Potion.moveSpeed);
@@ -104,9 +103,9 @@ public class PotionIngredient {
 		return priority;
 	}
 
-	public void applyEffect(IPotionBrewer tile, Random rand, boolean sideEffect) {
-		tile.addEffect(getEffect(tile, sideEffect), sideEffect);
-		tile.removeIngredient(this, ConfigHandler.maxEffects);
+	public void applyEffect(TEPotionBrewer tile, Random rand, boolean sideEffect) {
+		// tile.addEffect(getEffect(tile, sideEffect), sideEffect);
+		// tile.removeIngredient(this, ConfigHandler.maxEffects);
 	}
 
 	public Potion getPotion() {
@@ -122,7 +121,17 @@ public class PotionIngredient {
 	}
 
 	public NBTTagCompound getNBT() {
-		return stack.stackTagCompound;
+		return stack.getTagCompound();
+	}
+
+	public static boolean addSideEffect(TEPotionBrewer tile, PotionIngredient ing, Random rand) {
+		if (ing.getPotion() != null) {
+			return addSideEffect(tile, !ing.getPotion().isBadEffect, rand);
+		}
+		if (ing.instability != 0) {
+			return addSideEffect(tile, ing.instability > 0, rand);
+		}
+		return true;
 	}
 
 	/**
@@ -131,18 +140,18 @@ public class PotionIngredient {
 	 * @param rand
 	 * @return true, if adding ingredients was successful; false, if no more were accepted
 	 */
-	public static boolean addSideEffect(IPotionBrewer tile, boolean badEffect, Random rand) {
+	public static boolean addSideEffect(TEPotionBrewer tile, boolean badEffect, Random rand) {
 		if (tile.getProperties().isStable) {
 			return true;
 		}
 		float chance = rand.nextFloat();
 		int number = 0;
 		for (int i = 0; i < 3; i++) {
-			if (chance < tile.getInstability() / Math.pow(3, i)) {
-				number++;
-			} else {
-				break;
-			}
+			// if (chance < tile.getInstability() * 2 / Math.pow(3, i)) {
+			// number++;
+			// } else {
+			// break;
+			// }
 		}
 		for (int i = 0; i < number; i++) {
 			PotionIngredient ing = crystals[rand.nextInt(crystals.length - 1)];
@@ -150,12 +159,12 @@ public class PotionIngredient {
 				continue;
 			}
 			Potion p = ing.getPotion();
-			if (p == null || p.isBadEffect() != badEffect || p instanceof IDivinePotion || p instanceof IEvilPotion || ModPotionHelper.tier1blacklist.contains(p.getId())) {
+			if (p == null || p.isBadEffect != badEffect || p instanceof IAlignedPotion || ModPotionHelper.tier1blacklist.contains(p.getId())) {
 				continue;
 			} else {
-				if (!tile.addIngredient(ing, true)) {
-					return false;
-				}
+				// if (!tile.addIngredient(ing, true)) {
+				// return false;
+				// }
 			}
 		}
 		return true;
@@ -219,15 +228,16 @@ public class PotionIngredient {
 		return null;
 	}
 
-	public PotionEffect getEffect(IPotionBrewer tile, boolean sideEffect) {
-		int duration = !tile.getProperties().isStable ? new Random().nextInt(tile.getMaxDuration() / 4) + tile.getMaxDuration() / 4 : tile.getMaxDuration();
-		if (sideEffect) {
-			duration = (int) (duration * ((tile.getInstability() + 1) / 2));
-		}
-		if (getPotion().isInstant()) {
-			duration = 1;
-		}
-		return new PotionEffect(effect.id, duration, getAmplifier(tile.countIngredient(this), getMaxAmplifier()));
+	public PotionEffect getEffect(TEPotionBrewer tile, boolean sideEffect) {
+		return null;
+		// int duration = !tile.getProperties().isStable ? new Random().nextInt(tile.getMaxDuration() / 4) + tile.getMaxDuration() / 4 : tile.getMaxDuration();
+		// if (sideEffect) {
+		// duration = (int) (duration * ((tile.getInstability() + 1) / 2));
+		// }
+		// if (getPotion().isInstant()) {
+		// duration = 1;
+		// }
+		// return new PotionEffect(effect.id, duration, getAmplifier(tile.countIngredient(this), getMaxAmplifier()));
 	}
 
 	public int getPotionID() {

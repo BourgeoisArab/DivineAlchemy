@@ -1,0 +1,16 @@
+[
+{
+  "modid": "divinealchemy",
+  "name": "Divine Alchemy",
+  "description": "This is a mod to enhance and vastly expand the brewing capabilities of Minecraft.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["BourgeoisArab"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

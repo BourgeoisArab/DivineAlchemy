@@ -2,19 +2,19 @@ package bourgeoisarab.divinealchemy.common.item;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
@@ -23,28 +23,20 @@ import bourgeoisarab.divinealchemy.common.potion.Effects;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.tileentity.TEPotion;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
-import bourgeoisarab.divinealchemy.reference.Ref;
+import bourgeoisarab.divinealchemy.init.ModFluids;
 import bourgeoisarab.divinealchemy.utility.ColourHelper;
+import bourgeoisarab.divinealchemy.utility.Log;
 import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemBucketPotion extends ItemBucket implements IFluidContainerItem {
 
-	@SideOnly(Side.CLIENT)
-	public IIcon overlay;
-	private int capacity = FluidContainerRegistry.BUCKET_VOLUME;
+	private int capacity;
 
-	public ItemBucketPotion(Block block) {
-		super(block);
+	public ItemBucketPotion() {
+		super(ModBlocks.potion);
 		setUnlocalizedName("bucketPotion");
 		setContainerItem(Items.bucket);
-	}
-
-	@Override
-	public void registerIcons(IIconRegister iconRegister) {
-		itemIcon = iconRegister.registerIcon(Ref.MODID + ":bucket_base");
-		overlay = iconRegister.registerIcon(Ref.MODID + ":bucket_overlay");
+		setCapacity(FluidContainerRegistry.BUCKET_VOLUME);
 	}
 
 	@Override
@@ -52,28 +44,18 @@ public class ItemBucketPotion extends ItemBucket implements IFluidContainerItem 
 		if (pass == 0) {
 			return 0xFFFFFF;
 		}
-		Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
+		Effects effects = NBTEffectHelper.getEffects(stack);
 		if (effects == null) {
 			return ColourHelper.potionColourInt;
 		}
-		Colouring colouring = NBTEffectHelper.getColouringFromStack(stack);
+		Colouring colouring = NBTEffectHelper.getColouring(stack);
 		int colour = ColourHelper.combineColours(ColourHelper.getColourFromEffects(effects.getEffects(), colouring));
 		return colour == -1 ? ColourHelper.potionColourInt : colour;
 	}
 
 	@Override
-	public boolean requiresMultipleRenderPasses() {
-		return true;
-	}
-
-	@Override
-	public IIcon getIconFromDamageForRenderPass(int meta, int pass) {
-		return pass == 0 ? itemIcon : overlay;
-	}
-
-	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool) {
-		Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
+		Effects effects = NBTEffectHelper.getEffects(stack);
 		if (effects != null) {
 			for (int i = 0; i < effects.size(); i++) {
 				Potion potion = ModPotion.getPotion(effects.getEffect(i).getPotionID());
@@ -85,8 +67,8 @@ public class ItemBucketPotion extends ItemBucket implements IFluidContainerItem 
 
 	@Override
 	public boolean hasEffect(ItemStack stack) {
-		if (NBTEffectHelper.getEffectsFromStack(stack) != null) {
-			if (NBTEffectHelper.getEffectsFromStack(stack).size() > 0) {
+		if (NBTEffectHelper.getEffects(stack) != null) {
+			if (NBTEffectHelper.getEffects(stack).size() > 0) {
 				return true;
 			}
 		}
@@ -95,30 +77,45 @@ public class ItemBucketPotion extends ItemBucket implements IFluidContainerItem 
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+		FluidStack fluid = getFluid(stack);
 		ItemStack stackReturn = super.onItemRightClick(stack, world, player);
 
-		MovingObjectPosition pos = getMovingObjectPositionFromPlayer(world, player, false);
-		if (pos == null) {
+		MovingObjectPosition mopos = getMovingObjectPositionFromPlayer(world, player, false);
+		if (mopos == null) {
 			return stack;
 		}
 
-		ForgeDirection dir = ForgeDirection.getOrientation(pos.sideHit);
+		BlockPos pos = mopos.getBlockPos().offset(mopos.sideHit);
 
-		int x = pos.blockX + dir.offsetX;
-		int y = pos.blockY + dir.offsetY;
-		int z = pos.blockZ + dir.offsetZ;
-
-		if (world.getBlock(x, y, z) == ModBlocks.potion) {
-			((TEPotion) world.getTileEntity(x, y, z)).setEffects(NBTEffectHelper.getEffectsFromStack(stack));
-			((TEPotion) world.getTileEntity(x, y, z)).setColouring(NBTEffectHelper.getColouringFromStack(stack));
+		if (world.getBlockState(pos).getBlock() == ModBlocks.potion) {
+			((TEPotion) world.getTileEntity(pos)).setFluid(fluid);
 		}
-		world.markBlockForUpdate(x, y, z);
+		world.markBlockForUpdate(pos);
 		return stackReturn;
 	}
 
 	@Override
+	public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
+		FluidStack fluid = getFluid(stack);
+		if (fluid == null || fluid.amount <= 0) {
+			if (entity instanceof EntityPlayer) {
+				EntityPlayer player = (EntityPlayer) entity;
+				player.inventory.setInventorySlotContents(slot, new ItemStack(Items.bucket, stack.stackSize));
+			}
+		}
+	}
+
+	@Override
 	public FluidStack getFluid(ItemStack stack) {
-		return FluidStack.loadFluidStackFromNBT(stack.stackTagCompound);
+		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("Fluid")) {
+			return null;
+		}
+		return FluidStack.loadFluidStackFromNBT(stack.getTagCompound().getCompoundTag("Fluid"));
+	}
+
+	public Item setCapacity(int capacity) {
+		this.capacity = capacity;
+		return this;
 	}
 
 	@Override
@@ -128,41 +125,89 @@ public class ItemBucketPotion extends ItemBucket implements IFluidContainerItem 
 
 	@Override
 	public int fill(ItemStack stack, FluidStack fluid, boolean doFill) {
-		FluidStack stored = getFluid(stack);
-		if (stored == null || stored.amount <= 0) {
-			int amount = fluid.amount;
-			if (fluid != null) {
-				if (fluid.amount > getCapacity(stack)) {
-					fluid.amount = getCapacity(stack);
-				}
-				if (doFill) {
-					fluid.writeToNBT(stack.stackTagCompound);
-				}
+		if (fluid == null || fluid != null && fluid.getFluid() != ModFluids.potion) {
+			Log.warn("Tried to fill potion bucket with non-potion fluid");
+			return 0;
+		}
+
+		if (!doFill) {
+			if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("Fluid")) {
+				return Math.min(capacity, fluid.amount);
 			}
+
+			FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(stack.getTagCompound().getCompoundTag("Fluid"));
+
+			if (fluidStack == null) {
+				return Math.min(capacity, fluid.amount);
+			}
+
+			if (!fluidStack.isFluidEqual(fluid)) {
+				return 0;
+			}
+			return Math.min(capacity - fluidStack.amount, fluid.amount);
+		}
+
+		if (stack.getTagCompound() == null) {
+			stack.setTagCompound(new NBTTagCompound());
+		}
+
+		if (!stack.getTagCompound().hasKey("Fluid")) {
+			NBTTagCompound fluidTag = fluid.writeToNBT(new NBTTagCompound());
+
+			if (capacity < fluid.amount) {
+				fluidTag.setInteger("Amount", capacity);
+				stack.getTagCompound().setTag("Fluid", fluidTag);
+				return capacity;
+			}
+
+			stack.getTagCompound().setTag("Fluid", fluidTag);
 			return fluid.amount;
 		}
-		return 0;
+
+		NBTTagCompound fluidTag = stack.getTagCompound().getCompoundTag("Fluid");
+		FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(fluidTag);
+
+		if (!fluidStack.isFluidEqual(fluid)) {
+			return 0;
+		}
+
+		int filled = capacity - fluidStack.amount;
+		if (fluid.amount < filled) {
+			fluidStack.amount += fluid.amount;
+			filled = fluid.amount;
+		} else {
+			fluidStack.amount = capacity;
+		}
+
+		stack.getTagCompound().setTag("Fluid", fluidStack.writeToNBT(fluidTag));
+		return filled;
 	}
 
 	@Override
 	public FluidStack drain(ItemStack stack, int maxDrain, boolean doDrain) {
-		FluidStack fluid = FluidStack.loadFluidStackFromNBT(stack.stackTagCompound);
-		if (fluid != null) {
-			int amount = Math.min(fluid.amount, maxDrain);
-			FluidStack drained = fluid;
-			if (amount < fluid.amount) {
-				drained = fluid.copy();
-				drained.amount = amount;
-			}
-			if (doDrain) {
-				if (drained.amount < fluid.amount) {
-					fluid.amount -= drained.amount;
-				} else {
-					fluid.amount = 0;
+		if (stack.getTagCompound() == null || !stack.getTagCompound().hasKey("Fluid")) {
+			return null;
+		}
+		FluidStack fluid = FluidStack.loadFluidStackFromNBT(stack.getTagCompound().getCompoundTag("Fluid"));
+		if (fluid == null) {
+			return null;
+		}
+
+		int currentAmount = fluid.amount;
+		fluid.amount = Math.min(fluid.amount, maxDrain);
+		if (doDrain) {
+			if (currentAmount == fluid.amount) {
+				stack.getTagCompound().removeTag("Fluid");
+
+				if (stack.getTagCompound().hasNoTags()) {
+					stack.setTagCompound(null);
 				}
-				fluid.writeToNBT(stack.stackTagCompound);
+				return fluid;
 			}
-			return drained;
+
+			NBTTagCompound fluidTag = stack.getTagCompound().getCompoundTag("Fluid");
+			fluidTag.setInteger("Amount", currentAmount - fluid.amount);
+			stack.getTagCompound().setTag("Fluid", fluidTag);
 		}
 		return fluid;
 	}

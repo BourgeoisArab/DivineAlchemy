@@ -1,14 +1,13 @@
 package bourgeoisarab.divinealchemy.init;
 
+import net.minecraftforge.fluids.FluidRegistry;
 import bourgeoisarab.divinealchemy.common.fluid.FluidHotMess;
 import bourgeoisarab.divinealchemy.common.fluid.FluidPotion;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 
 public class ModFluids {
 
-	public static Fluid potion;
-	public static Fluid hotMess;
+	public static FluidPotion potion;
+	public static FluidHotMess hotMess;
 
 	public static void init() {
 		potion = new FluidPotion();

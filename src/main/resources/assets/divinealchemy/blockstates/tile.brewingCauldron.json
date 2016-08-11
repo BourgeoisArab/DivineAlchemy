@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "tier=0": { "model": "divinealchemy:brewingCauldron_tier1" },
+        "tier=1": { "model": "divinealchemy:brewingCauldron_tier2" },
+        "tier=2": { "model": "divinealchemy:brewingCauldron_tier3" },
+        "tier=3": { "model": "divinealchemy:brewingCauldron_tier4" },
+        "tier=4": { "model": "divinealchemy:brewingCauldron_tier5" }
+    }
+}

@@ -5,8 +5,8 @@ import net.minecraft.potion.PotionEffect;
 
 public class PotionDay extends ModPotion {
 
-	public PotionDay(int id, boolean isBadEffect, int colour) {
-		super(id, isBadEffect, colour);
+	public PotionDay(String name, boolean isBadEffect, int colour) {
+		super(name, isBadEffect, colour);
 	}
 
 	@Override

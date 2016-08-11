@@ -20,8 +20,8 @@ import bourgeoisarab.divinealchemy.utility.Log;
 public class NBTEffectHelper {
 
 	public static void initTagCompound(ItemStack stack) {
-		if (stack.stackTagCompound == null) {
-			stack.stackTagCompound = new NBTTagCompound();
+		if (stack.getTagCompound() == null) {
+			stack.setTagCompound(new NBTTagCompound());
 		}
 	}
 
@@ -31,7 +31,23 @@ public class NBTEffectHelper {
 		}
 	}
 
-	public static NBTTagCompound setPropertiesForNBT(NBTTagCompound tag, PotionProperties properties) {
+	public static FluidStack setProperties(FluidStack fluid, PotionProperties properties) {
+		if (fluid == null || properties == null) {
+			return null;
+		}
+		initTagCompound(fluid);
+		fluid.tag.setInteger(NBTNames.PROPERTIES, properties.getMetaValue());
+		return fluid;
+	}
+
+	public static PotionProperties getProperties(FluidStack fluid) {
+		if (fluid == null) {
+			return null;
+		}
+		return getProperties(fluid.tag);
+	}
+
+	public static NBTTagCompound setProperties(NBTTagCompound tag, PotionProperties properties) {
 		if (tag == null || properties == null) {
 			return null;
 		}
@@ -39,14 +55,14 @@ public class NBTEffectHelper {
 		return tag;
 	}
 
-	public static PotionProperties getPropertiesFromNBT(NBTTagCompound tag) {
+	public static PotionProperties getProperties(NBTTagCompound tag) {
 		if (tag == null) {
 			return null;
 		}
 		return new PotionProperties(tag.getInteger(NBTNames.PROPERTIES));
 	}
 
-	public static NBTTagCompound setIngredientsForNBT(NBTTagCompound tag, Ingredients ingredients) {
+	public static NBTTagCompound setIngredients(NBTTagCompound tag, Ingredients ingredients) {
 		if (ingredients == null) {
 			return null;
 		}
@@ -65,7 +81,7 @@ public class NBTEffectHelper {
 		return tag;
 	}
 
-	public static Ingredients getIngredientsFromNBT(NBTTagCompound tag) {
+	public static Ingredients getIngredients(NBTTagCompound tag) {
 		if (tag == null || !tag.hasKey(NBTNames.INGREDIENTS_TAG)) {
 			return null;
 		}
@@ -83,7 +99,7 @@ public class NBTEffectHelper {
 		return ingredients;
 	}
 
-	public static NBTTagCompound setEffectsForNBT(NBTTagCompound tag, Effects effects) {
+	public static NBTTagCompound setEffects(NBTTagCompound tag, Effects effects) {
 		if (tag == null || effects == null) {
 			return null;
 		}
@@ -101,7 +117,7 @@ public class NBTEffectHelper {
 		return tag;
 	}
 
-	public static Effects getEffectsFromNBT(NBTTagCompound tag) {
+	public static Effects getEffects(NBTTagCompound tag) {
 		if (tag == null || !tag.hasKey(NBTNames.EFFECTS_TAG)) {
 			return null;
 		}
@@ -119,7 +135,7 @@ public class NBTEffectHelper {
 		return effects;
 	}
 
-	public static NBTTagCompound setInstabilityForNBT(NBTTagCompound tag, float instability) {
+	public static NBTTagCompound setInstability(NBTTagCompound tag, float instability) {
 		if (tag == null) {
 			return null;
 		}
@@ -127,7 +143,7 @@ public class NBTEffectHelper {
 		return tag;
 	}
 
-	public static float getInstabilityFromNBT(NBTTagCompound tag) {
+	public static float getInstability(NBTTagCompound tag) {
 		if (tag == null || !tag.hasKey(NBTNames.INSTABILITY)) {
 			return 0;
 		}
@@ -139,7 +155,7 @@ public class NBTEffectHelper {
 	// return null;
 	// }
 	// initTagCompound(stack);
-	// setInstabilityForNBT(stack.stackTagCompound, instability);
+	// setInstabilityForNBT(stack.getTagCompound(), instability);
 	// return stack;
 	// }
 	//
@@ -147,10 +163,10 @@ public class NBTEffectHelper {
 	// if (stack == null) {
 	// return 0;
 	// }
-	// return getInstabilityFromNBT(stack.stackTagCompound);
+	// return getInstabilityFromNBT(stack.getTagCompound());
 	// }
 
-	public static ItemStack setEffectsForStack(ItemStack stack, Effects effects) {
+	public static ItemStack setEffects(ItemStack stack, Effects effects) {
 		if (stack == null || effects == null) {
 			return null;
 		}
@@ -159,28 +175,28 @@ public class NBTEffectHelper {
 			Log.warn("Tried to set potion NBT data for invalid itemstack.");
 		}
 		if (stack.getItem() instanceof IFluidContainerItem) {
-			FluidStack fluid = setEffectsForFluid(((IFluidContainerItem) stack.getItem()).getFluid(stack), effects);
+			FluidStack fluid = setEffects(((IFluidContainerItem) stack.getItem()).getFluid(stack), effects);
 			if (fluid != null) {
-				fluid.writeToNBT(stack.stackTagCompound);
+				fluid.writeToNBT(stack.getTagCompound());
 			}
 		} else {
 			initTagCompound(stack);
-			setEffectsForNBT(stack.stackTagCompound, effects);
+			setEffects(stack.getTagCompound(), effects);
 		}
 		return stack;
 	}
 
-	public static Effects getEffectsFromStack(ItemStack stack) {
+	public static Effects getEffects(ItemStack stack) {
 		if (stack == null) {
 			return null;
 		}
 		if (stack.getItem() instanceof IFluidContainerItem) {
-			return getEffectsFromFluid(((IFluidContainerItem) stack.getItem()).getFluid(stack));
+			return getEffects(((IFluidContainerItem) stack.getItem()).getFluid(stack));
 		}
-		return getEffectsFromNBT(stack.stackTagCompound);
+		return getEffects(stack.getTagCompound());
 	}
 
-	public static FluidStack setEffectsForFluid(FluidStack fluid, Effects effects) {
+	public static FluidStack setEffects(FluidStack fluid, Effects effects) {
 		if (fluid == null) {
 			return null;
 		}
@@ -188,18 +204,18 @@ public class NBTEffectHelper {
 			Log.warn("Tried to set potion NBT data for invalid fluidstack.");
 		}
 		initTagCompound(fluid);
-		setEffectsForNBT(fluid.tag, effects);
+		setEffects(fluid.tag, effects);
 		return fluid;
 	}
 
-	public static Effects getEffectsFromFluid(FluidStack fluid) {
+	public static Effects getEffects(FluidStack fluid) {
 		if (fluid == null) {
 			return null;
 		}
-		return getEffectsFromNBT(fluid.tag);
+		return getEffects(fluid.tag);
 	}
 
-	public static NBTTagCompound setColouringForNBT(NBTTagCompound tag, Colouring colouring) {
+	public static NBTTagCompound setColouring(NBTTagCompound tag, Colouring colouring) {
 		if (tag == null || colouring == null) {
 			return null;
 		}
@@ -207,7 +223,7 @@ public class NBTEffectHelper {
 		return tag;
 	}
 
-	public static Colouring getColouringFromNBT(NBTTagCompound tag) {
+	public static Colouring getColouring(NBTTagCompound tag) {
 		if (tag == null) {
 			return null;
 		}
@@ -218,51 +234,51 @@ public class NBTEffectHelper {
 		return new Colouring().setColours(array);
 	}
 
-	public static ItemStack setColouringForStack(ItemStack stack, Colouring colouring) {
+	public static ItemStack setColouring(ItemStack stack, Colouring colouring) {
 		if (stack == null || colouring == null) {
 			return null;
 		}
 		if (stack.getItem() instanceof IFluidContainerItem) {
-			FluidStack fluid = setColouringForFluid(((IFluidContainerItem) stack.getItem()).getFluid(stack), colouring);
+			FluidStack fluid = setColouring(((IFluidContainerItem) stack.getItem()).getFluid(stack), colouring);
 			if (fluid != null) {
-				fluid.writeToNBT(stack.stackTagCompound);
+				fluid.writeToNBT(stack.getTagCompound());
 			}
 		} else {
 			initTagCompound(stack);
-			setColouringForNBT(stack.stackTagCompound, colouring);
+			setColouring(stack.getTagCompound(), colouring);
 		}
 		return stack;
 	}
 
-	public static Colouring getColouringFromStack(ItemStack stack) {
+	public static Colouring getColouring(ItemStack stack) {
 		if (stack == null) {
 			return null;
 		}
 		if (stack.getItem() instanceof IFluidContainerItem) {
-			return getColouringFromFluid(((IFluidContainerItem) stack.getItem()).getFluid(stack));
+			return getColouring(((IFluidContainerItem) stack.getItem()).getFluid(stack));
 		}
-		return getColouringFromNBT(stack.stackTagCompound);
+		return getColouring(stack.getTagCompound());
 	}
 
-	public static FluidStack setColouringForFluid(FluidStack fluid, Colouring colouring) {
+	public static FluidStack setColouring(FluidStack fluid, Colouring colouring) {
 		if (fluid == null || colouring == null) {
 			return null;
 		}
-		setColouringForNBT(fluid.tag, colouring);
+		setColouring(fluid.tag, colouring);
 		return fluid;
 	}
 
-	public static Colouring getColouringFromFluid(FluidStack stack) {
+	public static Colouring getColouring(FluidStack stack) {
 		if (stack == null) {
 			return null;
 		}
-		return getColouringFromNBT(stack.tag);
+		return getColouring(stack.tag);
 	}
 
 	public static boolean getHiddenFoodEffects(ItemStack stack) {
-		if (stack == null || stack.stackTagCompound == null) {
+		if (stack == null || stack.getTagCompound() == null) {
 			return false;
 		}
-		return stack.stackTagCompound.getBoolean(NBTNames.HIDDEN_EFFECTS);
+		return stack.getTagCompound().getBoolean(NBTNames.HIDDEN_EFFECTS);
 	}
 }

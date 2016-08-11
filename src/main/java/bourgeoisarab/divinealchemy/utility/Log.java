@@ -1,10 +1,10 @@
 package bourgeoisarab.divinealchemy.utility;
 
-import bourgeoisarab.divinealchemy.reference.Ref;
+import net.minecraftforge.fml.common.FMLLog;
 
 import org.apache.logging.log4j.Level;
 
-import cpw.mods.fml.common.FMLLog;
+import bourgeoisarab.divinealchemy.reference.Ref;
 
 public class Log {
 

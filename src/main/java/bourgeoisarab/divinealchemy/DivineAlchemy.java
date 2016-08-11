@@ -7,11 +7,17 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import bourgeoisarab.divinealchemy.command.CommandDivinity;
 import bourgeoisarab.divinealchemy.common.event.BucketHandler;
 import bourgeoisarab.divinealchemy.common.event.DAEventHooks;
-import bourgeoisarab.divinealchemy.common.event.DARenderEventHooks;
-import bourgeoisarab.divinealchemy.common.event.RuntimeEventHooks;
+import bourgeoisarab.divinealchemy.common.event.StartupEventHooks;
 import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
@@ -27,13 +33,6 @@ import bourgeoisarab.divinealchemy.troll.CommandCake;
 import bourgeoisarab.divinealchemy.troll.TrollEvents;
 import bourgeoisarab.divinealchemy.utility.Log;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 @Mod(modid = Ref.MODID, name = Ref.NAME, version = Ref.VERSION)
 public class DivineAlchemy {
@@ -52,14 +51,16 @@ public class DivineAlchemy {
 		}
 
 		@Override
-		public int func_151243_f() {
+		public int getIconItemDamage() {
 			return 4;
 		}
 	};
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		expandPotionArray(128);
+		MinecraftForge.EVENT_BUS.register(new StartupEventHooks());
+
+		// expandPotionArray(128);
 
 		ConfigHandler.init(event.getSuggestedConfigurationFile());
 
@@ -95,8 +96,6 @@ public class DivineAlchemy {
 		DAEventHooks eventHooks = new DAEventHooks();
 		MinecraftForge.EVENT_BUS.register(eventHooks);
 		FMLCommonHandler.instance().bus().register(eventHooks);
-		MinecraftForge.EVENT_BUS.register(new RuntimeEventHooks());
-		MinecraftForge.EVENT_BUS.register(new DARenderEventHooks());
 		try {
 			FMLCommonHandler.instance().bus().register(new TrollEvents());
 		} catch (Exception e) {
@@ -112,6 +111,7 @@ public class DivineAlchemy {
 		event.registerServerCommand(new CommandDivinity());
 	}
 
+	@Deprecated
 	public static void expandPotionArray(int arraySize) {
 		if (arraySize > 128) {
 			Log.warn("Potion array can't be bigger than 128. Setting to 128");
@@ -134,7 +134,7 @@ public class DivineAlchemy {
 				}
 			} catch (Exception e) {
 				System.err.println("BourgeoisArab made a serious boo-boo. Please report this ASAP:");
-				System.err.println(e);
+				e.printStackTrace();
 			}
 		}
 		if (successful) {

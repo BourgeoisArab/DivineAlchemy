@@ -9,8 +9,8 @@ import net.minecraft.world.World;
 
 public class PotionFiendFyre extends ModPotion {
 
-	public PotionFiendFyre(int id, boolean isBadEffect, int colour) {
-		super(id, isBadEffect, colour);
+	public PotionFiendFyre(String name, boolean isBadEffect, int colour) {
+		super(name, isBadEffect, colour);
 		setPotionName("potion.fiendfyre");
 	}
 
@@ -21,10 +21,15 @@ public class PotionFiendFyre extends ModPotion {
 		if (entity.worldObj.getWorldTime() % 10 == 0) {
 			entity.attackEntityFrom(DamageSource.inFire, 2.0F);
 		}
-		List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, entity.boundingBox);
-		for (EntityLivingBase e : entities) {
-			if (e != entity) {
-				e.addPotionEffect(new PotionEffect(id, 60, 0));
+
+		if (entity.getCollisionBoundingBox() == null) {
+			return;
+		} else {
+			List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, entity.getCollisionBoundingBox());
+			for (EntityLivingBase e : entities) {
+				if (e != entity) {
+					e.addPotionEffect(new PotionEffect(id, 60, 0));
+				}
 			}
 		}
 	}

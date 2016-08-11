@@ -31,7 +31,7 @@ public class CraftingFoodConcealment implements IRecipe {
 				}
 			}
 		}
-		if (stackCount == 2 && food != null && NBTEffectHelper.getEffectsFromStack(food) != null && concealer != null) {
+		if (stackCount == 2 && food != null && NBTEffectHelper.getEffects(food) != null && concealer != null) {
 			return true;
 		}
 		return false;
@@ -42,9 +42,9 @@ public class CraftingFoodConcealment implements IRecipe {
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack j = inv.getStackInSlot(i);
 			if (j != null) {
-				if (j.getItem() instanceof ItemFood && j.stackTagCompound != null) {
+				if (j.getItem() instanceof ItemFood && j.getTagCompound() != null) {
 					ItemStack returnStack = j.copy();
-					returnStack.stackTagCompound.setBoolean(NBTNames.HIDDEN_EFFECTS, !returnStack.stackTagCompound.getBoolean(NBTNames.HIDDEN_EFFECTS));
+					returnStack.getTagCompound().setBoolean(NBTNames.HIDDEN_EFFECTS, !returnStack.getTagCompound().getBoolean(NBTNames.HIDDEN_EFFECTS));
 					return returnStack;
 				}
 			}
@@ -60,6 +60,12 @@ public class CraftingFoodConcealment implements IRecipe {
 	@Override
 	public ItemStack getRecipeOutput() {
 		return result;
+	}
+
+	@Override
+	public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

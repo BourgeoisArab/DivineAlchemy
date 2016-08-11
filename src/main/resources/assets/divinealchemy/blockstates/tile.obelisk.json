@@ -1,0 +1,42 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+		"particle": "minecraft:blocks/obsidian"
+	},
+	"model": "divinealchemy:obeliskInvisible",
+    "custom": { "flip-v": true }
+  },
+  "variants": {
+  	"multiblock=true,receptacle=true,tier=0": [{
+		"model": "divinealchemy:obelisk1.obj",
+		"transform": {
+			"translation": [ 0.25, -2.25, 0.25 ],
+			"scale": [ 0.5, 0.5, 0.5 ]
+		}
+	}],
+  	"multiblock=true,receptacle=true,tier=1": [{
+		"model": "divinealchemy:obelisk2.obj",
+		"transform": {
+			"translation": [ 0.25, -2.25, 0.25 ],
+			"scale": [ 0.5, 0.5, 0.5 ]
+		}
+	}],
+	"multiblock=true,receptacle=true,tier=2": [{
+		"model": "divinealchemy:obelisk3.obj",
+		"transform": {
+			"translation": [ 0.25, -2.25, 0.25 ],
+			"scale": [ 0.5, 0.5, 0.5 ]
+		}
+	}],
+  	"multiblock=false,receptacle=true,tier=0": [{ "model":"divinealchemy:obeliskReceptacle1" }],
+  	"multiblock=false,receptacle=true,tier=1": [{ "model":"divinealchemy:obeliskReceptacle2" }],
+  	"multiblock=false,receptacle=true,tier=2": [{ "model":"divinealchemy:obeliskReceptacle3" }],
+  	"multiblock=false,receptacle=false,tier=0": [{ "model":"divinealchemy:obeliskBrick1" }],
+  	"multiblock=false,receptacle=false,tier=1": [{ "model":"divinealchemy:obeliskBrick2" }],
+  	"multiblock=false,receptacle=false,tier=2": [{ "model":"divinealchemy:obeliskBrick3" }],
+  	"multiblock=true,receptacle=false,tier=0": [{ }],
+  	"multiblock=true,receptacle=false,tier=1": [{ }],
+  	"multiblock=true,receptacle=false,tier=2": [{ }]
+  }
+}

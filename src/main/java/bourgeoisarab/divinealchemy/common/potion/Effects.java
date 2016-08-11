@@ -3,10 +3,8 @@ package bourgeoisarab.divinealchemy.common.potion;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import bourgeoisarab.divinealchemy.utility.Log;
-import bourgeoisarab.divinealchemy.utility.nbt.NBTPlayerHelper;
 
 public class Effects {
 
@@ -117,21 +115,6 @@ public class Effects {
 		return getEffect(getEffectIndex(potionID));
 	}
 
-	public float getDivinityOffset() {
-		float divinity = 0.0F;
-		for (int i = 0; i < effects.size(); i++) {
-			if (!sideValues.get(i)) {
-				Potion p = ModPotion.getPotion(effects.get(i).getPotionID());
-				if (p.isBadEffect()) {
-					divinity -= NBTPlayerHelper.POTION_BREW_MODIFIER;
-				} else {
-					divinity += NBTPlayerHelper.POTION_BREW_MODIFIER;
-				}
-			}
-		}
-		return divinity;
-	}
-
 	@Override
 	public String toString() {
 		String s = getClass().getName() + ":[";
@@ -161,15 +144,7 @@ public class Effects {
 	public boolean equals(Object o) {
 		if (o instanceof Effects) {
 			Effects e = (Effects) o;
-			if (e.size() != size()) {
-				return false;
-			}
-			for (int i = 0; i < size(); i++) {
-				if (!getEffect(i).equals(e.getEffect(i)) || getSideEffect(i) != e.getSideEffect(i)) {
-					return false;
-				}
-			}
-			return true;
+			return effects.equals(e.effects) && sideValues.equals(e.sideValues);
 		}
 		return false;
 	}

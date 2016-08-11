@@ -1,7 +1,5 @@
 package bourgeoisarab.divinealchemy.common.potion;
 
-import bourgeoisarab.divinealchemy.common.tileentity.IPotionBrewer;
-
 public class PotionProperties {
 
 	/**

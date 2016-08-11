@@ -1,101 +1,96 @@
 package bourgeoisarab.divinealchemy.client.renderer;
 
-import net.minecraft.block.BlockLiquid;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
-import bourgeoisarab.divinealchemy.DivineAlchemy;
-import bourgeoisarab.divinealchemy.client.renderer.model.ModelBrewingCauldron;
 import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
-import bourgeoisarab.divinealchemy.init.ModFluids;
 import bourgeoisarab.divinealchemy.utility.ColourHelper;
+import bourgeoisarab.divinealchemy.utility.Log;
 
-public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer {
+public class RendererBlockBrewingCauldron extends TileEntitySpecialRenderer<TEBrewingCauldron> {
 
-	private ModelBrewingCauldron model = new ModelBrewingCauldron();
-	// private final RenderItem customRenderItem;
-	private IIcon icon;
-
-	private double renderMinX = 0.0;
-	private double renderMaxX = 1.0;
-	private double renderMinY = 0.0;
-	private double renderMaxY = 1.0;
-	private double renderMinZ = 0.0;
-	private double renderMaxZ = 1.0;
+	private static final ResourceLocation WATER = new ResourceLocation("minecraft:textures/blocks/water_still.png");
+	private static final ResourceLocation LAVA = new ResourceLocation("minecraft:textures/blocks/lava_still.png");
 
 	public RendererBlockBrewingCauldron() {
-		// customRenderItem = new RenderItem();
-		// customRenderItem.setRenderManager(RenderManager.instance);
+
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f) {
-		TEBrewingCauldron tile = (TEBrewingCauldron) tileEntity;
-		model.render(tile, x, y, z);
+	public void renderTileEntityAt(TEBrewingCauldron tile, double x, double y, double z, float partialTicks, int destroyStage) {
 		int level = tile.tank.getFluidAmount();
-
-		if (level > 0) {
-
-			DivineAlchemy.proxy.getClient().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
-			boolean doColour = false;
-			if (tile.tank.getFluid().getFluid() == FluidRegistry.WATER) {
-				icon = BlockLiquid.getLiquidIcon("water_still");
-			} else {
-				// icon = BlockLiquid.getLiquidIcon("water_still");
-				icon = tile.tank.getFluid().getFluid().getBlock().getIcon(0, 0);
-				if (tile.tank.getFluid().getFluid() == ModFluids.potion) {
-					doColour = true;
-				}
-			}
-			renderFluidLevel(tile, x, y - 0.6875 + level / (1.6 * tile.tank.getCapacity()), z, doColour);
+		if (level <= 0) {
+			return;
 		}
-	}
 
-	public void renderFluidLevel(TEBrewingCauldron tile, double x, double y, double z, boolean doColour) {
-		Tessellator t = Tessellator.instance;
-		double d3 = icon.getInterpolatedU(renderMinX * 16.0D);
-		double d4 = icon.getInterpolatedU(renderMaxX * 16.0D);
-		double d5 = icon.getInterpolatedV(renderMinZ * 16.0D);
-		double d6 = icon.getInterpolatedV(renderMaxZ * 16.0D);
+		FluidStack fluid = tile.tank.getFluid();
 
-		double d7 = d4;
-		double d8 = d3;
-		double d9 = d5;
-		double d10 = d6;
+		GL11.glPushMatrix();
 
-		double d11 = x + renderMinX;
-		double d12 = x + renderMaxX;
-		double d13 = y + renderMaxY;
-		double d14 = z + renderMinZ;
-		double d15 = z + renderMaxZ;
+		Tessellator tessellator = Tessellator.getInstance();
+		WorldRenderer renderer = tessellator.getWorldRenderer();
+
+		// TextureAtlasSprite sprite;
+		// if (fluid.getFluid() == FluidRegistry.WATER) {
+		// texture = ;
+		// } else if (fluid.getFluid() == FluidRegistry.LAVA) {
+		// bindTexture(LAVA);
+		// } else {
+		// bindTexture(fluid.getFluid().getStill(fluid));
+		// }
+
+		// TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(fluid.getFluid().getStill(fluid).toString());
+		TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fluid.getFluid().getStill(fluid).toString());
+		if (sprite == null) {
+			Log.info("sprite is null");
+			GL11.glPopMatrix();
+			return;
+		}
+		Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 
 		GL11.glDisable(GL11.GL_LIGHTING);
-		t.startDrawingQuads();
-		if (doColour) {
-			GL11.glEnable(GL11.GL_BLEND);
-			float[] colour;
-			if (tile.getEffects().size() > 0) {
-				colour = ColourHelper.getColourFromEffects(tile.getEffects().getEffects(), tile.getColouring());
-			} else {
-				colour = ColourHelper.getColourFromIngredients(tile.getIngredients().getIngredients(), tile.getColouring());
-			}
-			t.setColorOpaque_F(colour[0], colour[1], colour[2]);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDepthMask(true);
+
+		float[] colour;
+		// if (fluid.getFluid() == ModFluids.potion) {
+		// GL11.glEnable(GL11.GL_BLEND);
+		// if (tile.getEffects().size() > 0) {
+		// colour = ColourHelper.getColourFromEffects(tile.getEffects().getEffects(), tile.getColouring());
+		// } else {
+		// colour = ColourHelper.getColourFromIngredients(tile.getIngredients().getIngredients(), tile.getColouring());
+		// }
+		// } else
+		if (fluid.getFluid() == FluidRegistry.WATER || fluid.getFluid() == FluidRegistry.LAVA) {
+			colour = new float[]{1.0F, 1.0F, 1.0F};
 		} else {
-			t.setColorOpaque_F(1.0F, 1.0F, 1.0F);
+			colour = ColourHelper.getFloatColours(ColourHelper.separateColours(fluid.getFluid().getColor(fluid)));
 		}
 
-		t.addVertexWithUV(d12, d13, d15, d4, d6);
-		t.addVertexWithUV(d12, d13, d14, d7, d9);
-		t.addVertexWithUV(d11, d13, d14, d3, d5);
-		t.addVertexWithUV(d11, d13, d15, d8, d10);
-		t.draw();
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_LIGHTING);
+		GlStateManager.color(colour[0], colour[1], colour[2]);
+
+		GlStateManager.translate(x, y, z);
+
+		float fluidHeight = (float) (0.3125 + level / (1.6 * tile.tank.getCapacity()));
+
+		renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		renderer.pos(1.0, fluidHeight, 1.0).tex(sprite.getMaxU(), sprite.getMaxV()).endVertex();
+		renderer.pos(1.0, fluidHeight, 0.0).tex(sprite.getMaxU(), sprite.getMinV()).endVertex();
+		renderer.pos(0.0, fluidHeight, 0.0).tex(sprite.getMinU(), sprite.getMinV()).endVertex();
+		renderer.pos(0.0, fluidHeight, 1.0).tex(sprite.getMinU(), sprite.getMaxV()).endVertex();
+		tessellator.draw();
+
+		GL11.glPopMatrix();
 	}
 }

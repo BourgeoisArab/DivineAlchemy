@@ -1,19 +1,11 @@
 package bourgeoisarab.divinealchemy.common.event;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.client.particle.EntitySpellParticleFX;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntityCow;
-import net.minecraft.entity.passive.EntityHorse;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -24,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.village.MerchantRecipe;
@@ -42,6 +33,11 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -49,15 +45,13 @@ import bourgeoisarab.divinealchemy.DivineAlchemy;
 import bourgeoisarab.divinealchemy.common.potion.Effects;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
+import bourgeoisarab.divinealchemy.common.save.Divinity;
 import bourgeoisarab.divinealchemy.init.ModItems;
 import bourgeoisarab.divinealchemy.reference.NBTNames;
 import bourgeoisarab.divinealchemy.utility.Log;
 import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
 import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
 import bourgeoisarab.divinealchemy.utility.nbt.NBTPlayerHelper;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 
 public class DAEventHooks {
 
@@ -65,12 +59,12 @@ public class DAEventHooks {
 	public void onFoodEaten(PlayerUseItemEvent.Finish event) {
 		ItemStack stack = event.item;
 		if (stack.getItem() instanceof ItemFood) {
-			if (stack.stackTagCompound == null) {
+			if (stack.getTagCompound() == null) {
 				return;
 			}
 
-			Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
-			PotionProperties properties = NBTEffectHelper.getPropertiesFromNBT(stack.stackTagCompound);
+			Effects effects = NBTEffectHelper.getEffects(stack);
+			PotionProperties properties = NBTEffectHelper.getProperties(stack.getTagCompound());
 			if (effects != null) {
 				ModPotionHelper.addEffectsToEntity(effects.getEffects(), event.entityPlayer);
 			}
@@ -91,7 +85,7 @@ public class DAEventHooks {
 		ItemStack stack = event.item;
 		if (stack != null) {
 			Item item = stack.getItem();
-			if (item.getItemUseAction(stack) == EnumAction.eat || item.getItemUseAction(stack) == EnumAction.drink) {
+			if (item.getItemUseAction(stack) == EnumAction.EAT || item.getItemUseAction(stack) == EnumAction.DRINK) {
 				if (event.entityPlayer.getActivePotionEffect(ModPotion.potionSealedMouth) != null) {
 					if (event.duration <= item.getMaxDamage(stack) / 2 || event.duration <= 2) {
 						event.setCanceled(true);
@@ -121,14 +115,14 @@ public class DAEventHooks {
 
 		event.entityPlayer.getEntityData().setIntArray(NBTNames.PERSISTENT_IDS, newIDs);
 		// Transfer of previously active persistent effects to be applied after respawn
-		NBTEffectHelper.setEffectsForNBT(event.entityPlayer.getEntityData(), new Effects(effects, new ArrayList<Boolean>()));
+		NBTEffectHelper.setEffects(event.entityPlayer.getEntityData(), new Effects(effects, new ArrayList<Boolean>()));
 	}
 
 	@SubscribeEvent
 	public void onRespawn(PlayerRespawnEvent event) {
 		EntityPlayer player = event.player;
 		// Reapplying previously active persistent effects
-		Effects effects = NBTEffectHelper.getEffectsFromNBT(player.getEntityData());
+		Effects effects = NBTEffectHelper.getEffects(player.getEntityData());
 		if (effects != null) {
 			ModPotionHelper.addEffectsToEntity(effects.getEffects(), player);
 		}
@@ -142,10 +136,20 @@ public class DAEventHooks {
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
+	// @SubscribeEvent
+	public void onWorldUpdate(WorldTickEvent event) {
+		List entities = event.world.loadedEntityList;
+		for (Object entity : entities) {
+			if (entity instanceof EntityLivingBase) {
+				EntityLivingBase e = (EntityLivingBase) entity;
+				Collection effects = e.getActivePotionEffects();
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void onEntityUpdate(LivingUpdateEvent event) {
 		EntityLivingBase entity = event.entityLiving;
-
 		// PotionEffects
 		int[] persistentIDs = new int[]{};
 		if (entity.getEntityData().hasKey(NBTNames.PERSISTENT_IDS)) {
@@ -155,6 +159,11 @@ public class DAEventHooks {
 		while (it.hasNext()) {
 			PotionEffect effect = it.next();
 			Potion p = ModPotion.getPotion(effect.getPotionID());
+
+			if (p == ModPotion.potionTemporal) {
+				// continue;
+			}
+
 			if (p != null && p.isInstant()) {
 				ArrayList<ItemStack> list = new ArrayList<ItemStack>();
 				list.add(new ItemStack(Items.brewing_stand));
@@ -183,88 +192,107 @@ public class DAEventHooks {
 	}
 
 	@SubscribeEvent
+	public void onEntityUpdateEarly(LivingUpdateEvent event) {
+	}
+
+	@SubscribeEvent
 	public void onJump(LivingJumpEvent event) {
-		EntityLivingBase entity = event.entityLiving;
-		if (entity.getActivePotionEffect(ModPotion.potionTemporal) != null) {
-			entity.motionY *= 2;
-			// TODO
+		PotionEffect effect = event.entityLiving.getActivePotionEffect(ModPotion.potionTemporal);
+		if (effect != null) {
+			switch (effect.getAmplifier()) {
+				case 0:
+					event.entity.motionY *= 0.85;
+					break;
+				case 1:
+					event.entity.motionY *= 0.75;
+					break;
+				case 2:
+					event.entity.motionY *= 0.575;
+					break;
+				case 3:
+					event.entity.motionY *= 0.3125;
+					break;
+			}
 		}
 	}
 
 	@SubscribeEvent
 	public void onItemThrow(ItemTossEvent event) {
-		event.entityItem.getEntityData().setString(event.player.getCommandSenderName(), NBTNames.THROWER);
+		event.entityItem.getEntityData().setString(event.player.getUniqueID().toString(), NBTNames.THROWER);
 	}
 
 	@SubscribeEvent
 	public void onParticleSpawn(EntityEvent.EntityConstructing event) {
-		if (event.entity instanceof EntitySpellParticleFX) {
-			if (event.entity.worldObj.isRemote && DivineAlchemy.proxy.getClientPlayer().getActivePotionEffect(ModPotion.potionParticle) != null) {
-				event.entity.setDead();
-				// int partialTicks = 100;
-				// // float x = (float)stityFX.interpPosZ - particle.prevPosZ);
-				// double offset = 0.5;
-				// // AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(x - offset, y - offset, z - offset, x + offset, y + offset, z + offset);
-				// // List<EntityLivingBase> entities = particle.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
-				// // for (EntityLivingBase player : entities) {
-				// // if (player != null && player.getActivePotionEffect(ModPotion.potionParticle) != null) {
-				// // particle.setDead();
-				// // }
-				// // }
-				// float x = (float) -(particle.prevPosX + (particle.posX - particle.prevPosX) * partialTicks - EntityFX.interpPosX);
-				// float y = (float) -(particle.prevPosY + (particle.posY - particle.prevPosY) * partialTicks - EntityFX.interpPosY);
-				// float z = (float) -(particle.prevPosZ + (particle.posZ - particle.prevPosZ) * partialTicks - EntityFX.interpPosZ);
-				// if (particle.worldObj.isRemote) {
-				// EntityPlayer player = DivineAlchemy.proxy.getClientPlayer();
-				// Log.info("Particle: " + x + ", " + y + ", " + z);
-				// Log.info("Player: " + player.posX + ", " + player.posY + ", " + player.posZ);
-				// }
-				// TODO: Kill only the ones in the player's face; not all of them
+		if (event.entity.worldObj != null && event.entity.worldObj.isRemote) {
+			if (event.entity instanceof net.minecraft.client.particle.EntitySpellParticleFX) {
+				if (DivineAlchemy.proxy.getClientPlayer().getActivePotionEffect(ModPotion.potionParticle) != null) {
+					event.entity.setDead();
+					// int partialTicks = 100;
+					// // float x = (float)stityFX.interpPosZ - particle.prevPosZ);
+					// double offset = 0.5;
+					// // AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(x - offset, y - offset, z - offset, x + offset, y + offset, z + offset);
+					// // List<EntityLivingBase> entities = particle.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
+					// // for (EntityLivingBase player : entities) {
+					// // if (player != null && player.getActivePotionEffect(ModPotion.potionParticle) != null) {
+					// // particle.setDead();
+					// // }
+					// // }
+					// float x = (float) -(particle.prevPosX + (particle.posX - particle.prevPosX) * partialTicks - EntityFX.interpPosX);
+					// float y = (float) -(particle.prevPosY + (particle.posY - particle.prevPosY) * partialTicks - EntityFX.interpPosY);
+					// float z = (float) -(particle.prevPosZ + (particle.posZ - particle.prevPosZ) * partialTicks - EntityFX.interpPosZ);
+					// if (particle.worldObj.isRemote) {
+					// EntityPlayer player = DivineAlchemy.proxy.getClientPlayer();
+					// Log.info("Particle: " + x + ", " + y + ", " + z);
+					// Log.info("Player: " + player.posX + ", " + player.posY + ", " + player.posZ);
+					// }
+					// TODO: Kill only the ones in the player's face; not all of them
+				}
 			}
 		}
 	}
 
-	public void renderParticle(Tessellator t, float partialTicks, float rotationX, float rotationXZ, float rotationZ, float rotationYZ, float rotationXY) {
-		// float minU = (float) particleTextureIndexX / 16.0F;
-		// float maxU = minU + 0.0624375F;
-		// float minV = (float) particleTextureIndexY / 16.0F;
-		// float maxV = minV + 0.0624375F;
-		// float scale = 0.1F * particleScale;
-		//
-		// if (particleIcon != null) {
-		// minU = particleIcon.getMinU();
-		// maxU = particleIcon.getMaxU();
-		// minV = particleIcon.getMinV();
-		// maxV = particleIcon.getMaxV();
-		// }
-		//
-		// float x = (float) (prevPosX + (posX - prevPosX) * (double) partialTicks - EntityFX.interpPosX);
-		// float y = (float) (prevPosY + (posY - prevPosY) * (double) partialTicks - EntityFX.interpPosY);
-		// float z = (float) (prevPosZ + (posZ - prevPosZ) * (double) partialTicks - EntityFX.interpPosZ);
-		// t.addVertexWithUV(x - rotationX * scale - rotationYZ * scale, y - rotationXZ * scale, z - rotationZ * scale - rotationXY * scale, maxU, maxV);
-		// t.addVertexWithUV(x - rotationX * scale + rotationYZ * scale, y + rotationXZ * scale, z - rotationZ * scale + rotationXY * scale, maxU, minV);
-		// t.addVertexWithUV(x + rotationX * scale + rotationYZ * scale, y + rotationXZ * scale, z + rotationZ * scale + rotationXY * scale, minU, minV);
-		// t.addVertexWithUV(x + rotationX * scale - rotationYZ * scale, y - rotationXZ * scale, z + rotationZ * scale - rotationXY * scale, minU, maxV);
-	}
+	// public void renderParticle(Tessellator t, float partialTicks, float rotationX, float rotationXZ, float rotationZ, float rotationYZ, float rotationXY) {
+	// float minU = (float) particleTextureIndexX / 16.0F;
+	// float maxU = minU + 0.0624375F;
+	// float minV = (float) particleTextureIndexY / 16.0F;
+	// float maxV = minV + 0.0624375F;
+	// float scale = 0.1F * particleScale;
+	//
+	// if (particleIcon != null) {
+	// minU = particleIcon.getMinU();
+	// maxU = particleIcon.getMaxU();
+	// minV = particleIcon.getMinV();
+	// maxV = particleIcon.getMaxV();
+	// }
+	//
+	// float x = (float) (prevPosX + (posX - prevPosX) * (double) partialTicks - EntityFX.interpPosX);
+	// float y = (float) (prevPosY + (posY - prevPosY) * (double) partialTicks - EntityFX.interpPosY);
+	// float z = (float) (prevPosZ + (posZ - prevPosZ) * (double) partialTicks - EntityFX.interpPosZ);
+	// t.addVertexWithUV(x - rotationX * scale - rotationYZ * scale, y - rotationXZ * scale, z - rotationZ * scale - rotationXY * scale, maxU, maxV);
+	// t.addVertexWithUV(x - rotationX * scale + rotationYZ * scale, y + rotationXZ * scale, z - rotationZ * scale + rotationXY * scale, maxU, minV);
+	// t.addVertexWithUV(x + rotationX * scale + rotationYZ * scale, y + rotationXZ * scale, z + rotationZ * scale + rotationXY * scale, minU, minV);
+	// t.addVertexWithUV(x + rotationX * scale - rotationYZ * scale, y - rotationXZ * scale, z + rotationZ * scale - rotationXY * scale, minU, maxV);
+	// }
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onExplosion(ExplosionEvent.Start event) {
-		float size = event.explosion.explosionSize;
-		double x = event.explosion.explosionX, y = event.explosion.explosionY, z = event.explosion.explosionZ;
-		AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(x - size, y - size, z - size, x + size, y + size, z + size);
-		List<EntityLivingBase> entities = event.world.getEntitiesWithinAABB(EntityLivingBase.class, bb);
-		List<EntityPlayer> players = new ArrayList<EntityPlayer>();
-		for (EntityLivingBase entity : entities) {
-			if (entity.getActivePotionEffect(ModPotion.potionExplodeAbsorb) != null) {
-				if (entity instanceof EntityPlayer) {
-					players.add((EntityPlayer) entity);
-				}
-				event.setCanceled(true);
-			}
-		}
-		for (EntityPlayer player : players) {
-			NBTPlayerHelper.addAbsorbedExplosion(player, size / 4 / players.size());
-		}
+		// TODO: Absorbed explosions
+		// float size = event.explosion.explosionSize;
+		// double x = event.explosion.getPosition().xCoord, y = event.explosion.getPosition().yCoord, z = event.explosion.getPosition().zCoord;
+		// AxisAlignedBB bb = AxisAlignedBB.fromBounds(x - size, y - size, z - size, x + size, y + size, z + size);
+		// List<EntityLivingBase> entities = event.world.getEntitiesWithinAABB(EntityLivingBase.class, bb);
+		// List<EntityPlayer> players = new ArrayList<EntityPlayer>();
+		// for (EntityLivingBase entity : entities) {
+		// if (entity.getActivePotionEffect(ModPotion.potionExplodeAbsorb) != null) {
+		// if (entity instanceof EntityPlayer) {
+		// players.add((EntityPlayer) entity);
+		// }
+		// event.setCanceled(true);
+		// }
+		// }
+		// for (EntityPlayer player : players) {
+		// NBTPlayerHelper.addAbsorbedExplosion(player, size / 4 / players.size());
+		// }
 	}
 
 	@SubscribeEvent
@@ -276,7 +304,7 @@ public class DAEventHooks {
 			villager.getEntityData().setTag(NBTNames.OLD_TRADES, oldRecipes.getRecipiesAsTags());
 			float discount = 1.0F - (divinity - 0.3F) * 1.4285F;
 			for (int i = 0; i < oldRecipes.size(); i++) {
-				MerchantRecipe recipe = (MerchantRecipe) oldRecipes.get(i);
+				MerchantRecipe recipe = oldRecipes.get(i);
 				ItemStack buy = recipe.getItemToBuy();
 				buy.stackSize = (int) (buy.stackSize * discount);
 				if (buy.stackSize < 1 && divinity < 1.0F) {
@@ -310,37 +338,38 @@ public class DAEventHooks {
 		}
 	}
 
-	@SubscribeEvent
+	// @SubscribeEvent
 	public void livingDrops(LivingDropsEvent event) {
-		EntityLivingBase entity = event.entityLiving;
-		if (!entity.worldObj.isRemote) {
-			if (entity.getEntityData().hasKey(NBTNames.BUTCHER)) {
-				World world = entity.worldObj;
-				EntityPlayer player = world.getPlayerEntityByName(entity.getEntityData().getString(NBTNames.BUTCHER));
-				float divinity = NBTPlayerHelper.getAbsDivinity(player);
-				if (world.rand.nextFloat() < divinity * 1.42857F) {
-					ItemStack stack = new ItemStack(ModItems.organ);
-					int organ = world.rand.nextInt(ModItems.organ.organs.length);
-					if (entity instanceof EntityPlayer || entity instanceof EntityVillager) {
-						stack.setItemDamage(ModItems.organ.getMetaValue(organ, 0));
-					} else if (entity instanceof EntityCow || entity instanceof EntitySheep || entity instanceof EntityHorse || entity instanceof EntityPig) {
-						stack.setItemDamage(ModItems.organ.getMetaValue(organ, 1));
-					} else if (entity instanceof EntityZombie) {
-						stack.setItemDamage(ModItems.organ.getMetaValue(organ, 2));
-					}
-					EntityItem item = new EntityItem(world, entity.posX, entity.posY, entity.posZ, stack);
-					event.drops.add(item);
-				}
-				NBTPlayerHelper.setDivnity(player, NBTPlayerHelper.getProcessedSigmoid(divinity, 0.12F, 0.75F));
-			}
-		}
+		// TODO
+		// EntityLivingBase entity = event.entityLiving;
+		// if (!entity.worldObj.isRemote) {
+		// if (entity.getEntityData().hasKey(NBTNames.BUTCHER)) {
+		// World world = entity.worldObj;
+		// EntityPlayer player = NBTPlayerHelper.getPlayer(UUID.fromString(entity.getEntityData().getString(NBTNames.BUTCHER)), world);
+		// float divinity = NBTPlayerHelper.getAbsDivinity(player);
+		// if (world.rand.nextFloat() < divinity * 1.42857F) {
+		// ItemStack stack = new ItemStack(ModItems.organ);
+		// int organ = world.rand.nextInt(ModItems.organ.organs.length);
+		// if (entity instanceof EntityPlayer || entity instanceof EntityVillager) {
+		// stack.setItemDamage(ModItems.organ.getMetaValue(organ, 0));
+		// } else if (entity instanceof EntityCow || entity instanceof EntitySheep || entity instanceof EntityHorse || entity instanceof EntityPig) {
+		// stack.setItemDamage(ModItems.organ.getMetaValue(organ, 1));
+		// } else if (entity instanceof EntityZombie) {
+		// stack.setItemDamage(ModItems.organ.getMetaValue(organ, 2));
+		// }
+		// EntityItem item = new EntityItem(world, entity.posX, entity.posY, entity.posZ, stack);
+		// event.drops.add(item);
+		// }
+		// NBTPlayerHelper.setDivnity(player, NBTPlayerHelper.getProcessedSigmoid(divinity, 0.12F, 0.75F));
+		// }
+		// }
 	}
 
 	@SubscribeEvent
 	public void onPlayerAttack(AttackEntityEvent event) {
 		EntityPlayer player = event.entityPlayer;
 		if (player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getItem() == ModItems.butcherKnife) {
-			event.target.getEntityData().setString(NBTNames.BUTCHER, player.getCommandSenderName());
+			event.target.getEntityData().setString(NBTNames.BUTCHER, player.getUniqueID().toString());
 		}
 	}
 
@@ -355,15 +384,20 @@ public class DAEventHooks {
 			if (PotionProperties.getBlessed(stack.getItemDamage())) {
 				list.add("Cursed");
 			}
-			Effects effects = NBTEffectHelper.getEffectsFromStack(stack);
+			Effects effects = NBTEffectHelper.getEffects(stack);
 			if (effects != null) {
 				for (int i = 0; i < effects.size(); i++) {
 					Potion potion = ModPotion.getPotion(effects.getEffect(i).getPotionID());
-					String s1 = I18n.format(potion.getName());
-					s1 = s1 + " " + I18n.format("enchantment.level." + (effects.getEffect(i).getAmplifier() + 1));
+					String s1 = net.minecraft.client.resources.I18n.format(potion.getName());
+					s1 = s1 + " " + net.minecraft.client.resources.I18n.format("enchantment.level." + (effects.getEffect(i).getAmplifier() + 1));
 					list.add((effects.getSideEffect(i) ? EnumChatFormatting.DARK_RED : "") + s1 + (potion.isInstant() ? "" : " (" + Potion.getDurationString(effects.getEffect(i)) + ")"));
 				}
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void login(PlayerLoggedInEvent event) {
+		Divinity.get(event.player.worldObj).initialiseData(event.player.getUniqueID());
 	}
 }

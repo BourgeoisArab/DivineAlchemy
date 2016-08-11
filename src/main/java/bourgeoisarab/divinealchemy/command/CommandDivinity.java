@@ -26,7 +26,7 @@ public class CommandDivinity extends CommandBase {
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) {
+	public void processCommand(ICommandSender sender, String[] args) throws WrongUsageException, PlayerNotFoundException {
 		EntityPlayer player = null;
 		float divinity = 0.0F;
 		if (args.length >= 1) {
@@ -43,7 +43,7 @@ public class CommandDivinity extends CommandBase {
 				}
 				divinity = NBTPlayerHelper.getDivinity(player);
 				// ??? String.format("%.4f", divinity);
-				sender.addChatMessage(new ChatComponentText(I18n.format("commands.divinity.getDivinity", player.getCommandSenderName(), divinity)));
+				sender.addChatMessage(new ChatComponentText(I18n.format("commands.divinity.getDivinity", player.getCommandSenderEntity(), divinity)));
 			} else {
 				if (args.length == 3) {
 					player = getPlayer(sender, args[1]);
@@ -60,10 +60,10 @@ public class CommandDivinity extends CommandBase {
 
 				if (args[0].equals("add")) {
 					NBTPlayerHelper.addDivinity(player, divinity);
-					sender.addChatMessage(new ChatComponentText(I18n.format("commands.divinity.addDivinity", player.getCommandSenderName(), divinity)));
+					sender.addChatMessage(new ChatComponentText(I18n.format("commands.divinity.addDivinity", player.getCommandSenderEntity(), divinity)));
 				} else if (args[0].equals("set")) {
 					NBTPlayerHelper.setDivnity(player, divinity);
-					sender.addChatMessage(new ChatComponentText(I18n.format("commands.divinity.setDivinity", player.getCommandSenderName(), divinity)));
+					sender.addChatMessage(new ChatComponentText(I18n.format("commands.divinity.setDivinity", player.getCommandSenderEntity(), divinity)));
 				}
 			}
 		} else {
@@ -71,7 +71,7 @@ public class CommandDivinity extends CommandBase {
 		}
 	}
 
-	private float getDivinity(String s) {
+	private float getDivinity(String s) throws WrongUsageException {
 		float f;
 		try {
 			f = Float.parseFloat(s);

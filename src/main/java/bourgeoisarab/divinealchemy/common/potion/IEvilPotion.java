@@ -1,6 +1,6 @@
 package bourgeoisarab.divinealchemy.common.potion;
 
-public interface IEvilPotion {
+public interface IEvilPotion extends IAlignedPotion {
 
 	public float getMinEvilness();
 

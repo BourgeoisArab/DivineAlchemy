@@ -29,7 +29,7 @@ public class CraftingPotionFood implements IRecipe {
 			ItemStack stack1 = inv.getStackInSlot(i);
 
 			if (stack1 != null && stack1.getItem() instanceof ItemFood) {
-				if (stack1.stackTagCompound != null && stack1.stackTagCompound.hasKey(NBTNames.EFFECTS_TAG)) {
+				if (stack1.getTagCompound() != null && stack1.getTagCompound().hasKey(NBTNames.EFFECTS_TAG)) {
 					return false;
 				}
 
@@ -51,19 +51,19 @@ public class CraftingPotionFood implements IRecipe {
 			if (foodStack != null && foodStack.getItem() instanceof ItemFood) {
 				for (int j = 0; j < inv.getSizeInventory(); j++) {
 					ItemStack potionStack = inv.getStackInSlot(j);
-					if (potionStack != null && potionStack.getItem() instanceof ItemBottlePotion && potionStack.stackTagCompound != null) {
+					if (potionStack != null && potionStack.getItem() instanceof ItemBottlePotion && potionStack.getTagCompound() != null) {
 						ItemStack returnStack;
 
 						returnStack = new ItemStack(foodStack.getItem(), 1, foodStack.getItemDamage());
 
-						if (returnStack.stackTagCompound == null) {
-							returnStack.stackTagCompound = new NBTTagCompound();
+						if (returnStack.getTagCompound() == null) {
+							returnStack.setTagCompound(new NBTTagCompound());
 						}
 
-						returnStack.stackTagCompound.setTag(NBTNames.EFFECTS_TAG, potionStack.stackTagCompound.getCompoundTag(NBTNames.EFFECTS_TAG));
+						returnStack.getTagCompound().setTag(NBTNames.EFFECTS_TAG, potionStack.getTagCompound().getCompoundTag(NBTNames.EFFECTS_TAG));
 
-						if (potionStack.stackTagCompound.hasKey(NBTNames.PERSISTENT)) {
-							returnStack.stackTagCompound.setBoolean(NBTNames.PERSISTENT, potionStack.stackTagCompound.getBoolean(NBTNames.PERSISTENT));
+						if (potionStack.getTagCompound().hasKey(NBTNames.PERSISTENT)) {
+							returnStack.getTagCompound().setBoolean(NBTNames.PERSISTENT, potionStack.getTagCompound().getBoolean(NBTNames.PERSISTENT));
 						}
 
 						result = returnStack.copy();
@@ -83,6 +83,12 @@ public class CraftingPotionFood implements IRecipe {
 	@Override
 	public ItemStack getRecipeOutput() {
 		return result;
+	}
+
+	@Override
+	public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

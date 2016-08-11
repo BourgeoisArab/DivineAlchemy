@@ -3,6 +3,7 @@ package bourgeoisarab.divinealchemy.client.renderer.entity;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelCreeper;
 import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
@@ -20,8 +21,8 @@ public class RenderSpecialCreeper extends RenderLiving {
 	/** The creeper model. */
 	private ModelBase creeperModel = new ModelCreeper(2.0F);
 
-	public RenderSpecialCreeper() {
-		super(new ModelSpecialCreeper(), 0.5F);
+	public RenderSpecialCreeper(RenderManager r) {
+		super(r, new ModelSpecialCreeper(), 0.5F);
 	}
 
 	/**
@@ -91,7 +92,7 @@ public class RenderSpecialCreeper extends RenderLiving {
 				float f2 = f1 * 0.01F;
 				float f3 = f1 * 0.01F;
 				GL11.glTranslatef(f2, f3, 0.0F);
-				setRenderPassModel(creeperModel);
+				// setRenderPassModel(creeperModel);
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 				GL11.glEnable(GL11.GL_BLEND);
 				float f4 = 0.5F;
@@ -140,18 +141,18 @@ public class RenderSpecialCreeper extends RenderLiving {
 		return this.getColorMultiplier((EntitySpecialCreeper) entity, lightLevel, tickTime);
 	}
 
-	/**
-	 * Queries whether should render the specified pass or not.
-	 */
-	@Override
-	protected int shouldRenderPass(EntityLivingBase entity, int p_77032_2_, float p_77032_3_) {
-		return this.shouldRenderPass((EntitySpecialCreeper) entity, p_77032_2_, p_77032_3_);
-	}
-
-	@Override
-	protected int inheritRenderPass(EntityLivingBase entity, int p_77035_2_, float p_77035_3_) {
-		return this.inheritRenderPass((EntitySpecialCreeper) entity, p_77035_2_, p_77035_3_);
-	}
+	// /**
+	// * Queries whether should render the specified pass or not.
+	// */
+	// @Override
+	// protected int shouldRenderPass(EntityLivingBase entity, int p_77032_2_, float p_77032_3_) {
+	// return this.shouldRenderPass((EntitySpecialCreeper) entity, p_77032_2_, p_77032_3_);
+	// }
+	//
+	// @Override
+	// protected int inheritRenderPass(EntityLivingBase entity, int p_77035_2_, float p_77035_3_) {
+	// return this.inheritRenderPass((EntitySpecialCreeper) entity, p_77035_2_, p_77035_3_);
+	// }
 
 	/**
 	 * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.

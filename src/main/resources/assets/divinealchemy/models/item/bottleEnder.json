@@ -1,0 +1,6 @@
+{
+    "parent": "divinealchemy:item/bottlePotion",
+    "textures": {
+		"layer1": "divinealchemy:items/bottle_overlay"
+    }
+}

@@ -5,11 +5,12 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 import bourgeoisarab.divinealchemy.DivineAlchemy;
-import bourgeoisarab.divinealchemy.common.tileentity.TileEntityBaseDA;
+import bourgeoisarab.divinealchemy.common.tileentity.TEDivineAlchemy;
 import bourgeoisarab.divinealchemy.reference.Ref;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 
 @Sharable
 public class NetworkHandlerDescription extends SimpleChannelInboundHandler<FMLProxyPacket> {
@@ -27,12 +28,12 @@ public class NetworkHandlerDescription extends SimpleChannelInboundHandler<FMLPr
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, FMLProxyPacket msg) throws Exception {
 		ByteBuf buf = msg.payload();
-		int x = buf.readInt();
-		int y = buf.readInt();
-		int z = buf.readInt();
-		TileEntity entity = DivineAlchemy.proxy.getClientWorld().getTileEntity(x, y, z);
-		if (entity instanceof TileEntityBaseDA) {
-			((TileEntityBaseDA) entity).readFromPacket(buf);
+		int x = buf.readInt(),
+		y = buf.readInt(),
+		z = buf.readInt();
+		TileEntity entity = DivineAlchemy.proxy.getClientWorld().getTileEntity(new BlockPos(x, y, z));
+		if (entity instanceof TEDivineAlchemy) {
+			((TEDivineAlchemy) entity).readFromPacket(buf);
 		}
 	}
 

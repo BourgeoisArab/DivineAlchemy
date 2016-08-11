@@ -40,7 +40,7 @@ public class Colouring {
 	}
 
 	public static int getDyeColour(int type) {
-		return type >= 0 && type < ItemDye.field_150922_c.length ? ItemDye.field_150922_c[type] : -1;
+		return type >= 0 && type < ItemDye.dyeColors.length ? ItemDye.dyeColors[type] : -1;
 	}
 
 	public static int getDyeColour(ItemStack stack) {

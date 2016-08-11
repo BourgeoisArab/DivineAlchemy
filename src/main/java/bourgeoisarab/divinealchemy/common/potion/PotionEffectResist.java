@@ -5,8 +5,8 @@ import net.minecraft.potion.PotionEffect;
 
 public class PotionEffectResist extends ModPotion {
 
-	public PotionEffectResist(int id, boolean isBadEffect, int colour) {
-		super(id, isBadEffect, colour);
+	public PotionEffectResist(String name, boolean isBadEffect, int colour) {
+		super(name, isBadEffect, colour);
 	}
 
 	@Override

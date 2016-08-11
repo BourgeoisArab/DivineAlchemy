@@ -114,6 +114,9 @@ public class ColourHelper {
 	 * @return int[] array with RGB values from 0 to 255
 	 */
 	public static int[] separateColours(int colour) {
+		if (colour > 0xFFFFFF) {
+			colour = colour >> 8;
+		}
 		int r = colour >> 16;
 		colour -= r << 16;
 		int g = colour >> 8;

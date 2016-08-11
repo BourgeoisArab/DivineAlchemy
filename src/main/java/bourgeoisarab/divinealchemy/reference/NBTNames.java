@@ -10,9 +10,9 @@ public final class NBTNames {
 	public static final String PROPERTIES = "PotionProperties";
 	public static final String PERSISTENT_IDS = "PersistentIDs";
 	public static final String PERSISTENT = "Persistent";
-	public static final String FOOD_ID = "DAFoodID";
-	public static final String FOOD_LEVEL = "DAFoodLevel";
-	public static final String FOOD_SATURATION = "DAFoodSaturation";
+	// public static final String FOOD_ID = "DAFoodID";
+	// public static final String FOOD_LEVEL = "DAFoodLevel";
+	// public static final String FOOD_SATURATION = "DAFoodSaturation";
 	public static final String SOUL_AMOUNT = "SoulAmount";
 	public static final String DIVINITY = "Divinity";
 	public static final String INSTABILITY = "Instability";
@@ -26,5 +26,13 @@ public final class NBTNames {
 	public static final String BUTCHER = "Butcher";
 	public static final String HIDDEN_EFFECTS = "Hidden";
 	public static final String REMAINING_USES = "Remaining";
-
+	public static final String COORDINATES = "Coords";
+	// public static final String OWNER = "Owner";
+	// public static final String PLAYER_DATA = "PlayerData";
+	// public static final String HAS_POWER = "HasPower";
+	// public static final String REQUIRES_POWER = "ReqPower";
+	// public static final String ENERGY_MAX = "EnergyMax";
+	public static final String ENERGY_STORED = "Energy";
+	public static final String ENERGY_DATA = "EnergyData";
+	public static final String POWER_SOURCES = "PowerSources";
 }

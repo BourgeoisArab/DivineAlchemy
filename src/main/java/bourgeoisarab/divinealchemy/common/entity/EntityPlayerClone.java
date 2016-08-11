@@ -19,6 +19,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import bourgeoisarab.divinealchemy.DivineAlchemy;
@@ -42,7 +43,7 @@ public class EntityPlayerClone extends EntityCreature {
 		try {
 			inventory = master.inventory;
 		} catch (NullPointerException e) {
-			inventory = ((EntityPlayer) world.playerEntities.get(0)).inventory;
+			inventory = world.playerEntities.get(0).inventory;
 			e.printStackTrace();
 		}
 	}
@@ -56,7 +57,7 @@ public class EntityPlayerClone extends EntityCreature {
 		}
 		inventory = master.inventory;
 		itemInUse = master.getItemInUse();
-		setCustomNameTag(master.getDisplayName());
+		setCustomNameTag(master.getDisplayName().toString());
 		setAlwaysRenderNameTag(true);
 		Iterator<PotionEffect> i = master.getActivePotionEffects().iterator();
 		while (i.hasNext()) {
@@ -78,7 +79,7 @@ public class EntityPlayerClone extends EntityCreature {
 		int range = 8;
 		posX = master.posX + (worldObj.rand.nextInt(range * 2) - range);
 		posZ = master.posZ + (worldObj.rand.nextInt(range * 2) - range);
-		posY = worldObj.getHeightValue((int) posX, (int) posZ);
+		posY = worldObj.getHeight(new BlockPos(posX, 0, posZ)).getY();
 		rotationYaw = worldObj.rand.nextFloat() * 360;
 		rotationYawHead = worldObj.rand.nextFloat() * 360;
 	}
@@ -111,12 +112,6 @@ public class EntityPlayerClone extends EntityCreature {
 	@Override
 	public void setDead() {
 		super.setDead();
-		try {
-			EntityPlayerClone p = null;
-			p.setDead();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		// if (getCloneEffect() != null && getHealth() > 0.5F) {
 		// EntityPlayerClone newClone = new EntityPlayerClone(master);
 		// newClone.copyDataFrom(this, true);
@@ -127,7 +122,7 @@ public class EntityPlayerClone extends EntityCreature {
 
 	public static List<EntityPlayerClone> getClones(EntityPlayer master) {
 		List<EntityPlayerClone> clones = new ArrayList<EntityPlayerClone>();
-		for (Entity entity : (List<Entity>) master.worldObj.loadedEntityList) {
+		for (Entity entity : master.worldObj.loadedEntityList) {
 			if (entity instanceof EntityPlayerClone) {
 				clones.add((EntityPlayerClone) entity);
 			}
@@ -141,11 +136,6 @@ public class EntityPlayerClone extends EntityCreature {
 			damage = getHealth();
 		}
 		return super.attackEntityFrom(source, damage);
-	}
-
-	@Override
-	protected void attackEntity(Entity entity, float p_70785_2_) {
-
 	}
 
 }

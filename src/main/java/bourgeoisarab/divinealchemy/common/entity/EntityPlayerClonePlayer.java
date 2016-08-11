@@ -8,7 +8,6 @@ import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
@@ -28,11 +27,11 @@ public class EntityPlayerClonePlayer extends EntityPlayer {
 	public PathNavigate navigator;
 
 	public EntityPlayerClonePlayer(World world) {
-		this((EntityPlayer) world.playerEntities.get(0), 0);
+		this(world.playerEntities.get(0), 0);
 	}
 
 	public EntityPlayerClonePlayer(EntityPlayer master, int cloneTier) {
-		super(master.worldObj, new GameProfile(master.getUniqueID(), master.getDisplayName()));
+		super(master.worldObj, new GameProfile(master.getUniqueID(), master.getDisplayName().toString()));
 		this.master = master;
 		this.cloneTier = cloneTier;
 		setSize(master.width, master.height);
@@ -42,7 +41,7 @@ public class EntityPlayerClonePlayer extends EntityPlayer {
 
 	public static List<EntityPlayerClonePlayer> getClones(EntityPlayer master) {
 		List<EntityPlayerClonePlayer> clones = new ArrayList<EntityPlayerClonePlayer>();
-		for (Entity entity : (List<Entity>) master.worldObj.loadedEntityList) {
+		for (Entity entity : master.worldObj.loadedEntityList) {
 			if (entity instanceof EntityPlayerClonePlayer) {
 				clones.add((EntityPlayerClonePlayer) entity);
 			}
@@ -120,10 +119,16 @@ public class EntityPlayerClonePlayer extends EntityPlayer {
 		return false;
 	}
 
+	// @Override
+	// public ChunkCoordinates getPlayerCoordinates() {
+	// return null;
+	// // return new ChunkCoordinates(MathHelper.floor_double(posX), MathHelper.floor_double(posY + 0.5D), MathHelper.floor_double(posZ));
+	// }
+
 	@Override
-	public ChunkCoordinates getPlayerCoordinates() {
-		return null;
-		// return new ChunkCoordinates(MathHelper.floor_double(posX), MathHelper.floor_double(posY + 0.5D), MathHelper.floor_double(posZ));
+	public boolean isSpectator() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

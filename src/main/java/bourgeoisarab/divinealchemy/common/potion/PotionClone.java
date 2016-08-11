@@ -9,14 +9,13 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import bourgeoisarab.divinealchemy.common.entity.EntityPlayerClone;
-import bourgeoisarab.divinealchemy.reference.Ref;
 
 public class PotionClone extends ModPotion {
 
-	public PotionClone(int id, boolean isBadEffect, int colour) {
-		super(id, isBadEffect, colour);
+	public PotionClone(String name, boolean isBadEffect, int colour) {
+		super(name, isBadEffect, colour);
 		setPotionName("potion.clone");
-		setIcon(Ref.Location.PREFIX + "textures/potion/tome.png");
+		// setIcon(Ref.Location.PREFIX + "textures/potion/tome.png");
 	}
 
 	@Override
