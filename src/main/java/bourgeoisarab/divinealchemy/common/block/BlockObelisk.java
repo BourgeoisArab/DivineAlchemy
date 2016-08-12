@@ -77,7 +77,7 @@ public class BlockObelisk extends BlockPowerProvider {
 
 	@Override
 	public TEPowerProvider createNewTileEntity(World world, int meta) {
-		if ((meta & 1) == 1) {
+		if ((meta & 1) == 1 && (meta & 2) == 2) {
 			return new TEObelisk();
 		}
 		return null;

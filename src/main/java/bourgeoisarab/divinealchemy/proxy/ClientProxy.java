@@ -123,17 +123,17 @@ public class ClientProxy extends CommonProxy {
 		ModelColoured3D.registerModel(model);
 
 		item = Item.getItemFromBlock(ModBlocks.obelisk);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskBrick1", "inventory");
+		model = new ModelResourceLocation(Ref.MODID + ":obeliskBrick1");
 		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskBrick2", "inventory");
+		model = new ModelResourceLocation(Ref.MODID + ":obeliskBrick2");
 		ModelLoader.setCustomModelResourceLocation(item, 4, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskBrick3", "inventory");
+		model = new ModelResourceLocation(Ref.MODID + ":obeliskBrick3");
 		ModelLoader.setCustomModelResourceLocation(item, 8, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskReceptacle1", "inventory");
+		model = new ModelResourceLocation(Ref.MODID + ":obeliskReceptacle1");
 		ModelLoader.setCustomModelResourceLocation(item, 1, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskReceptacle2", "inventory");
+		model = new ModelResourceLocation(Ref.MODID + ":obeliskReceptacle2");
 		ModelLoader.setCustomModelResourceLocation(item, 5, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskReceptacle3", "inventory");
+		model = new ModelResourceLocation(Ref.MODID + ":obeliskReceptacle3");
 		ModelLoader.setCustomModelResourceLocation(item, 9, model);
 
 		item = Item.getItemFromBlock(ModBlocks.deadDirt);

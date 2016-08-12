@@ -1,106 +1,156 @@
-uild(BatchImageBuilder.java:46)
-	at org.eclipse.jdt.internal.core.builder.JavaBuilder.buildAll(JavaBuilder.java:254)
-	at org.eclipse.jdt.internal.core.builder.JavaBuilder.build(JavaBuilder.java:178)
-	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:733)
-	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
-	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:206)
-	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:246)
-	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:299)
-	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
-	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:302)
-	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:358)
-	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:381)
-	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:143)
-	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:241)
-	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
-Contains: Problems encountered while deleting files.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\block\obelisk1.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\block\obelisk2.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\block.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item\crystal1.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item\crystal2.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item\crystal3.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets.
-!SUBENTRY 1 org.eclipse.core.resources 4 273 2016-08-11 17:29:51.617
-!MESSAGE Problems encountered while deleting resources.
-!SUBENTRY 2 org.eclipse.core.resources 4 273 2016-08-11 17:29:51.617
-!MESSAGE Could not delete '/DivineAlchemy/bin/assets'.
-!STACK 1
-org.eclipse.core.internal.resources.ResourceException: Problems encountered while deleting resources.
-	at org.eclipse.core.internal.localstore.FileSystemResourceManager.delete(FileSystemResourceManager.java:351)
-	at org.eclipse.core.internal.resources.ResourceTree.internalDeleteFolder(ResourceTree.java:352)
-	at org.eclipse.core.internal.resources.ResourceTree.standardDeleteFolder(ResourceTree.java:798)
-	at org.eclipse.core.internal.resources.Resource.unprotectedDelete(Resource.java:1977)
-	at org.eclipse.core.internal.resources.Resource.delete(Resource.java:803)
-	at org.eclipse.jdt.internal.core.builder.BatchImageBuilder.cleanOutputFolders(BatchImageBuilder.java:114)
-	at org.eclipse.jdt.internal.core.builder.BatchImageBuilder.build(BatchImageBuilder.java:46)
-	at org.eclipse.jdt.internal.core.builder.JavaBuilder.buildAll(JavaBuilder.java:254)
-	at org.eclipse.jdt.internal.core.builder.JavaBuilder.build(JavaBuilder.java:178)
-	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:733)
-	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
-	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:206)
-	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:246)
-	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:299)
-	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
-	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:302)
-	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:358)
-	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:381)
-	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:143)
-	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:241)
-	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
-Contains: Problems encountered while deleting files.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\block\obelisk1.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\block\obelisk2.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\block.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item\crystal1.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item\crystal2.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item\crystal3.mtl.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy.
-Contains: Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets.
-!SUBENTRY 3 org.eclipse.core.resources 4 273 2016-08-11 17:29:51.617
-!MESSAGE Problems encountered while deleting resources.
-!SUBENTRY 4 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.617
-!MESSAGE Problems encountered while deleting files.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.617
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\block\obelisk1.mtl.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.617
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\block\obelisk2.mtl.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.617
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\block.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.617
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item\crystal1.mtl.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.617
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item\crystal2.mtl.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.617
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item\crystal3.mtl.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.617
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models\item.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.618
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy\models.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.618
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets\divinealchemy.
-!SUBENTRY 5 org.eclipse.core.filesystem 4 273 2016-08-11 17:29:51.618
-!MESSAGE Could not delete: C:\Dev\minecraft\DivineAlchemy\bin\assets.
-
-!ENTRY org.eclipse.jdt.core 4 4 2016-08-11 17:29:54.580
-!MESSAGE JavaBuilder handling ImageBuilderInternalException while building: .org.eclipse.jdt.core.external.folders
-!STACK 1
-org.eclipse.core.internal.resources.ResourceException: Problems encountered while deleting resources.
-	at org.eclipse.core.internal.resources.Resource.delete(Resource.java:816)
-	at org.eclipse.jdt.internal.core.builder.BatchImageBuilder.cleanOutputFolders(BatchImageBuilder.java:114)
-	at org.eclipse.jdt.internal.core.builder.BatchImageBuilder.build(BatchImageBuilder.java:46)
-	at org.eclipse.jdt.internal.core.builder.JavaBuilder.buildAll(JavaBuilder.java:254)
-	at org.eclipse.jdt.internal.core.builder.JavaBuilder.build(JavaBuilder.java:178)
-	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:733)
-	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
-	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:206)
-	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:246)
-	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:299)
-	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
-	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:302)
-	at org.eclipse.core.internal.events.BuildManager.ba
+{
+    "ambientocclusion": false,
+    "textures": {
+        "particle": "blocks/cauldron_side",
+        "top": "blocks/cauldron_top",
+        "bottom": "blocks/cauldron_bottom",
+        "side": "blocks/cauldron_side",
+        "inside": "blocks/cauldron_inner",
+        "outside": "divinealchemy:blocks/brewingCauldron_tier1"
+    },
+    "elements": [
+        {   "from": [ 0, 3, 0 ],
+            "to": [ 2, 16, 16 ],
+            "faces": {
+                "down":  { "uv": [ 0, 0,  2, 16 ], "texture": "#inside", "cullface": "down" },
+                "up":    { "uv": [ 0, 0,  2, 16 ], "texture": "#top", "cullface": "up" },
+                "north": { "uv": [ 2, 0,  0, 13 ], "texture": "#side", "cullface": "north" },
+                "south": { "uv": [ 0, 0,  2, 13 ], "texture": "#side", "cullface": "south" },
+                "west":  { "uv": [ 0, 0, 16, 13 ], "texture": "#side", "cullface": "west" },
+                "east":  { "uv": [ 0, 0, 16, 13 ], "texture": "#side" }
+            }
+        },
+        {   "from": [ 2, 3, 2 ],
+            "to": [ 14, 4, 14 ],
+            "faces": {
+                "down":  { "uv": [ 2, 2, 14, 14 ], "texture": "#inside", "cullface": "down" },
+                "up":    { "uv": [ 2, 2, 14, 14 ], "texture": "#inside", "cullface": "up" },
+                "north": { "uv": [ 2, 0,  0, 13 ], "texture": "#side", "cullface": "north" },
+                "south": { "uv": [ 0, 0,  2, 13 ], "texture": "#side", "cullface": "south" },
+                "west":  { "uv": [ 0, 0, 16, 13 ], "texture": "#side", "cullface": "west" },
+                "east":  { "uv": [ 0, 0, 16, 13 ], "texture": "#side", "cullface": "east" }
+            }
+        },
+        {   "from": [ 14, 3, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "down":  { "uv": [ 14, 0, 16, 16 ], "texture": "#inside", "cullface": "down" },
+                "up":    { "uv": [ 14, 0, 16, 16 ], "texture": "#top", "cullface": "up" },
+                "north": { "uv": [ 16, 0, 14, 13 ], "texture": "#side", "cullface": "north" },
+                "south": { "uv": [ 14, 0, 16, 13 ], "texture": "#side", "cullface": "south" },
+                "west":  { "uv": [  0, 0, 16, 13 ], "texture": "#side" },
+                "east":  { "uv": [  0, 0, 16, 13 ], "texture": "#side", "cullface": "east" }
+            }
+        },
+        {   "from": [ 2, 3, 0 ],
+            "to": [ 14, 16, 2 ],
+            "faces": {
+                "down":  { "uv": [ 2, 0, 14,  2 ], "texture": "#inside", "cullface": "down" },
+                "up":    { "uv": [ 2, 0, 14,  2 ], "texture": "#top", "cullface": "up" },
+                "north": { "uv": [ 2, 0, 14, 13 ], "texture": "#side", "cullface": "north" },
+                "south": { "uv": [ 2, 0, 14, 13 ], "texture": "#side" },
+                "west":  { "uv": [ 0, 0,  2, 13 ], "texture": "#side", "cullface": "west" },
+                "east":  { "uv": [ 0, 0,  2, 13 ], "texture": "#side", "cullface": "east" }
+            }
+        },
+        {   "from": [ 2, 3, 14 ],
+            "to": [ 14, 16, 16 ],
+            "faces": {
+                "down":  { "uv": [  2, 14, 14, 16 ], "texture": "#inside", "cullface": "down" },
+                "up":    { "uv": [  2, 14, 14, 16 ], "texture": "#top", "cullface": "up" },
+                "north": { "uv": [  2,  0, 14, 13 ], "texture": "#side" },
+                "south": { "uv": [  2,  0, 14, 13 ], "texture": "#side", "cullface": "south" },
+                "west":  { "uv": [ 14,  0, 16, 13 ], "texture": "#side", "cullface": "west" },
+                "east":  { "uv": [ 14,  0, 16, 13 ], "texture": "#side", "cullface": "east" }
+            }
+        },
+        {   "from": [ 0, 0, 0 ],
+            "to": [ 4, 3, 2 ],
+            "faces": {
+                "down":  { "uv": [ 0,  0, 4,  2 ], "texture": "#bottom", "cullface": "down" },
+                "up":    { "uv": [ 0,  0, 2, 16 ], "texture": "#top", "cullface": "up" },
+                "north": { "uv": [ 4, 13, 0, 16 ], "texture": "#side", "cullface": "north" },
+                "south": { "uv": [ 0, 13, 4, 16 ], "texture": "#side", "cullface": "south" },
+                "west":  { "uv": [ 0, 13, 2, 16 ], "texture": "#side", "cullface": "west" },
+                "east":  { "uv": [ 0, 13, 2, 16 ], "texture": "#side", "cullface": "east" }
+            }
+        },
+        {   "from": [ 0, 0, 2 ],
+            "to": [ 2, 3, 4 ],
+            "faces": {
+                "down":  { "uv": [ 0,  2, 2,  4 ], "texture": "#bottom", "cullface": "down" },
+                "up":    { "uv": [ 0,  0, 2, 16 ], "texture": "#top", "cullface": "up" },
+                "north": { "uv": [ 2, 13, 0, 16 ], "texture": "#side", "cullface": "north" },
+                "south": { "uv": [ 0, 13, 2, 16 ], "texture": "#side", "cullface": "south" },
+                "west":  { "uv": [ 2, 13, 4, 16 ], "texture": "#side", "cullface": "west" },
+                "east":  { "uv": [ 2, 13, 4, 16 ], "texture": "#side", "cullface": "east" }
+            }
+        },
+        {   "from": [ 12, 0, 0 ],
+            "to": [ 16, 3, 2 ],
+            "faces": {
+                "down":  { "uv": [ 12,  0, 16,  2 ], "texture": "#bottom", "cullface": "down" },
+                "up":    { "uv": [  0,  0,  2, 16 ], "texture": "#top", "cullface": "up" },
+                "north": { "uv": [ 16, 13, 12, 16 ], "texture": "#side", "cullface": "north" },
+                "south": { "uv": [ 12, 13, 16, 16 ], "texture": "#side", "cullface": "south" },
+                "west":  { "uv": [  0, 13,  2, 16 ], "texture": "#side", "cullface": "west" },
+                "east":  { "uv": [  0, 13,  2, 16 ], "texture": "#side", "cullface": "east" }
+            }
+        },
+        {   "from": [ 14, 0, 2 ],
+            "to": [ 16, 3, 4 ],
+            "faces": {
+                "down":  { "uv": [ 14,  2, 16,  4 ], "texture": "#bottom" },
+                "up":    { "uv": [  0,  0,  2, 16 ], "texture": "#top" },
+                "north": { "uv": [ 16, 13, 14, 16 ], "texture": "#side" },
+                "south": { "uv": [ 14, 13, 16, 16 ], "texture": "#side" },
+                "west":  { "uv": [  4, 13,  2, 16 ], "texture": "#side" },
+                "east":  { "uv": [  4, 13,  2, 16 ], "texture": "#side" }
+            }
+        },
+        {   "from": [ 0, 0, 14 ],
+            "to": [ 4, 3, 16 ],
+            "faces": {
+                "down":  { "uv": [ 14,  0, 16,  4 ], "texture": "#bottom" },
+                "up":    { "uv": [ 14,  0, 16, 16 ], "texture": "#top" },
+                "north": { "uv": [  4, 13,  0, 16 ], "texture": "#side" },
+                "south": { "uv": [  0, 13,  4, 16 ], "texture": "#side" },
+                "west":  { "uv": [ 14, 13, 16, 16 ], "texture": "#side" },
+                "east":  { "uv": [ 14, 13, 16, 16 ], "texture": "#side" }
+            }
+        },
+        {   "from": [ 0, 0, 12 ],
+            "to": [ 2, 3, 14 ],
+            "faces": {
+                "down":  { "uv": [ 12,  0, 14,  4 ], "texture": "#bottom" },
+                "up":    { "uv": [ 14,  0, 16, 16 ], "texture": "#top" },
+                "north": { "uv": [  2, 13,  0, 16 ], "texture": "#side" },
+                "south": { "uv": [  0, 13,  2, 16 ], "texture": "#side" },
+                "west":  { "uv": [ 12, 13, 14, 16 ], "texture": "#side" },
+                "east":  { "uv": [ 12, 13, 14, 16 ], "texture": "#side" }
+            }
+        },
+        {   "from": [ 12, 0, 14 ],
+            "to": [ 16, 3, 16 ],
+            "faces": {
+                "down":  { "uv": [ 14, 12, 16, 16 ], "texture": "#bottom" },
+                "up":    { "uv": [ 14,  0, 16, 16 ], "texture": "#top" },
+                "north": { "uv": [ 16, 13, 12, 16 ], "texture": "#side" },
+                "south": { "uv": [ 12, 13, 16, 16 ], "texture": "#side" },
+                "west":  { "uv": [ 14, 13, 16, 16 ], "texture": "#side" },
+                "east":  { "uv": [ 14, 13, 16, 16 ], "texture": "#side" }
+            }
+        },
+        {   "from": [ 14, 0, 12 ],
+            "to": [ 16, 3, 14 ],
+            "faces": {
+                "down":  { "uv": [ 14, 12, 16, 14 ], "texture": "#bottom" },
+                "up":    { "uv": [ 14,  0, 16, 16 ], "texture": "#top" },
+                "north": { "uv": [ 16, 13, 14, 16 ], "texture": "#side" },
+                "south": { "uv": [ 14, 13, 16, 16 ], "texture": "#side" },
+                "west":  { "uv": [ 14, 13, 12, 16 ], "texture": "#side" },
+                "east":  { "uv": [ 14, 13, 12, 16 ], "texture": "#side" }
+            }
+        }
+    ]
+}
