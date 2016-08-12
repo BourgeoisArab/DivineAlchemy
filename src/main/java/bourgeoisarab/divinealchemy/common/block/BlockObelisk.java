@@ -192,19 +192,18 @@ public class BlockObelisk extends BlockPowerProvider {
 		super.onBlockDestroyedByPlayer(world, pos, state);
 		if (state.getBlock() == this && state.getValue(PROPERTY_MULTIBLOCK)) {
 			if (state.getValue(PROPERTY_TYPE)) {
+				world.setBlockToAir(pos);
 				world.setBlockToAir(pos.offset(EnumFacing.DOWN));
 				world.setBlockToAir(pos.offset(EnumFacing.DOWN, 2));
 			} else {
 				IBlockState state1 = world.getBlockState(pos.offset(EnumFacing.UP));
 				if (state1.getBlock() == ModBlocks.obelisk && state1.getValue(PROPERTY_TYPE)) {
-					world.setBlockToAir(pos.offset(EnumFacing.UP));
-					world.setBlockToAir(pos.offset(EnumFacing.DOWN));
+					onBlockDestroyedByPlayer(world, pos.offset(EnumFacing.UP), state1);
 					return;
 				}
 				state1 = world.getBlockState(pos.offset(EnumFacing.UP, 2));
 				if (state1.getBlock() == ModBlocks.obelisk && state1.getValue(PROPERTY_TYPE)) {
-					world.setBlockToAir(pos.offset(EnumFacing.UP));
-					world.setBlockToAir(pos.offset(EnumFacing.UP, 2));
+					onBlockDestroyedByPlayer(world, pos.offset(EnumFacing.UP, 2), state1);
 				}
 			}
 		}

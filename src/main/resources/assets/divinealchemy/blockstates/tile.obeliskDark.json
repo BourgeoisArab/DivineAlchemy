@@ -4,17 +4,24 @@
     "textures": {
 		"particle": "minecraft:blocks/obsidian"
 	},
-	"model": "divinealchemy:obeliskInvisible",
+	"model": "divinealchemy:obeliskDark.obj",
     "custom": { "flip-v": true }
   },
   "variants": {
   	"receptacle=true": [{
-		"model": "divinealchemy:obelisk.obj",
 		"transform": {
-			"translation": [ 0.25, -2.25, 0.25 ],
-			"scale": [ 0.5, 0.5, 0.5 ]
-		}
+			"translation": [ -0.125, -3.0, 1.125 ],
+			"scale": [ 1, 1, 1 ]
+		},
+		"display": {
+			"thirdperson": {
+				"translation": [ 0, 0, 0]
+			},
+			"firstperson": {
+				"translation": [ 0, 0, 0]
+			}
+		}	
 	}],
-  	"receptacle=false": [{ }]
+  	"receptacle=false": [{ "model": "divinealchemy:obeliskInvisible" }]
   }
 }

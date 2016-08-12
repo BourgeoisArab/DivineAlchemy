@@ -14,11 +14,13 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import bourgeoisarab.divinealchemy.command.CommandDivinity;
 import bourgeoisarab.divinealchemy.common.event.BucketHandler;
 import bourgeoisarab.divinealchemy.common.event.DAEventHooks;
 import bourgeoisarab.divinealchemy.common.event.StartupEventHooks;
 import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
+import bourgeoisarab.divinealchemy.common.worldgen.WorldGenObeliskDark;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
 import bourgeoisarab.divinealchemy.init.ModEntities;
@@ -79,6 +81,8 @@ public class DivineAlchemy {
 		NetworkHandler.init();
 		NetworkHandlerDescription.init();
 		proxy.preInit();
+
+		GameRegistry.registerWorldGenerator(new WorldGenObeliskDark(), 0);
 	}
 
 	@Mod.EventHandler

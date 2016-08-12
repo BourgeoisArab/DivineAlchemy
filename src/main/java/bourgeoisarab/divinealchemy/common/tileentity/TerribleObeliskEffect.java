@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -27,7 +28,7 @@ public abstract class TerribleObeliskEffect {
 		this.energy = energy;
 	}
 
-	public abstract boolean performTask(TileEntity tile, int range);
+	public abstract boolean performTask(TileEntity tile, int range, boolean all);
 
 	public static class BlockDecay extends TerribleObeliskEffect {
 
@@ -41,7 +42,7 @@ public abstract class TerribleObeliskEffect {
 		}
 
 		@Override
-		public boolean performTask(TileEntity tile, int range) {
+		public boolean performTask(TileEntity tile, int range, boolean all) {
 			Iterator<BlockPos> blocks = BlockPos.getAllInBox(tile.getPos().offset(EnumFacing.DOWN, range).offset(EnumFacing.NORTH, range).offset(EnumFacing.EAST, range),
 					tile.getPos().offset(EnumFacing.UP, range).offset(EnumFacing.SOUTH, range).offset(EnumFacing.WEST, range)).iterator();
 			List<BlockPos> desiredBlocks = new ArrayList<BlockPos>();
@@ -54,6 +55,12 @@ public abstract class TerribleObeliskEffect {
 				}
 			}
 			if (desiredBlocks.size() > 0) {
+				if (all) {
+					for (BlockPos pos : desiredBlocks) {
+						tile.getWorld().setBlockState(pos, to.getDefaultState(), 3);
+					}
+					return false;
+				}
 				if (!tile.getWorld().isRemote) {
 					BlockPos pos = desiredBlocks.get(tile.getWorld().rand.nextInt(desiredBlocks.size()));
 					tile.getWorld().setBlockState(pos, to.getDefaultState(), 3);
@@ -72,13 +79,16 @@ public abstract class TerribleObeliskEffect {
 	public static TerribleObeliskEffect creatureDamage = new TerribleObeliskEffect(3, 50) {
 
 		@Override
-		public boolean performTask(TileEntity tile, int range) {
+		public boolean performTask(TileEntity tile, int range, boolean all) {
 			BlockPos pos = tile.getPos();
 			List<EntityLivingBase> entities = tile.getWorld().getEntitiesWithinAABB(EntityLivingBase.class,
 					AxisAlignedBB.fromBounds(pos.getX() - range, pos.getY() - range, pos.getZ() - range, pos.getX() + range, pos.getY() + range, pos.getZ() + range));
 			for (EntityLivingBase entity : entities) {
 				if (tile.getDistanceSq(entity.posX, entity.posY, entity.posZ) <= range * range) {
-					entity.attackEntityFrom(DamageSource.magic, 5);
+					entity.attackEntityFrom(DamageSource.magic, 1);
+					if (all) {
+						return false;
+					}
 					return true;
 				}
 			}
@@ -89,15 +99,16 @@ public abstract class TerribleObeliskEffect {
 	public static TerribleObeliskEffect creatureKill = new TerribleObeliskEffect(4, 100) {
 
 		@Override
-		public boolean performTask(TileEntity tile, int range) {
+		public boolean performTask(TileEntity tile, int range, boolean all) {
 			BlockPos pos = tile.getPos();
 			List<EntityLivingBase> entities = tile.getWorld().getEntitiesWithinAABB(EntityLivingBase.class,
 					AxisAlignedBB.fromBounds(pos.getX() - range, pos.getY() - range, pos.getZ() - range, pos.getX() + range, pos.getY() + range, pos.getZ() + range));
 			for (EntityLivingBase entity : entities) {
-				if (tile.getDistanceSq(entity.posX, entity.posY, entity.posZ) <= range * range) {
-					// while (entity.getHealth() > 0) {
+				if (!(entity instanceof EntityPlayer) && tile.getDistanceSq(entity.posX, entity.posY, entity.posZ) <= range * range) {
 					entity.attackEntityFrom(DamageSource.magic, entity.getHealth());
-					// }
+					if (all) {
+						return false;
+					}
 					return true;
 				}
 			}

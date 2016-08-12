@@ -80,7 +80,7 @@ public class TEObelisk extends TEPowerProvider implements ITickable {
 		for (int i = 0; i < evilThings.size(); i++) {
 			TerribleObeliskEffect e = evilThings.get(i);
 			if (e.stage == stageOfEvilness) {
-				if (e.performTask(this, range)) {
+				if (e.performTask(this, range, false)) {
 					buffer.add(e.energy);
 					moveToNextStage = false;
 				}

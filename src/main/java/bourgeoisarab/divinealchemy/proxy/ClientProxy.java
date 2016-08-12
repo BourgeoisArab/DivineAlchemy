@@ -143,6 +143,11 @@ public class ClientProxy extends CommonProxy {
 		item = Item.getItemFromBlock(ModBlocks.deadWood);
 		model = new ModelResourceLocation(Ref.MODID + ":deadWood", "inventory");
 		ModelLoader.setCustomModelResourceLocation(item, 0, model);
+
+		item = Item.getItemFromBlock(ModBlocks.obeliskDark);
+		model = new ModelResourceLocation(Ref.MODID + ":tile.obeliskDark", "receptacle=true");
+		ModelLoader.setCustomModelResourceLocation(item, 1, model);
+
 	}
 
 	private void registerFluidModels() {

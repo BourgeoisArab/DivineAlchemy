@@ -21,6 +21,7 @@ public final class Ref {
 
 		public static final String CATEGORY_COMPAT = "Compatability";
 		public static final String CATEGORY_POTION_IDS = "Potion IDs (if dynamic assignment is on, this will be ignored)";
+		public static final String WORLDGEN = "WorldGen";
 	}
 
 }

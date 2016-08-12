@@ -5,16 +5,18 @@ import java.util.List;
 
 import net.minecraft.util.ITickable;
 import bourgeoisarab.divinealchemy.common.energy.EnergyBuffer;
+import bourgeoisarab.divinealchemy.utility.Log;
 
 public class TEObeliskDark extends TEPowerProvider implements ITickable {
 
 	public static List<TerribleObeliskEffect> evilThings = new ArrayList<TerribleObeliskEffect>();
-
 	static {
 		// TODO make these configurable
 		evilThings.add(TerribleObeliskEffect.grassDecay);
 		evilThings.add(TerribleObeliskEffect.leafDecay);
 		evilThings.add(TerribleObeliskEffect.cropDecay);
+		evilThings.add(TerribleObeliskEffect.dirtDecay);
+		evilThings.add(TerribleObeliskEffect.woodDecay);
 		evilThings.add(TerribleObeliskEffect.creatureDamage);
 		evilThings.add(TerribleObeliskEffect.creatureKill);
 	}
@@ -35,10 +37,22 @@ public class TEObeliskDark extends TEPowerProvider implements ITickable {
 	}
 
 	protected void doEvilThing() {
-		for (int i = 0; i < evilThings.size(); i++) {
-			TerribleObeliskEffect e = evilThings.get(i);
-			if (e.performTask(this, range)) {
+		for (TerribleObeliskEffect e : evilThings) {
+			if (e.performTask(this, range, false)) {
 				buffer.add(e.energy / 2);
+			}
+		}
+	}
+
+	public void drainAllLife() {
+		boolean running = true;
+		while (running) {
+			running = false;
+			for (TerribleObeliskEffect e : evilThings) {
+				if (e.performTask(this, range, true)) {
+					running = true;
+					Log.info("loop");
+				}
 			}
 		}
 	}

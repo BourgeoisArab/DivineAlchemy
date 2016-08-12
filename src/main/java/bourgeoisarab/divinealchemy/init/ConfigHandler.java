@@ -3,6 +3,8 @@ package bourgeoisarab.divinealchemy.init;
 import java.io.File;
 
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
+import bourgeoisarab.divinealchemy.common.worldgen.WorldGenObeliskDark;
 import bourgeoisarab.divinealchemy.reference.Ref;
 import bourgeoisarab.divinealchemy.utility.Log;
 
@@ -37,10 +39,11 @@ public class ConfigHandler {
 			CoFHCompat = config.getBoolean("Enable CoFH compatability", Ref.Config.CATEGORY_COMPAT, true, "");
 			player = config.getString("Player", config.CATEGORY_GENERAL, "coolhobo77", "The subject's player name");
 			interval = config.getInt("Interval", config.CATEGORY_GENERAL, 200, 1, Integer.MAX_VALUE, "");
-			maxNaturalPower = config.getInt("MaxNaturalPower", config.CATEGORY_GENERAL, 32, 0, 64, "Maximum value of a player's power without any modifiers (eg. obelisks)");
 
 			useDynamicPotionIDs = config.getBoolean("DynamicIDs", Ref.Config.CATEGORY_POTION_IDS, true, "Use dynamic assignment for potion IDs");
 
+			Property p = config.get(Ref.Config.WORLDGEN, "ObeliskBiomes", new int[]{4, 5, 6, 18, 19, 21, 22, 27, 28, 29}, "Biome IDs, in which Desolate Obelisks can spawn");
+			WorldGenObeliskDark.BIOME_IDS = p.getIntList();
 			// if (!useDynamicPotionIDs) {
 			// potionIDs[0] = config.getInt("Flight", Ref.Config.CATEGORY_POTION_IDS, 50, 1, 127, "");
 			// potionIDs[1] = config.getInt("MagicResist", Ref.Config.CATEGORY_POTION_IDS, 51, 1, 127, "");
