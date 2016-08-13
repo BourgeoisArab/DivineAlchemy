@@ -4,6 +4,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import bourgeoisarab.divinealchemy.common.item.ItemAmulet;
 import bourgeoisarab.divinealchemy.common.item.ItemBottlePotion;
 import bourgeoisarab.divinealchemy.common.item.ItemBucketHotMess;
 import bourgeoisarab.divinealchemy.common.item.ItemBucketPotion;
@@ -21,6 +22,7 @@ public class ModItems {
 	public static ItemBucketPotion bucketPotion;
 	public static ItemBucketHotMess bucketHotMess;
 	public static ItemEssenceCrystal essenceCrystal;
+	public static ItemAmulet amulet;
 	// public static ItemOrgan organ;
 	public static ItemButcherKnife butcherKnife;
 	public static ItemEnergyStorage crystalBasic;
@@ -34,6 +36,7 @@ public class ModItems {
 		bucketPotion = new ItemBucketPotion();
 		bucketHotMess = new ItemBucketHotMess(ModBlocks.hotMess);
 		essenceCrystal = new ItemEssenceCrystal();
+		amulet = new ItemAmulet();
 		// organ = new ItemOrgan();
 		butcherKnife = new ItemButcherKnife();
 		crystalBasic = (ItemEnergyStorage) new ItemEnergyStorage(1000).setUnlocalizedName("crystalBasic");
@@ -53,6 +56,7 @@ public class ModItems {
 		GameRegistry.registerItem(crystalBasic, crystalBasic.getUnlocalizedName());
 		GameRegistry.registerItem(crystalMedium, crystalMedium.getUnlocalizedName());
 		GameRegistry.registerItem(crystalBig, crystalBig.getUnlocalizedName());
+		GameRegistry.registerItem(amulet, amulet.getUnlocalizedName());
 
 		FluidContainerRegistry.registerFluidContainer(ModFluids.hotMess, new ItemStack(bucketHotMess), new ItemStack(Items.bucket));
 	}

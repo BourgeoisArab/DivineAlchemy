@@ -19,9 +19,9 @@ public final class NBTNames {
 	public static final String THROWER = "Thrower";
 	public static final String COLOURS = "Colouring";
 	public static final String EXPLOSIONS_ABSORBED = "AbsorbedExplosions";
-	public static final String ORIENTATION = "Orientation";
-	public static final String DIMENSIONS = "Dimensions";
-	public static final String MULTIBLOCK = "Multiblock";
+	// public static final String ORIENTATION = "Orientation";
+	// public static final String DIMENSIONS = "Dimensions";
+	// public static final String MULTIBLOCK = "Multiblock";
 	public static final String OLD_TRADES = "OldRecipes";
 	public static final String BUTCHER = "Butcher";
 	public static final String HIDDEN_EFFECTS = "Hidden";
@@ -35,4 +35,8 @@ public final class NBTNames {
 	public static final String ENERGY_STORED = "Energy";
 	public static final String ENERGY_DATA = "EnergyData";
 	public static final String POWER_SOURCES = "PowerSources";
+	public static final String MAX_DAMAGE = "MaxDamage";
+	public static final String COOLDOWN = "Cooldown";
+	public static final String MAX_COOLDOWN = "MaxCooldown";
+	public static final String ACTIVE = "Active";
 }

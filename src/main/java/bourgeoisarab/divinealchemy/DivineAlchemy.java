@@ -91,6 +91,7 @@ public class DivineAlchemy {
 		Recipes.init();
 		ModPotionHelper.init();
 		Log.info("Registered " + PotionIngredient.ingredients.size() + " ingredients");
+
 	}
 
 	@Mod.EventHandler

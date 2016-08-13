@@ -65,7 +65,7 @@ public class EntitySplashPotion extends EntityThrowable {
 									entity.addPotionEffect(effect);
 								}
 								if (potion instanceof ISplashEffect) {
-									((ISplashEffect) potion).applySplashEffect(worldObj, posX, posY, posZ, this, j);
+									((ISplashEffect) potion).applySplashEffect(worldObj, posX, posY, posZ, j.getDuration(), j.getAmplifier());
 								}
 							}
 						}

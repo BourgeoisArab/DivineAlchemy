@@ -26,7 +26,7 @@ public class PotionFlight extends ModPotion {
 
 	@Override
 	public void removeEffect(EntityLivingBase entity, int amplifier) {
-		if (entity instanceof EntityPlayer) {
+		if (entity instanceof EntityPlayer && entity.getActivePotionEffect(this) == null) {
 			EntityPlayer player = (EntityPlayer) entity;
 			player.capabilities.allowFlying = false;
 			player.capabilities.isFlying = false;
