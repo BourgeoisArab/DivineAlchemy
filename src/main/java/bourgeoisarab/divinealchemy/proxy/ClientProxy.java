@@ -1,5 +1,6 @@
 package bourgeoisarab.divinealchemy.proxy;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemMeshDefinition;
@@ -12,17 +13,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.world.World;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import bourgeoisarab.divinealchemy.client.renderer.RendererBlockBrewingCauldron;
 import bourgeoisarab.divinealchemy.client.renderer.RendererBlockObelisk;
 import bourgeoisarab.divinealchemy.client.renderer.RendererBlockPotionTank;
-import bourgeoisarab.divinealchemy.client.renderer.entity.RenderEntitySplashPotion;
+import bourgeoisarab.divinealchemy.client.renderer.entity.RenderFactorySplashPotion;
 import bourgeoisarab.divinealchemy.client.renderer.model.ModelColoured3D;
 import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
 import bourgeoisarab.divinealchemy.common.event.DAClientEventHooks;
@@ -40,11 +39,11 @@ public class ClientProxy extends CommonProxy {
 		OBJLoader.instance.addDomain(Ref.MODID);
 		registerModels();
 		registerFluidModels();
+		registerRenderers();
 	}
 
 	@Override
 	public void init() {
-		registerRenderers();
 	}
 
 	@Override
@@ -52,101 +51,54 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new DAClientEventHooks());
 	}
 
+	private void registerInventoryModel(Item item, int meta, String modelName, boolean forceColor) {
+		ModelResourceLocation model = new ModelResourceLocation(Ref.Location.PREFIX + modelName, "inventory");
+		ModelLoader.setCustomModelResourceLocation(item, meta, model);
+		if (forceColor) {
+			ModelColoured3D.registerModel(model);
+		}
+	}
+
+	private void registerInventoryModel(Item item, int meta, String modelName) {
+		registerInventoryModel(item, meta, modelName, false);
+	}
+
+	private void registerInventoryModel(Block item, int meta, String modelName) {
+		registerInventoryModel(Item.getItemFromBlock(item), meta, modelName, false);
+	}
+
 	private void registerModels() {
-		Item item = GameRegistry.findItem(Ref.MODID, ModBlocks.brewingCauldron.getUnlocalizedName());
-		ModelResourceLocation model = new ModelResourceLocation(Ref.MODID + ":brewingCauldron_tier1", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-
-		model = new ModelResourceLocation(Ref.MODID + ":brewingCauldron_tier2", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 1, model);
-
-		model = new ModelResourceLocation(Ref.MODID + ":brewingCauldron_tier3", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 2, model);
-
-		model = new ModelResourceLocation(Ref.MODID + ":brewingCauldron_tier4", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 3, model);
-
-		model = new ModelResourceLocation(Ref.MODID + ":brewingCauldron_tier5", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 4, model);
-
-		item = ModItems.instillationTome;
-		model = new ModelResourceLocation(Ref.MODID + ":instillationTome", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-
-		item = ModItems.bottleEnder;
-		model = new ModelResourceLocation(Ref.MODID + ":bottleEnder", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-
-		item = ModItems.essenceCrystal;
-		model = new ModelResourceLocation(Ref.MODID + ":essenceCrystal", "inventory");
-		for (int i = 0; i < Potion.potionTypes.length; i++) {
-			ModelLoader.setCustomModelResourceLocation(item, i, model);
+		for (int i = 0; i < 5; i++) {
+			registerInventoryModel(ModBlocks.brewingCauldron, i, "brewingCauldron_tier" + (i + 1));
 		}
 
-		item = ModItems.butcherKnife;
-		model = new ModelResourceLocation(Ref.MODID + ":butcherKnife", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
+		registerInventoryModel(ModItems.instillationTome, 0, "instillationTome");
+		registerInventoryModel(ModItems.bottleEnder, 0, "bottleEnder");
 
-		item = ModItems.bucketHotMess;
-		model = new ModelResourceLocation(Ref.MODID + ":bucketHotMess", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
+		for (int i = 0; i < Potion.potionTypes.length; i++) {
+			registerInventoryModel(ModItems.essenceCrystal, i, "essenceCrystal");
+		}
 
-		item = ModItems.bucketPotion;
-		model = new ModelResourceLocation(Ref.MODID + ":bucketPotion", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
+		registerInventoryModel(ModItems.butcherKnife, 0, "butcherKnife");
+		registerInventoryModel(ModItems.bucketHotMess, 0, "bucketHotMess");
+		registerInventoryModel(ModItems.bucketPotion, 0, "bucketPotion");
+		registerInventoryModel(ModItems.bottlePotion, 0, "bottlePotion");
+		registerInventoryModel(ModItems.bottleEnder, 0, "bottleEnder");
+		registerInventoryModel(ModBlocks.potionTank, 0, "potionTank");
+		registerInventoryModel(ModItems.crystalBasic, 0, "crystal1", true);
+		registerInventoryModel(ModItems.crystalMedium, 0, "crystal2", true);
+		registerInventoryModel(ModItems.crystalBig, 0, "crystal3", true);
+		registerInventoryModel(ModBlocks.obelisk, 0, "obeliskBrick1");
+		registerInventoryModel(ModBlocks.obelisk, 1, "obeliskReceptacle1");
+		registerInventoryModel(ModBlocks.obelisk, 4, "obeliskBrick2");
+		registerInventoryModel(ModBlocks.obelisk, 5, "obeliskReceptacle2");
+		registerInventoryModel(ModBlocks.obelisk, 8, "obeliskBrick3");
+		registerInventoryModel(ModBlocks.obelisk, 9, "obeliskReceptacle3");
+		registerInventoryModel(ModBlocks.deadDirt, 0, "deadDirt");
+		registerInventoryModel(ModBlocks.deadWood, 0, "deadWood");
+		registerInventoryModel(ModItems.amulet, 0, "amulet");
 
-		item = ModItems.bottlePotion;
-		model = new ModelResourceLocation(Ref.MODID + ":bottlePotion", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-
-		item = ModItems.bottleEnder;
-		model = new ModelResourceLocation(Ref.MODID + ":bottleEnder", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-
-		item = GameRegistry.findItem(Ref.MODID, ModBlocks.potionTank.getUnlocalizedName());
-		model = new ModelResourceLocation(Ref.MODID + ":potionTank", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-
-		item = ModItems.crystalBasic;
-		model = new ModelResourceLocation(Ref.MODID + ":crystal1");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-		ModelColoured3D.registerModel(model);
-
-		item = ModItems.crystalMedium;
-		model = new ModelResourceLocation(Ref.MODID + ":crystal2");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-		ModelColoured3D.registerModel(model);
-
-		item = ModItems.crystalBig;
-		model = new ModelResourceLocation(Ref.MODID + ":crystal3");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-		ModelColoured3D.registerModel(model);
-
-		item = Item.getItemFromBlock(ModBlocks.obelisk);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskBrick1");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskBrick2");
-		ModelLoader.setCustomModelResourceLocation(item, 4, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskBrick3");
-		ModelLoader.setCustomModelResourceLocation(item, 8, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskReceptacle1");
-		ModelLoader.setCustomModelResourceLocation(item, 1, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskReceptacle2");
-		ModelLoader.setCustomModelResourceLocation(item, 5, model);
-		model = new ModelResourceLocation(Ref.MODID + ":obeliskReceptacle3");
-		ModelLoader.setCustomModelResourceLocation(item, 9, model);
-
-		item = Item.getItemFromBlock(ModBlocks.deadDirt);
-		model = new ModelResourceLocation(Ref.MODID + ":deadDirt", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-
-		item = Item.getItemFromBlock(ModBlocks.deadWood);
-		model = new ModelResourceLocation(Ref.MODID + ":deadWood", "inventory");
-		ModelLoader.setCustomModelResourceLocation(item, 0, model);
-
-		item = Item.getItemFromBlock(ModBlocks.obeliskDark);
-		model = new ModelResourceLocation(Ref.MODID + ":tile.obeliskDark", "receptacle=true");
-		ModelLoader.setCustomModelResourceLocation(item, 1, model);
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.obeliskDark), 1, new ModelResourceLocation(Ref.MODID + ":tile.obeliskDark", "receptacle=true"));
 
 	}
 
@@ -157,7 +109,7 @@ public class ClientProxy extends CommonProxy {
 
 			@Override
 			public ModelResourceLocation getModelLocation(ItemStack stack) {
-				return new ModelResourceLocation(Ref.MODID + ":BlockFluidStuff", "hotmess");
+				return new ModelResourceLocation(Ref.MODID + ":BlockFluidStuff2");
 			}
 		});
 
@@ -165,7 +117,7 @@ public class ClientProxy extends CommonProxy {
 
 			@Override
 			protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
-				return new ModelResourceLocation(Ref.MODID + ":BlockFluidStuff", "hotmess");
+				return new ModelResourceLocation(Ref.MODID + ":BlockFluidStuff2");
 			}
 		});
 
@@ -188,20 +140,29 @@ public class ClientProxy extends CommonProxy {
 		});
 	}
 
+	static class MeshDefinition implements ItemMeshDefinition {
+
+		private ModelResourceLocation model;
+
+		public MeshDefinition(String s) {
+			model = new ModelResourceLocation(s);
+		}
+
+		@Override
+		public ModelResourceLocation getModelLocation(ItemStack stack) {
+			return model;
+		}
+
+	}
+
 	private void registerRenderers() {
-		RendererBlockObelisk renderObelisk = new RendererBlockObelisk();
-		RendererBlockBrewingCauldron renderCauldron = new RendererBlockBrewingCauldron();
-
-		ClientRegistry.bindTileEntitySpecialRenderer(TEBrewingCauldron.class, renderCauldron);
+		ClientRegistry.bindTileEntitySpecialRenderer(TEBrewingCauldron.class, new RendererBlockBrewingCauldron());
 		ClientRegistry.bindTileEntitySpecialRenderer(TEPotionTank.class, new RendererBlockPotionTank());
-		ClientRegistry.bindTileEntitySpecialRenderer(TEObelisk.class, renderObelisk);
-		ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(ModBlocks.obelisk), 0, TEObelisk.class);
+		ClientRegistry.bindTileEntitySpecialRenderer(TEObelisk.class, new RendererBlockObelisk());
 
-		// MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.brewingCauldron), new RendererItemBrewingCauldron(new TEBrewingCauldron(), renderCauldron));
-		// MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.obelisk), new RendererItemObelisk(new TEObelisk(), renderObelisk));
-
+		RenderingRegistry.registerEntityRenderingHandler(EntitySplashPotion.class, new RenderFactorySplashPotion());
+		// RenderingRegistry.registerEntityRenderingHandler(EntityAmuletSpell.class, new RendererFactoryAmuletSpell());
 		// RenderingRegistry.registerEntityRenderingHandler(EntitySpecialCreeper.class, new RenderSpecialCreeper());
-		RenderingRegistry.registerEntityRenderingHandler(EntitySplashPotion.class, new RenderEntitySplashPotion(getRenderManager()));
 		// RenderingRegistry.registerEntityRenderingHandler(EntityPlayerClone.class, new RendererPlayerClone());
 	}
 
@@ -222,21 +183,6 @@ public class ClientProxy extends CommonProxy {
 
 	public static RenderManager getRenderManager() {
 		return Minecraft.getMinecraft().getRenderManager();
-	}
-
-	static class MeshDefinition implements ItemMeshDefinition {
-
-		private ModelResourceLocation model;
-
-		public MeshDefinition(String s) {
-			model = new ModelResourceLocation(s);
-		}
-
-		@Override
-		public ModelResourceLocation getModelLocation(ItemStack stack) {
-			return model;
-		}
-
 	}
 
 }

@@ -1,27 +1,22 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "divinealchemy:crystal1.obj",
-    "custom": { "flip-v": true },
-    "transform": {
-	  "translation": [ 0.375, 0.375, 0.375 ],
-      "scale": [ 0.75, 0.75, 0.75 ]
-    }
-  },
-  "variants": {
-    "normal": [{
-
-    }],
-    "inventory": [{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "divinealchemy:crystal1.obj",
+		"custom": { "flip-v": true },
 		"transform": {
-      },
-    
-	"firstperson": {
-        
-    },
-    "thirdperson": {
-        
-    }
-	}]
-  }
+			"translation": [ 0.375, 0.375, 0.375 ],
+			"scale": [ 0.75, 0.75, 0.75 ]
+		}
+	},
+	"variants": {
+		"normal": [{	
+		}],
+		"inventory": [{
+			"display": {
+				"thirdperson": {
+					"scale": [0.25, 0.25, 0.25]
+				}
+			}
+		}]
+	}
 }
