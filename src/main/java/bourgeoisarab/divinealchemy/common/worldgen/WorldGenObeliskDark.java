@@ -26,6 +26,9 @@ public class WorldGenObeliskDark implements IWorldGenerator {
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+		if (random.nextFloat() > 0.5F) {
+			return;
+		}
 		int biomeID = world.getBiomeGenForCoords(new BlockPos(chunkX * 16, 0, chunkZ * 16)).biomeID;
 		if (!justGenerated && ArrayUtils.contains(BIOME_IDS, biomeID) && biomeID == world.getBiomeGenForCoords(new BlockPos(chunkX * 16 + 15, 0, chunkZ * 16 + 15)).biomeID) {
 			List<BlockPos> blocks = getTopBlocks(world, chunkX, chunkZ);
