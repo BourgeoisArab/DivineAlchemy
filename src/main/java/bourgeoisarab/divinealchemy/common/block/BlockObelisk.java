@@ -28,7 +28,7 @@ import bourgeoisarab.divinealchemy.common.tileentity.TEPowerProvider;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
 
-public class BlockObelisk extends BlockPowerProvider {
+public class BlockObelisk extends BlockPowerProvider implements IBrewingMultiblock {
 
 	public static final PropertyInteger PROPERTY_TIER = PropertyInteger.create("tier", 0, 2);
 	public static final PropertyBool PROPERTY_TYPE = PropertyBool.create("receptacle");

@@ -22,10 +22,8 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumWorldBlockLayer;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -40,7 +38,6 @@ import bourgeoisarab.divinealchemy.reference.NBTNames;
 import bourgeoisarab.divinealchemy.utility.ColourHelper;
 import bourgeoisarab.divinealchemy.utility.InventoryHelper;
 import bourgeoisarab.divinealchemy.utility.Log;
-import bourgeoisarab.divinealchemy.utility.nbt.NBTPlayerHelper;
 
 public class BlockBrewingCauldron extends BlockPowered {
 
@@ -125,37 +122,30 @@ public class BlockBrewingCauldron extends BlockPowered {
 		setBlockBoundsForItemRender();
 	}
 
-	public boolean checkBoil(IBlockAccess world, BlockPos pos) {
-		return ((TEBrewingCauldron) world.getTileEntity(pos)).checkFuelSource();
-	}
-
 	@Override
 	public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
 		super.onBlockAdded(world, pos, state);
-		checkBoil(world, pos);
 	}
 
 	@Override
 	public void onNeighborBlockChange(World world, BlockPos pos, IBlockState state, Block block) {
 		super.onNeighborBlockChange(world, pos, state, block);
-		checkBoil(world, pos);
 	}
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float what, float these, float are) {
-		checkBoil(world, pos);
 		TEBrewingCauldron tile = (TEBrewingCauldron) world.getTileEntity(pos);
 		ItemStack heldStack = player.getCurrentEquippedItem();
 
 		if (tile == null || player.isSneaking() || heldStack == null) {
 			Log.info("--------------CAULDRON INFO----------------------");
 			Log.info("Fluid: " + tile.tank.getFluid());
-			Log.info("Tier: " + tile.getTier());
-			Log.info("Boiling: " + tile.isBoiling());
-			Log.info("Cauldron instability:" + tile.getCauldronInstability());
+			Log.info("Tier: " + (state.getValue(PROPERTY_TIER) + 1));
+			Log.info("Boiling: " + tile.isRunning());
+			// Log.info("Cauldron instability:" + tile.getCauldronInstability());
 			// Log.info("Total instability: " + tile.getInstability());
 			// Log.info("Ingredients: " + tile.getIngredients());
-			// Log.info("Effects: " + tile.getEffects());
+			Log.info("Effects: " + tile.effects);
 			Log.info("-------------------------------------------------");
 			return false;
 		}
@@ -202,14 +192,11 @@ public class BlockBrewingCauldron extends BlockPowered {
 
 	@Override
 	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
-		checkBoil(world, pos);
 		TEBrewingCauldron tile = (TEBrewingCauldron) world.getTileEntity(pos);
 		FluidStack fluid = tile.tank.getFluid();
+
 		if (fluid != null && fluid.getFluid() != ModFluids.potion) {
 			fluid.getFluid().getBlock().onEntityCollidedWithBlock(world, pos, entity);
-		}
-		if (!tile.isBoiling()) {
-			return;
 		}
 
 		if (entity instanceof EntityItem) {
@@ -218,34 +205,11 @@ public class BlockBrewingCauldron extends BlockPowered {
 			ItemStack stack = item.getEntityItem();
 
 			PotionIngredient ing = PotionIngredient.getIngredient(stack);
+
 			Log.info(ing);
+
 			if (!tile.addDye(stack, true) && ing != null) {
-				if (!world.isRemote) {
-					while (stack.stackSize > 0) {
-						if (ing == null) {
-							if (world.rand.nextFloat() < 0.1F) {
-								// tile.makeHotMess();
-								break;
-							}
-						} else if (true
-						// tile.addIngredient(ing, false)
-						) {
-							if (tile.tank.getFluid().getFluid() == FluidRegistry.WATER) {
-								tile.tank.setFluid(new FluidStack(ModFluids.potion, tile.tank.getFluidAmount()));
-							}
-							if (!PotionIngredient.addSideEffect(tile, ing, world.rand)) {
-								// tile.makeHotMess();
-							}
-						}
-						// else {
-						// tile.makeHotMess();
-						// }
-						if (thrower != null && ing != null && ing.getPotion() != null) {
-							NBTPlayerHelper.addDivinity(thrower, ing.getPotion().isBadEffect() ? -0.0002F : 0.0002F);
-						}
-						stack.stackSize -= ing.getItem().stackSize;
-					}
-				}
+				tile.addIngredient(ing, thrower);
 			}
 
 			float[] colour;

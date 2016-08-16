@@ -20,7 +20,7 @@ public class PotionNegativeEffectResist extends ModPotion {
 			ItemStack cure = new ItemStack(Blocks.dragon_egg);
 			while (i.hasNext()) {
 				PotionEffect effect = i.next();
-				if (ModPotion.getPotion(effect.getPotionID()).isBadEffect) {
+				if (ModPotion.getPotion(effect.getPotionID()).isBadEffect()) {
 					effect.addCurativeItem(cure);
 				}
 			}

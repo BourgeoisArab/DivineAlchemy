@@ -2,24 +2,19 @@ package bourgeoisarab.divinealchemy.common.potion.ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import bourgeoisarab.divinealchemy.common.potion.IAlignedPotion;
+import bourgeoisarab.divinealchemy.common.block.BrewingSetup;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.tileentity.TEPotionBrewer;
 import bourgeoisarab.divinealchemy.init.ModItems;
-import bourgeoisarab.divinealchemy.utility.ModPotionHelper;
 
 public class PotionIngredient {
 
 	public static final List<PotionIngredient> ingredients = new ArrayList<PotionIngredient>();
 	public static final IngredientEssenceCrystal[] crystals = new IngredientEssenceCrystal[256];
-	// public static final Map<Integer, IngredientEssenceCrystal> crystalMap = Maps.newHashMap();
 
 	public static final PotionIngredient magmaCream = new PotionIngredient(new ItemStack(Items.magma_cream), 0, Potion.fireResistance);
 	public static final PotionIngredient sugar = new PotionIngredient(new ItemStack(Items.sugar), 0, Potion.moveSpeed);
@@ -36,44 +31,49 @@ public class PotionIngredient {
 
 	public static final PotionIngredient gunpowder = new IngredientGunpowder(new ItemStack(Items.gunpowder), 0);
 	public static final PotionIngredient netherStar = new IngredientNetherStar(new ItemStack(Items.nether_star), 0);
-	public static final PotionIngredient potato = new IngredientPotato(new ItemStack(Items.potato), 0);
 
 	public final int id;
-	public ItemStack stack;
+	public final ItemStack stack;
 	/**
 	 * Additional instability this ingredient may add
 	 */
-	public float instability;
-	public Potion effect;
-	public boolean doesEffectStack;
+	protected float instability;
+	protected Potion effect;
+	protected boolean doesEffectStack;
 	/**
 	 * Whether to check metadata when getting ingredient from an ItemStack
 	 */
-	public boolean metaSensitive;
-	/**
-	 * The ingredient's order of priority when applying effects. Higher values will make it go first and lower values last.
-	 */
-	private int priority;
+	protected boolean metaSensitive;
+	protected int maxAmplifier;
+	protected BrewingSetup brewingSetup;
 
 	public PotionIngredient(ItemStack stack) {
 		this(stack, 0);
 	}
 
 	public PotionIngredient(ItemStack stack, float instability) {
-		this(stack, instability, null);
+		this(stack, instability, null, Byte.MAX_VALUE);
 	}
 
 	public PotionIngredient(ItemStack stack, float instability, int potionID) {
-		this(stack, instability, ModPotion.getPotion(potionID));
+		this(stack, instability, ModPotion.getPotion(potionID), Byte.MAX_VALUE);
 	}
 
 	public PotionIngredient(ItemStack stack, float instability, Potion potion) {
+		this(stack, instability, potion, Byte.MAX_VALUE);
+	}
+
+	public PotionIngredient(ItemStack stack, float instability, Potion potion, int maxAmplifier) {
 		this.stack = stack;
 		this.instability = instability;
 		effect = potion;
 		doesEffectStack = true;
 		metaSensitive = false;
-		priority = 0;
+		if (potion instanceof ModPotion) {
+			brewingSetup = ((ModPotion) potion).brewingSetup;
+		} else {
+			brewingSetup = BrewingSetup.defaultSetup;
+		}
 		id = ingredients.size();
 		registerIngredient(this);
 		if (this instanceof IngredientEssenceCrystal) {
@@ -81,12 +81,12 @@ public class PotionIngredient {
 		}
 	}
 
-	/**
-	 * Sets priority for ingredient, which is capped at Integer.MAX_VALUE - 1 aka 2147483646
-	 */
-	public PotionIngredient setPriority(int priority) {
-		this.priority = priority == Integer.MAX_VALUE ? Integer.MAX_VALUE - 1 : priority;
-		return this;
+	public BrewingSetup getBrewingSetup() {
+		return brewingSetup;
+	}
+
+	public float getInstability() {
+		return instability;
 	}
 
 	public PotionIngredient setMetaSensitive(boolean metaSensitive) {
@@ -99,17 +99,14 @@ public class PotionIngredient {
 		return this;
 	}
 
-	public int getPriority() {
-		return priority;
-	}
-
-	public void applyEffect(TEPotionBrewer tile, Random rand, boolean sideEffect) {
-		// tile.addEffect(getEffect(tile, sideEffect), sideEffect);
-		// tile.removeIngredient(this, ConfigHandler.maxEffects);
+	/**
+	 * Called to apply any additional ingredient properties
+	 */
+	public void applyEffect(TEPotionBrewer tile) {
 	}
 
 	public Potion getPotion() {
-		return ModPotion.getPotion(getPotionID());
+		return effect;
 	}
 
 	public int getColour() {
@@ -119,85 +116,6 @@ public class PotionIngredient {
 	public ItemStack getItem() {
 		return stack;
 	}
-
-	public NBTTagCompound getNBT() {
-		return stack.getTagCompound();
-	}
-
-	public static boolean addSideEffect(TEPotionBrewer tile, PotionIngredient ing, Random rand) {
-		if (ing.getPotion() != null) {
-			return addSideEffect(tile, !ing.getPotion().isBadEffect, rand);
-		}
-		if (ing.instability != 0) {
-			return addSideEffect(tile, ing.instability > 0, rand);
-		}
-		return true;
-	}
-
-	/**
-	 * @param tile
-	 * @param badEffect of the desired side effect
-	 * @param rand
-	 * @return true, if adding ingredients was successful; false, if no more were accepted
-	 */
-	public static boolean addSideEffect(TEPotionBrewer tile, boolean badEffect, Random rand) {
-		if (tile.getProperties().isStable) {
-			return true;
-		}
-		float chance = rand.nextFloat();
-		int number = 0;
-		for (int i = 0; i < 3; i++) {
-			// if (chance < tile.getInstability() * 2 / Math.pow(3, i)) {
-			// number++;
-			// } else {
-			// break;
-			// }
-		}
-		for (int i = 0; i < number; i++) {
-			PotionIngredient ing = crystals[rand.nextInt(crystals.length - 1)];
-			if (ing == null) {
-				continue;
-			}
-			Potion p = ing.getPotion();
-			if (p == null || p.isBadEffect != badEffect || p instanceof IAlignedPotion || ModPotionHelper.tier1blacklist.contains(p.getId())) {
-				continue;
-			} else {
-				// if (!tile.addIngredient(ing, true)) {
-				// return false;
-				// }
-			}
-		}
-		return true;
-	}
-
-	// /**
-	// * @param badEffect of the desired side effect
-	// **/
-	// public static List<PotionIngredient> getSideEffects(IEffectBrewingThingy tile, boolean badEffect, Random random) {
-	// float chance = random.nextFloat();
-	// int duration = tile.getProperties().isUnstable ? (int) (tile.getMaxDuration() * tile.getInstability() * (new Random().nextFloat() * 0.5 + 0.5)) : tile.getMaxDuration();
-	// int tier = tile.getTier();
-	// int amplifier = tier / 2;
-	//
-	// int number = 0;
-	// for (int i = 0; i < 3; i++) {
-	// if (chance < tile.getInstability() / Math.pow(3, i)) {
-	// number = i;
-	// } else {
-	// break;
-	// }
-	// }
-	//
-	// List<PotionIngredient> ings = new ArrayList<PotionIngredient>();
-	//
-	// for (int i = 0; i < number; i++) {
-	// PotionIngredient ing = ingredients.get(random.nextInt(ingredients.size() - 1));
-	// if (ing.getPotion().isBadEffect() != badEffect) {
-	// continue;
-	// }
-	// }
-	// return ings;
-	// }
 
 	public static void registerIngredient(PotionIngredient ingredient) {
 		if (!ingredients.contains(ingredient)) {
@@ -228,36 +146,15 @@ public class PotionIngredient {
 		return null;
 	}
 
-	public PotionEffect getEffect(TEPotionBrewer tile, boolean sideEffect) {
-		return null;
-		// int duration = !tile.getProperties().isStable ? new Random().nextInt(tile.getMaxDuration() / 4) + tile.getMaxDuration() / 4 : tile.getMaxDuration();
-		// if (sideEffect) {
-		// duration = (int) (duration * ((tile.getInstability() + 1) / 2));
-		// }
-		// if (getPotion().isInstant()) {
-		// duration = 1;
-		// }
-		// return new PotionEffect(effect.id, duration, getAmplifier(tile.countIngredient(this), getMaxAmplifier()));
-	}
-
 	public int getPotionID() {
 		return effect != null ? effect.id : 0;
 	}
 
-	/**
-	 * @param count the number of ingredients present in potion
-	 * @param maxLevel the maximum possible amplifier
-	 * @return potion amplifier to be used
-	 */
-	public int getAmplifier(int count, int maxLevel) {
-		return Math.min(count - 1, maxLevel);
-	}
-
 	public int getMaxAmplifier() {
-		if (this instanceof IngredientEssenceCrystal) {
-			return 3;
-		}
-		return 1;
+		// if (this instanceof IngredientEssenceCrystal) {
+		// return 3;
+		// }
+		return maxAmplifier;
 	}
 
 	@Override

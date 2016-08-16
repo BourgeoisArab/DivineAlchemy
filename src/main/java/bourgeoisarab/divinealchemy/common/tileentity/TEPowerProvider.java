@@ -10,7 +10,7 @@ import bourgeoisarab.divinealchemy.common.energy.EnergyBuffer;
 
 public abstract class TEPowerProvider extends TEDivineAlchemy implements ITickable {
 
-	public final int searchDistanceSq = 256;
+	public int rangeSq = 256;
 
 	public List<BlockPos> powerSinks = new ArrayList<BlockPos>();
 	protected EnergyBuffer buffer = new EnergyBuffer(1000, 1000);
@@ -32,7 +32,7 @@ public abstract class TEPowerProvider extends TEDivineAlchemy implements ITickab
 	protected void updateList() {
 		for (TileEntity tile : worldObj.loadedTileEntityList) {
 			BlockPos pos = tile.getPos();
-			if (getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= searchDistanceSq) {
+			if (getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= rangeSq) {
 				if (tile instanceof TEPowered) {
 					powerSinks.add(tile.getPos());
 				}
@@ -43,7 +43,7 @@ public abstract class TEPowerProvider extends TEDivineAlchemy implements ITickab
 	protected void cleanList() {
 		for (BlockPos pos : powerSinks) {
 			TileEntity tile = worldObj.getTileEntity(pos);
-			if (tile == null || !(tile instanceof TEPowered) || getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) > searchDistanceSq) {
+			if (tile == null || !(tile instanceof TEPowered) || getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) > rangeSq) {
 				powerSinks.remove(pos);
 			}
 		}

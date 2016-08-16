@@ -85,7 +85,6 @@ public class Divinity extends WorldSavedData {
 	public float getDivinity(UUID player) {
 		Float f = values.get(player);
 		if (f == null) {
-			Log.warn("Attempted to get divinity of non-existent player");
 			return 0.0F;
 		}
 		return f;

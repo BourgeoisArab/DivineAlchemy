@@ -12,11 +12,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import bourgeoisarab.divinealchemy.DivineAlchemy;
 import bourgeoisarab.divinealchemy.common.potion.ModPotion;
+import bourgeoisarab.divinealchemy.common.tileentity.TEPowerProvider;
 import bourgeoisarab.divinealchemy.init.ConfigHandler;
 import bourgeoisarab.divinealchemy.reference.NBTNames;
 
@@ -93,6 +95,15 @@ public class ItemAmulet extends Item {
 				short cooldown = stack.getTagCompound().getShort(NBTNames.COOLDOWN);
 				if (cooldown > 0) {
 					stack.getTagCompound().setShort(NBTNames.COOLDOWN, cooldown--);
+				}
+			}
+			if (stack.getItemDamage() > 0 && world.getWorldTime() % 20 == 0) {
+				for (TileEntity tile : world.loadedTileEntityList) {
+					if (tile instanceof TEPowerProvider && entity.getDistanceSq(tile.getPos()) <= ((TEPowerProvider) tile).rangeSq) {
+						if (((TEPowerProvider) tile).drainEnergy(ConfigHandler.amuletRepairCost) >= ConfigHandler.amuletRepairCost) {
+							stack.setItemDamage(stack.getItemDamage() - 1);
+						}
+					}
 				}
 			}
 		}

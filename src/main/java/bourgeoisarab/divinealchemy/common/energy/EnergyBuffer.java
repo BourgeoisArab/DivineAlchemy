@@ -37,6 +37,10 @@ public class EnergyBuffer {
 		return maxEnergy;
 	}
 
+	public void setMaxEnergy(int maxEnergy) {
+		this.maxEnergy = Math.max(maxEnergy, 0);
+	}
+
 	public boolean isFull() {
 		return energyLevel >= maxEnergy;
 	}

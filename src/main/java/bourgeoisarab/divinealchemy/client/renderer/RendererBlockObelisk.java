@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
@@ -35,12 +34,12 @@ public class RendererBlockObelisk extends TileEntitySpecialRenderer<TEObelisk> {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDepthMask(true);
-		renderItem(te.getWorld(), stack, partialTicks);
+		renderItem(stack);
 
 		GL11.glPopMatrix();
 	}
 
-	private void renderItem(World world, ItemStack stack, float partialTicks) {
+	private void renderItem(ItemStack stack) {
 		RenderItem itemRenderer = DivineAlchemy.proxy.getClient().getRenderItem();
 		if (stack != null) {
 			EntityItem entity = entityCrystalBasic;

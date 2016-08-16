@@ -21,7 +21,8 @@ public abstract class TEPowered extends TEDivineAlchemy implements ITickable {
 
 	// Energy buffers
 	protected EnergyBuffer buffer = new EnergyBuffer(1000);
-	protected int energyFlow = 100;
+	protected int energyFlow = 10;
+	protected boolean isRunning = false;
 
 	@Override
 	public void update() {
@@ -37,13 +38,19 @@ public abstract class TEPowered extends TEDivineAlchemy implements ITickable {
 		}
 	}
 
-	public abstract boolean isRunning();
+	public boolean isRunning() {
+		return isRunning;
+	}
 
 	protected void requestEnergy(int amount) {
+		if (powerSources.size() <= 0) {
+			return;
+		}
+		int drainEach = amount / powerSources.size();
 		for (BlockPos pos : powerSources) {
 			TileEntity tile = worldObj.getTileEntity(pos);
 			if (tile != null && tile instanceof TEPowerProvider) {
-				buffer.add(((TEPowerProvider) tile).drainEnergy(amount));
+				buffer.add(((TEPowerProvider) tile).drainEnergy(drainEach));
 			}
 		}
 	}
@@ -85,6 +92,7 @@ public abstract class TEPowered extends TEDivineAlchemy implements ITickable {
 		for (int i = 0; i < list.tagCount(); i++) {
 			powerSources.add(BlockPos.fromLong(((NBTTagLong) list.get(i)).getLong()));
 		}
+		isRunning = nbt.getBoolean(NBTNames.RUNNING);
 	}
 
 	@Override
@@ -96,6 +104,7 @@ public abstract class TEPowered extends TEDivineAlchemy implements ITickable {
 			list.appendTag(new NBTTagLong(pos.toLong()));
 		}
 		nbt.setTag(NBTNames.POWER_SOURCES, list);
+		nbt.setBoolean(NBTNames.RUNNING, isRunning);
 	}
 
 }

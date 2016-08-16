@@ -20,6 +20,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import bourgeoisarab.divinealchemy.client.renderer.RendererBlockBrewingCauldron;
 import bourgeoisarab.divinealchemy.client.renderer.RendererBlockObelisk;
+import bourgeoisarab.divinealchemy.client.renderer.RendererBlockPedestal;
 import bourgeoisarab.divinealchemy.client.renderer.RendererBlockPotionTank;
 import bourgeoisarab.divinealchemy.client.renderer.entity.RenderFactorySplashPotion;
 import bourgeoisarab.divinealchemy.client.renderer.model.ModelColoured3D;
@@ -27,6 +28,7 @@ import bourgeoisarab.divinealchemy.common.entity.EntitySplashPotion;
 import bourgeoisarab.divinealchemy.common.event.DAClientEventHooks;
 import bourgeoisarab.divinealchemy.common.tileentity.TEBrewingCauldron;
 import bourgeoisarab.divinealchemy.common.tileentity.TEObelisk;
+import bourgeoisarab.divinealchemy.common.tileentity.TEPedestal;
 import bourgeoisarab.divinealchemy.common.tileentity.TEPotionTank;
 import bourgeoisarab.divinealchemy.init.ModBlocks;
 import bourgeoisarab.divinealchemy.init.ModItems;
@@ -97,6 +99,7 @@ public class ClientProxy extends CommonProxy {
 		registerInventoryModel(ModBlocks.deadDirt, 0, "deadDirt");
 		registerInventoryModel(ModBlocks.deadWood, 0, "deadWood");
 		registerInventoryModel(ModItems.amulet, 0, "amulet");
+		registerInventoryModel(ModBlocks.pedestal, 0, "pedestal");
 
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.obeliskDark), 1, new ModelResourceLocation(Ref.MODID + ":tile.obeliskDark", "receptacle=true"));
 
@@ -159,6 +162,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TEBrewingCauldron.class, new RendererBlockBrewingCauldron());
 		ClientRegistry.bindTileEntitySpecialRenderer(TEPotionTank.class, new RendererBlockPotionTank());
 		ClientRegistry.bindTileEntitySpecialRenderer(TEObelisk.class, new RendererBlockObelisk());
+		ClientRegistry.bindTileEntitySpecialRenderer(TEPedestal.class, new RendererBlockPedestal());
 
 		RenderingRegistry.registerEntityRenderingHandler(EntitySplashPotion.class, new RenderFactorySplashPotion());
 		// RenderingRegistry.registerEntityRenderingHandler(EntityAmuletSpell.class, new RendererFactoryAmuletSpell());

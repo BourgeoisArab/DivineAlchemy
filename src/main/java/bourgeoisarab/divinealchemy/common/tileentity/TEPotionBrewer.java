@@ -1,9 +1,16 @@
 package bourgeoisarab.divinealchemy.common.tileentity;
 
 import io.netty.buffer.ByteBuf;
+
+import java.util.List;
+
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -11,40 +18,45 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import bourgeoisarab.divinealchemy.common.block.BrewingSetup;
 import bourgeoisarab.divinealchemy.common.potion.Colouring;
 import bourgeoisarab.divinealchemy.common.potion.Effects;
-import bourgeoisarab.divinealchemy.common.potion.Ingredients;
+import bourgeoisarab.divinealchemy.common.potion.ModPotion;
 import bourgeoisarab.divinealchemy.common.potion.PotionProperties;
+import bourgeoisarab.divinealchemy.common.potion.ingredient.PotionIngredient;
 import bourgeoisarab.divinealchemy.init.ModFluids;
+import bourgeoisarab.divinealchemy.init.ModItems;
+import bourgeoisarab.divinealchemy.utility.Log;
 import bourgeoisarab.divinealchemy.utility.nbt.NBTEffectHelper;
 
 public abstract class TEPotionBrewer extends TEPowered implements IFluidHandler {
 
 	public final FluidTank tank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME);
-	public Ingredients ingredients = new Ingredients();
 	public Effects effects = new Effects();
-	public PotionProperties properties = new PotionProperties();
-	public Colouring colouring = new Colouring();
 	public float instability = 0.0F;
+
+	@Override
+	public void update() {
+		super.update();
+		if (worldObj.getWorldTime() % updateRate == 0) {
+			if (buffer.isFull()) {
+				completePotion();
+			}
+		}
+	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		tank.writeToNBT(nbt);
-		NBTEffectHelper.setIngredients(nbt, ingredients);
 		NBTEffectHelper.setEffects(nbt, effects);
-		NBTEffectHelper.setColouring(nbt, colouring);
-		NBTEffectHelper.setProperties(nbt, properties);
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		tank.readFromNBT(nbt);
-		ingredients = NBTEffectHelper.getIngredients(nbt);
 		effects = NBTEffectHelper.getEffects(nbt);
-		colouring = NBTEffectHelper.getColouring(nbt);
-		properties = NBTEffectHelper.getProperties(nbt);
 	}
 
 	@Override
@@ -81,134 +93,111 @@ public abstract class TEPotionBrewer extends TEPowered implements IFluidHandler 
 	// sendUpdateToClient();
 	// }
 
-	// @Override
+	public abstract boolean isHeated();
+
 	public PotionProperties getProperties() {
+		return NBTEffectHelper.getProperties(tank.getFluid());
+	}
+
+	public PotionProperties setProperties(PotionProperties properties) {
+		if (properties != null) {
+			NBTEffectHelper.setProperties(tank.getFluid(), properties);
+		}
+		sendUpdateToClient();
 		return properties;
 	}
 
-	// @Override
-	public PotionProperties setProperties(PotionProperties properties) {
-		if (properties != null) {
-			this.properties = properties;
-		} else {
-			this.properties = new PotionProperties();
-		}
-		sendUpdateToClient();
-		return this.properties;
-	}
-
-	// @Override
 	public Colouring getColouring() {
-		return colouring;
+		return NBTEffectHelper.getColouring(tank.getFluid());
 	}
 
-	// @Override
 	public Colouring setColouring(Colouring colour) {
 		if (colour != null) {
-			colouring = colour;
+			NBTEffectHelper.setColouring(tank.getFluid(), colour);
 		} else {
-			colouring.clear();
+			NBTEffectHelper.setColouring(tank.getFluid(), new Colouring());
 		}
 		sendUpdateToClient();
-		return colouring;
+		return colour;
 	}
 
-	// @Override
-	// public boolean addIngredient(PotionIngredient ing, boolean side) {
-	// if (!effects.empty()) {
-	// return false;
-	// }
-	// boolean r = ingredients.add(ing, side);
-	// sendUpdateToClient();
-	// return r;
-	// }
+	public abstract int getMaxDuration();
 
-	// @Override
-	// public int removeIngredient(PotionIngredient ing, int amount) {
-	// int removed = ingredients.remove(ing, amount);
-	// sendUpdateToClient();
-	// return removed;
-	// }
+	public abstract int getMaxAmplifier();
 
-	// @Override
-	// public Ingredients getIngredients() {
-	// return ingredients;
-	// }
-
-	// @Override
-	// public void setIngredients(Ingredients ingredients) {
-	// if (ingredients != null) {
-	// this.ingredients = ingredients;
-	// } else {
-	// this.ingredients.clear();
-	// }
-	// sendUpdateToClient();
-	// }
-
-	// @Override
-	// public void addEffect(PotionEffect effect, boolean side) {
-	// effects.add(effect, side);
-	// sendUpdateToClient();
-	// }
-
-	// @Override
-	// public int getMaxDuration() {
-	// return (int) (Math.pow(2, getTier()) * 1200);
-	// }
-
-	// @Override
-	// public void clearInstability() {
-	// properties.isStable = true;
-	// instability = 0.0F;
-	// }
-
-	// @Override
-	// public void finaliseEffects() {
-	// if (ingredients.countIngredients() <= 0 || tank.getFluid() == null || tank.getFluid().getFluid() != ModFluids.potion) {
-	// return;
-	// }
-	// if (!worldObj.isRemote) {
-	// for (int i = 0; i < ingredients.getIngredients().length; i++) {
-	// if (ingredients.getIngredient(i) != null) {
-	// ingredients.getIngredient(i).applyEffect(this, worldObj.rand, ingredients.getSide(i));
-	// }
-	// }
-	// NBTEffectHelper.setEffects(tank.getFluid(), effects);
-	// NBTEffectHelper.setColouring(tank.getFluid(), colouring);
-	// NBTEffectHelper.setProperties(tank.getFluid().tag, properties);
-	// sendUpdateToClient();
-	// }
-	// }
-
-	// @Override
-	// public void clearEffects() {
-	// effects.clear();
-	// ingredients.clear();
-	// colouring.clear();
-	// properties.clear();
-	// sendUpdateToClient();
-	// }
-
-	// @Override
-	public int getTier() {
-		return getBlockMetadata();
+	public void completePotion() {
+		if (isRunning) {
+			isRunning = false;
+			if (tank.getFluid().getFluid() == FluidRegistry.WATER) {
+				tank.setFluid(new FluidStack(ModFluids.potion, tank.getFluidAmount()));
+			}
+			NBTEffectHelper.setEffects(tank.getFluid(), effects);
+			effects.clear();
+			markDirty();
+			if (worldObj.isRemote) {
+				for (int i = 0; i < 20; i++) {
+					double x = 2D * (worldObj.rand.nextDouble() - 0.5D);
+					double z = 2D * (worldObj.rand.nextDouble() - 0.5D);
+					worldObj.spawnParticle(EnumParticleTypes.SPELL_INSTANT, getPos().getX() + x, getPos().getY() + 1, pos.getZ() + z, -x, 0, -z);
+				}
+			}
+		}
 	}
 
-	// @Override
-	// public int countIngredient(PotionIngredient ing) {
-	// int count = 0;
-	// for (PotionIngredient i : ingredients.getIngredients()) {
-	// if (i != null && ing.getPotionID() == i.getPotionID()) {
-	// count++;
-	// }
-	// }
-	// return count;
-	// }
+	public void addIngredient(PotionIngredient ing, EntityPlayer player) {
+		if (ing != null && !worldObj.isRemote) {
+			BrewingSetup setup = ing.getBrewingSetup();
+			Log.info("getting brewing setup");
+			if (setup.checkSetup(worldObj, getPos(), this) && isHeated()) {
+				Log.info("setup is valid");
+				List<TEPedestal> pedestals = setup.getPedestals(worldObj, getPos(), this);
+				// int[] counts = getCrystalCounts(pedestals);
+				// int amplifier = Math.min(getMaxAmplifier(), Math.min(counts[0], ing.getMaxAmplifier()));
+				// int duration = Math.min(getMaxDuration(), counts[1]);
+				int duration = 600;
+				int amplifier = 2;
+				// List<TEObelisk> obelisks = setup.getObelisks(worldObj, getPos(), this);
+				Log.info("adding effects");
+				Log.info("pedestals:" + pedestals);
+				effects.add(new PotionEffect(ing.getPotionID(), duration, amplifier), false);
+				for (int i = 0; i < 3; i++) {
+					Potion p = ModPotion.getRandomPotion(worldObj.rand, !ing.getPotion().isBadEffect);
+					effects.add(new PotionEffect(p.getId(), worldObj.rand.nextInt(duration / 2) + duration / 2, worldObj.rand.nextBoolean() ? amplifier : amplifier - 1), true);
+				}
+				isRunning = true;
+				for (TEPedestal tile : pedestals) {
+					tile.isRunning = true;
+				}
+				Log.info("all things running");
+			} else {
+				if (ing.getPotion() instanceof ModPotion) {
+					((ModPotion) ing.getPotion()).punishForFailedSetup(player);
+				}
+			}
+			sendUpdateToClient();
+		}
+	}
 
-	// @Override
+	/**
+	 * @return int[]{amplifier, duration, instability}
+	 */
+	public int[] getCrystalCounts(List<TEPedestal> pedestals) {
+		int[] data = new int[3];
+		for (TEPedestal tile : pedestals) {
+			ItemStack stack = tile.getStackInSlot(0);
+			if (stack != null && stack.getItem() == ModItems.pedestalCrystal) {
+				data[ModItems.pedestalCrystal.getType(stack).ordinal()]++;
+			}
+		}
+		return data;
+	}
+
 	public boolean addDye(ItemStack stack, boolean add) {
 		if (tank.getFluid() != null && tank.getFluid().getFluid() == ModFluids.potion) {
-			return colouring.add(stack, add);
+			Colouring c = NBTEffectHelper.getColouring(tank.getFluid());
+			boolean b = c.add(stack, add);
+			NBTEffectHelper.setColouring(tank.getFluid(), c);
+			return b;
 		}
 		return false;
 	}
@@ -266,43 +255,4 @@ public abstract class TEPotionBrewer extends TEPowered implements IFluidHandler 
 	public FluidTankInfo[] getTankInfo(EnumFacing from) {
 		return new FluidTankInfo[]{tank.getInfo()};
 	}
-
-	// /**
-	// / * Sorts the stored effects in order of priority
-	// / */
-	// public void sortEffects() {
-	// List<PotionIngredient> sorted = new ArrayList<PotionIngredient>();
-	// int priority = getHighestPriority(Integer.MAX_VALUE);
-	// while (sorted.size() < ingredients.length) {
-	// sorted.addAll(getIngredientsWithPriority(getHighestPriority(priority)));
-	// priority = getHighestPriority(priority);
-	// }
-	// for (int i = 0; i < ingredients.length; i++) {
-	// ingredients[i] = sorted.get(i);
-	// }
-	// }
-	//
-	// /**
-	// * @param the previous highest priority that was already processed
-	// * @return
-	// */
-	// private int getHighestPriority(int priority) {
-	// int highest = Integer.MIN_VALUE;
-	// for (PotionIngredient i : ingredients.getIngredients()) {
-	// if (i != null) {
-	// highest = i.getPriority() <= priority ? Math.max(i.getPriority(), highest) : highest;
-	// }
-	// }
-	// return highest;
-	// }
-	//
-	// protected List<PotionIngredient> getIngredientsWithPriority(int priority) {
-	// List<PotionIngredient> list = new ArrayList<PotionIngredient>();
-	// for (PotionIngredient i : ingredients.getIngredients()) {
-	// if (i != null && i.getPriority() == priority) {
-	// list.add(i);
-	// }
-	// }
-	// return list;
-	// }
 }

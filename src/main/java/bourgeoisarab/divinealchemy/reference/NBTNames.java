@@ -39,4 +39,5 @@ public final class NBTNames {
 	public static final String COOLDOWN = "Cooldown";
 	public static final String MAX_COOLDOWN = "MaxCooldown";
 	public static final String ACTIVE = "Active";
+	public static final String RUNNING = "Running";
 }

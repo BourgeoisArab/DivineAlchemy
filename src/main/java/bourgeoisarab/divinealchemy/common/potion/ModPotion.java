@@ -1,10 +1,16 @@
 package bourgeoisarab.divinealchemy.common.potion;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.BaseAttributeMap;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
+import bourgeoisarab.divinealchemy.common.block.BrewingSetup;
 import bourgeoisarab.divinealchemy.common.event.DAEventHooks;
 import bourgeoisarab.divinealchemy.network.MessageRemoveEffect;
 import bourgeoisarab.divinealchemy.network.NetworkHandler;
@@ -24,7 +30,7 @@ public class ModPotion extends Potion {
 	public static ModPotion potionNauseaAura = new PotionAura("auraNausea", true, 0xFFFFFF, confusion);
 	public static ModPotion potionHungerAura = new PotionAura("auraHunger", true, 0xFFFFFF, hunger);
 	public static ModPotion potionNegativeEffectResist = new ModPotion("effectResistNeg", false, 0xAAFFAA).setPotionName("potion.negativeEffectResist");
-	public static ModPotion potionParticle = new ModPotion("particle", false, 0x888888).setPotionName("potion.particle");
+	public static ModPotion potionParticle = new PotionParticle("particle", false, 0x888888).setPotionName("potion.particle");
 	public static ModPotion potionFiendFyre = new PotionFiendFyre("fiendFyre", true, 0x884400);
 	public static ModPotion potionSealedMouth = new ModPotion("sealedMouth", true, 0x000000).setPotionName("potion.sealedmouth");
 	public static ModPotion potionReach = new PotionReach("reach", false, 0xFFFFFF);
@@ -35,8 +41,29 @@ public class ModPotion extends Potion {
 	public static ModPotion potionSmite = new PotionSmite("smite", true, 0xFFFFFF);
 	public static ModPotion potionMagnet = new PotionMagnet("magnet", false, 0xFFFFFF);
 
-	public ModPotion(String name, boolean isBadEffect, int colour) {
+	public static List<Potion> badEffects = new ArrayList<Potion>();
+	public static List<Potion> goodEffects = new ArrayList<Potion>();
+	static {
+		for (Potion p : Potion.potionTypes) {
+			if (p != null) {
+				if (p.isBadEffect()) {
+					badEffects.add(p);
+				} else {
+					goodEffects.add(p);
+				}
+			}
+		}
+	}
+
+	public final BrewingSetup brewingSetup;
+
+	public ModPotion(String name, boolean isBadEffect, int colour, BrewingSetup setup) {
 		super(new ResourceLocation(Ref.Location.TEXTURES + "potion/" + name + ".png"), isBadEffect, colour);
+		brewingSetup = setup;
+	}
+
+	public ModPotion(String name, boolean isBadEffect, int colour) {
+		this(name, isBadEffect, colour, BrewingSetup.defaultSetup);
 	}
 
 	@Override
@@ -108,6 +135,13 @@ public class ModPotion extends Potion {
 			return null;
 		}
 		return potionTypes[id];
+	}
+
+	public void punishForFailedSetup(EntityPlayer player) {
+	}
+
+	public static Potion getRandomPotion(Random rand, boolean isBadEffect) {
+		return isBadEffect ? badEffects.get(rand.nextInt(badEffects.size())) : goodEffects.get(rand.nextInt(goodEffects.size()));
 	}
 
 }

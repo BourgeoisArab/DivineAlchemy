@@ -13,6 +13,7 @@ import bourgeoisarab.divinealchemy.common.item.ItemEnderBottle;
 import bourgeoisarab.divinealchemy.common.item.ItemEnergyStorage;
 import bourgeoisarab.divinealchemy.common.item.ItemEssenceCrystal;
 import bourgeoisarab.divinealchemy.common.item.ItemInstillationTome;
+import bourgeoisarab.divinealchemy.common.item.ItemPedestalCrystal;
 
 public class ModItems {
 
@@ -28,6 +29,7 @@ public class ModItems {
 	public static ItemEnergyStorage crystalBasic;
 	public static ItemEnergyStorage crystalMedium;
 	public static ItemEnergyStorage crystalBig;
+	public static ItemPedestalCrystal pedestalCrystal;
 
 	public static void init() {
 		instillationTome = new ItemInstillationTome();
@@ -42,6 +44,7 @@ public class ModItems {
 		crystalBasic = (ItemEnergyStorage) new ItemEnergyStorage(1000).setUnlocalizedName("crystalBasic");
 		crystalMedium = (ItemEnergyStorage) new ItemEnergyStorage(5000).setUnlocalizedName("crystalMedium");
 		crystalBig = (ItemEnergyStorage) new ItemEnergyStorage(10000).setUnlocalizedName("crystalBig");
+		pedestalCrystal = new ItemPedestalCrystal();
 	}
 
 	public static void registerItems() {
@@ -57,6 +60,7 @@ public class ModItems {
 		GameRegistry.registerItem(crystalMedium, crystalMedium.getUnlocalizedName());
 		GameRegistry.registerItem(crystalBig, crystalBig.getUnlocalizedName());
 		GameRegistry.registerItem(amulet, amulet.getUnlocalizedName());
+		GameRegistry.registerItem(pedestalCrystal, pedestalCrystal.getUnlocalizedName());
 
 		FluidContainerRegistry.registerFluidContainer(ModFluids.hotMess, new ItemStack(bucketHotMess), new ItemStack(Items.bucket));
 	}

@@ -1,7 +1,5 @@
 package bourgeoisarab.divinealchemy.common.potion.ingredient;
 
-import java.util.Random;
-
 import net.minecraft.item.ItemStack;
 import bourgeoisarab.divinealchemy.common.tileentity.TEPotionBrewer;
 
@@ -13,7 +11,7 @@ public class IngredientGunpowder extends PotionIngredient {
 	}
 
 	@Override
-	public void applyEffect(TEPotionBrewer tile, Random rand, boolean sideEffect) {
+	public void applyEffect(TEPotionBrewer tile) {
 		tile.getProperties().isSplash = true;
 	}
 

@@ -34,8 +34,8 @@ public class TEObelisk extends TEPowerProvider implements ITickable {
 
 	@Override
 	public void update() {
-		if (worldObj.getWorldTime() % 1 == 0) {
-			drainEnergy(500);
+		if (worldObj.getWorldTime() % 10 == 0) {
+			// drainEnergy(500);
 			if (!buffer.isFull()) {
 				doEvilThing();
 			}
